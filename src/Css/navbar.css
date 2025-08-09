@@ -1,0 +1,46 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.custom-mobile-dropdown{
+       display: flex;
+   flex-direction: column;
+  position: absolute;
+  top: 100px;
+  right: 20px;
+  height: 28%;
+}
+
+ul{
+    list-style: none;
+    display: flex;
+      flex-direction: column;
+}
+
+.items{
+    display: flex;
+    justify-content: end;
+}
+
+a {
+
+  text-decoration: none; /* Removes underline */
+}
+
+.navbar{
+    display: flex;
+    justify-content: end;
+    height: 140px;
+}
+
+.navbar-toggler{
+    position: absolute;
+}

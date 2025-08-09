@@ -1,0 +1,221 @@
+/*
+ * Flex Layout Specifics
+ */
+ main {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem; /* Added spacing between rounds */
+  justify-content: center;
+  padding: 2rem;
+}
+.round {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 250px;
+  list-style: none;
+  padding: 0;
+}
+.round .spacer { 
+  flex-grow: 1; 
+}
+.round .spacer:first-child,
+.round .spacer:last-child { 
+  flex-grow: 0.5; 
+}
+.round .game-spacer {
+  flex-grow: 1;
+}
+
+/*
+* General Styles
+*/
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.95rem;
+  padding: 20px;
+  background-color: #f8f9fa; /* light Bootstrap bg */
+  line-height: 1.4em;
+}
+
+li.game {
+  background: #ffffff;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  text-align: center;
+  transition: background 0.3s;
+  position: relative;
+}
+
+li.game:hover {
+  background: #e2f0ff; /* light hover effect */
+}
+
+li.game.winner {
+  font-weight: bold;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+li.game span {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+li.game-top { 
+  border-bottom: 1px solid #adb5bd; 
+}
+li.game-spacer { 
+  border-right: 2px dashed #adb5bd;
+  min-height: 40px;
+}
+li.game-bottom { 
+  border-top: 1px solid #adb5bd; 
+}
+
+/* Rounds title */
+.round-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+.match {
+  position: relative;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 50px;
+  width: 160px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.match .player {
+  padding: 8px 0;
+  position: relative;
+}
+
+.match .player + .player::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 16px;
+  background-color: #ccc;
+}
+
+.match::after {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 2px;
+  background-color: #ccc;
+}
+
+.round-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Ensures the SVG container aligns correctly with the bracket columns */
+.bracket-svg-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1; /* Keep lines behind the bracket cards */
+}
+
+/* Additional styling to ensure lines are rendered correctly */
+.bracket-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Bracket container that holds the columns */
+.bracket-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4rem;
+  padding: 1rem;
+  position: relative; /* This helps ensure absolute positioning inside it */
+  overflow-x: auto;
+}
+
+/* Bracket columns - align the items and set the gap */
+.bracket-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  position: relative;
+}
+
+/* Bracket card styling */
+.bracket-card {
+  width: 10rem;
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+
+/* Additional tweaks to make sure lines can be drawn between elements */
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.card-body button {
+  font-size: 0.75rem;
+  padding: 0.3rem 0.6rem;
+  width: 100%;
+}
+
+/* Round title styling */
+.round-title {
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #343a40;
+}
+
+/* Adjust for hover and winner */
+li.game:hover {
+  background: #e2f0ff;
+}
+
+li.game.winner {
+  font-weight: bold;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
