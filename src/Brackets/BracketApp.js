@@ -1,17 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import './Brackets.css';
+import './ModernBracket.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { link } from '../constant';
+import { Container, Row, Col, Button, Card, Badge } from 'react-bootstrap';
 
 const TournamentBracket = () => {
   const [bracketData, setBracketData] = useState([]);
   const [bracketCount, setBracketCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [lastRefresh, setLastRefresh] = useState(null);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const division_id = queryParams.get('division_id') || '';
   const navigate = useNavigate();
+
+  // Refresh bracket data when component mounts or when coming back from other pages
+  useEffect(() => {
+    // Refresh when the window/tab gains focus (user comes back from PointTracker)
+    const handleFocus = () => {
+      if (division_id && bracketData.length > 0 && !loading) {
+        console.log('Auto-refreshing brackets due to window focus');
+        fetchBrackets(true); // Background refresh
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [division_id, bracketData.length, loading]);
+
+  // Separate useEffect for interval-based refreshing
+  useEffect(() => {
+    let intervalId;
+    
+    // Auto-refresh every 30 seconds if there are active brackets
+    if (division_id && bracketData.length > 0) {
+      intervalId = setInterval(() => {
+        if (!loading) {
+          console.log('Auto-refreshing brackets (30s interval)');
+          fetchBrackets(true); // Background refresh
+        }
+      }, 30000);
+    }
+    
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [division_id, bracketData.length]);
+
+  // Separate function to fetch brackets (without creating new ones)
+  const fetchBrackets = async (isBackground = false) => {
+    if (!division_id) {
+      console.error('No division_id provided.');
+      return;
+    }
+
+    // Prevent multiple simultaneous requests
+    if (loading && !isBackground) {
+      console.log('Already loading brackets, skipping request');
+      return;
+    }
+
+    if (!isBackground) {
+      setLoading(true);
+    }
+
+    try {
+      const response = await axios.get(`${link}/brackets`, {
+        params: { division_id },
+      });
+
+      let fetchedBrackets = response.data;
+      console.log('Refreshed brackets:', fetchedBrackets.length, 'brackets found');
+
+      // Sort the brackets by bracket_id
+      fetchedBrackets = fetchedBrackets.sort((a, b) => a.bracket_id - b.bracket_id);
+
+      // Structure the brackets into rounds and include the next round
+      const newBrackets = fetchedBrackets.map((bracket) => ({
+        bracket_id: bracket.bracket_id,
+        user1: bracket.user1 || 'Bye',
+        user2: bracket.user2 || 'Bye',
+        score1: bracket.points_user1 || 0,
+        score2: bracket.points_user2 || 0,
+        winner: bracket.winner,
+        round: bracket.round,
+      }));
+
+      setBracketData(newBrackets);
+      setLastRefresh(new Date());
+    } catch (error) {
+      console.error('Error fetching brackets from backend:', error);
+    } finally {
+      if (!isBackground) {
+        setLoading(false);
+      }
+    }
+  };
 
   const generateBracket = async () => {
     if (!division_id) {
@@ -19,6 +111,7 @@ const TournamentBracket = () => {
       return;
     }
 
+    setLoading(true);
     try {
       // Call backend to create brackets
       const response = await axios.post(`${link}/brackets`, { division_id });
@@ -27,35 +120,9 @@ const TournamentBracket = () => {
       console.error('Error making Axios call:', error);
     }
 
-    console.log("Trying TO FETCH NOW!");
-    try {
-      // Fetch the created brackets from the backend
-      const response = await axios.get(`${link}/brackets`, {
-        params: { division_id },
-      });
-
-      let fetchedBrackets = response.data;
-      console.log('Fetched brackets:', fetchedBrackets);
-
-      // Sort the brackets by bracket_id
-      fetchedBrackets = fetchedBrackets.sort((a, b) => a.bracket_id - b.bracket_id);
-
-      // Structure the brackets into rounds and include the next round
-      const newBrackets = fetchedBrackets.map((bracket, idx) => ({
-        bracket_id: bracket.bracket_id,
-        user1: bracket.user1 || 'Bye',
-        user2: bracket.user2 || 'Bye',
-        score1: bracket.points_user1 || 0,
-        score2: bracket.points_user2 || 0,
-        winner: bracket.winner,
-        round: bracket.round, // Use the round from backend directly
-      }));
-
-      setBracketData(newBrackets);
-      setBracketCount((prevCount) => prevCount + 1);
-    } catch (error) {
-      console.error('Error fetching brackets from backend:', error);
-    }
+    // Fetch the brackets (use the separate fetch function)
+    await fetchBrackets();
+    setLoading(false);
   };
 
   const clearBrackets = async () => {
@@ -64,6 +131,7 @@ const TournamentBracket = () => {
       return;
     }
   
+    setLoading(true);
     try {
       await axios.delete(`${link}/brackets`, {
         data: { division_id },
@@ -73,10 +141,13 @@ const TournamentBracket = () => {
       setBracketCount(0);
     } catch (error) {
       console.error('Error clearing brackets:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const deleteBracket = async (bracket_id) => {
+    setLoading(true);
     try {
       await axios.delete(`${link}/brackets/byOne`, {
         data: {bracket_id},
@@ -84,6 +155,8 @@ const TournamentBracket = () => {
       setBracketData((prevData) => prevData.filter(b => b.bracket_id !== bracket_id));
     } catch (error){
       console.error('error deleting bracket',error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -92,60 +165,301 @@ const TournamentBracket = () => {
     return acc;
   }, {});
 
-  return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-center mb-3">
-        <button className="btn btn-primary mx-2" onClick={generateBracket}>Show Brackets</button>
-        <button className="btn btn-danger mx-2" onClick={clearBrackets}>Clear Brackets</button>
-      </div>
+  // Calculate tournament statistics - useMemo to optimize recalculation
+  const tournamentStats = useMemo(() => {
+    const totalMatches = bracketData.length;
+    const totalRounds = Object.keys(rounds).length;
+    
+    const newStats = {
+      totalMatches,
+      totalRounds
+    };
+    
+    // Log significant changes
+    if (totalMatches > 0) {
+      console.log('Tournament stats:', newStats);
+    }
+    
+    return newStats;
+  }, [bracketData, rounds]);
 
+  const renderMatchCard = (bracket, roundNumber) => {
+    const isWinner1 = bracket.winner === 'user1';
+    const isWinner2 = bracket.winner === 'user2';
+    const hasWinner = bracket.winner && bracket.winner !== null;
+    const isComplete = hasWinner;
+    const isBye = bracket.user1 === 'Bye' || bracket.user2 === 'Bye';
+
+    return (
+      <Card key={bracket.bracket_id} className="bracket-match-card card-modern mb-4">
+        <Card.Header className="card-modern-header p-2">
+          <div className="d-flex justify-content-between align-items-center">
+            <div className="d-flex align-items-center gap-2">
+              <Badge bg="dark" className="fw-normal">
+                <i className="fas fa-trophy me-1"></i>
+                Round {roundNumber}
+              </Badge>
+              {isComplete && (
+                <Badge bg="success" className="fw-normal">
+                  <i className="fas fa-check me-1"></i>
+                  Complete
+                </Badge>
+              )}
+              {isBye && (
+                <Badge bg="warning" text="dark" className="fw-normal">
+                  <i className="fas fa-forward me-1"></i>
+                  Bye
+                </Badge>
+              )}
+            </div>
+            <small className="text-muted">Match #{bracket.bracket_id}</small>
+          </div>
+        </Card.Header>
+        
+        <Card.Body className="card-modern-body p-3">
+          <div className="match-participants">
+            {/* Player 1 */}
+            <div className={`participant ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''} p-3 mb-2`}>
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                  <i className={`fas ${bracket.user1 === 'Bye' ? 'fa-ban' : 'fa-user'} me-2 text-muted`}></i>
+                  <span className="participant-name fw-medium">{bracket.user1}</span>
+                  {isWinner1 && <i className="fas fa-crown ms-2 text-warning"></i>}
+                </div>
+                <Badge bg={isWinner1 ? 'success' : 'light'} text={isWinner1 ? 'white' : 'dark'} className="score-badge">
+                  {bracket.score1}
+                </Badge>
+              </div>
+            </div>
+
+            <div className="vs-divider text-center my-2">
+              <span className="vs-text text-muted fw-bold">VS</span>
+            </div>
+
+            {/* Player 2 */}
+            <div className={`participant ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''} p-3 mb-3`}>
+              <div className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                  <i className={`fas ${bracket.user2 === 'Bye' ? 'fa-ban' : 'fa-user'} me-2 text-muted`}></i>
+                  <span className="participant-name fw-medium">{bracket.user2}</span>
+                  {isWinner2 && <i className="fas fa-crown ms-2 text-warning"></i>}
+                </div>
+                <Badge bg={isWinner2 ? 'success' : 'light'} text={isWinner2 ? 'white' : 'dark'} className="score-badge">
+                  {bracket.score2}
+                </Badge>
+              </div>
+            </div>
+          </div>
+
+          <div className="match-actions">
+            <div className="d-grid gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                className="btn-modern"
+                onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
+                disabled={isBye}
+              >
+                <i className="fas fa-edit me-2"></i>
+                {isComplete ? 'Update Score' : 'Manage Score'}
+              </Button>
+              
+              <div className="d-flex gap-2">
+                <Button
+                  variant="success"
+                  size="sm"
+                  className="btn-modern flex-fill"
+                  onClick={() => navigate(`/stream?bracket_id=${bracket.bracket_id}`)}
+                  disabled={isBye}
+                >
+                  <i className="fas fa-video me-1"></i>
+                  Stream
+                </Button>
+                
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  className="btn-modern-outline"
+                  onClick={() => deleteBracket(bracket.bracket_id)}
+                  disabled={loading}
+                >
+                  <i className="fas fa-trash me-1"></i>
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card.Body>
+      </Card>
+    );
+  };
+
+  return (
+    <Container fluid className="tournament-bracket-container py-4">
+      {/* Header Section */}
+      <Row className="mb-4">
+        <Col>
+          <div className="page-header-modern text-center">
+            <h1 className="page-title-modern">
+              <i className="fas fa-trophy me-3"></i>
+              Tournament Bracket
+            </h1>
+            <p className="page-subtitle-modern text-muted">
+              Manage and view tournament matches
+              {lastRefresh && (
+                <small className="d-block mt-2 text-muted">
+                  <i className="fas fa-clock me-1"></i>
+                  Last updated: {lastRefresh.toLocaleTimeString()}
+                </small>
+              )}
+            </p>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Action Buttons */}
+      <Row className="mb-4">
+        <Col>
+          <div className="d-flex justify-content-center gap-3 flex-wrap">
+            <Button 
+              className="btn-modern" 
+              onClick={generateBracket}
+              disabled={loading}
+              size="lg"
+            >
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-eye me-2"></i>
+                  Show Brackets
+                </>
+              )}
+            </Button>
+            
+            <Button 
+              className="btn-modern-outline" 
+              onClick={() => fetchBrackets(false)}
+              disabled={loading}
+              size="lg"
+            >
+              <i className="fas fa-sync-alt me-2"></i>
+              Refresh
+            </Button>
+            
+            <Button 
+              className="btn-modern-outline" 
+              onClick={clearBrackets}
+              disabled={loading}
+              size="lg"
+            >
+              <i className="fas fa-trash-alt me-2"></i>
+              Clear All
+            </Button>
+
+            <Button 
+              className="btn-modern-outline" 
+              onClick={() => navigate(-1)}
+              size="lg"
+            >
+              <i className="fas fa-arrow-left me-2"></i>
+              Back
+            </Button>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Brackets Display */}
       {Object.keys(rounds).length > 0 ? (
-        <div className="bracket-container">
-          {Object.keys(rounds).sort().map((roundNumber) => (
-            <div key={roundNumber} className="bracket-column">
-              <h5 className="text-center mb-2">Round {roundNumber}</h5>
-              {rounds[roundNumber].map((bracket, idx) => (
-                <div key={idx} style={{ minHeight: '130px' }}>
-                  <div className="card shadow-sm bracket-card">
-                    <div className="card-body p-2">
-                      <div className={`py-2 ${bracket.winner === 'user1' ? 'bg-success text-white' : ''}`}>
-                        {bracket.user1} <span className="badge bg-light text-dark ms-1">{bracket.score1}</span>
+        <>
+          {/* Tournament Progress Summary */}
+          <Row className="mb-4">
+            <Col>
+              <Card className="card-modern">
+                <Card.Body className="card-modern-body">
+                  <Row className="text-center">
+                    <Col md={6} sm={6} className="mb-3 mb-md-0">
+                      <div className="stat-item">
+                        <h4 className="stat-number text-primary mb-1">{tournamentStats.totalRounds}</h4>
+                        <p className="stat-label text-muted mb-0">
+                          <i className="fas fa-layer-group me-1"></i>
+                          Total Rounds
+                        </p>
                       </div>
-                      <hr className="my-1" />
-                      <div className={`py-2 ${bracket.winner === 'user2' ? 'bg-success text-white' : ''}`}>
-                        {bracket.user2} <span className="badge bg-light text-dark ms-1">{bracket.score2}</span>
+                    </Col>
+                    <Col md={6} sm={6} className="mb-3 mb-md-0">
+                      <div className="stat-item">
+                        <h4 className="stat-number text-info mb-1">{tournamentStats.totalMatches}</h4>
+                        <p className="stat-label text-muted mb-0">
+                          <i className="fas fa-fist-raised me-1"></i>
+                          Total Matches
+                        </p>
                       </div>
-                      <button
-                        className="btn btn-success mt-2"
-                        onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
-                      >
-                        Select 🎯
-                      </button>
-                      <button
-                        className="btn btn-success mt-2"
-                        onClick={() => deleteBracket(bracket.bracket_id)}
-                      >
-                        delete 🎯
-                      </button>
-                      <button 
-                      className='btn btn-success mt-2'
-                      onClick={() => navigate(`/stream?bracket_id=${bracket.bracket_id}`)}
-                      >
-                         Start Streaming
-                      </button>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Tournament Rounds */}
+          <Row>
+            <Col>
+              <div className="tournament-bracket-grid">
+                {Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).map((roundNumber) => (
+                  <div key={roundNumber} className="tournament-round">
+                    <div className="round-header text-center mb-4">
+                      <h3 className="round-title">
+                        <Badge bg="dark" className="p-3">
+                          <i className="fas fa-layer-group me-2"></i>
+                          Round {roundNumber}
+                        </Badge>
+                      </h3>
+                      <p className="text-muted small mb-0">
+                        {rounds[roundNumber].length} match{rounds[roundNumber].length !== 1 ? 'es' : ''}
+                        {' • '}
+                        {rounds[roundNumber].filter(b => b.winner && b.winner !== null).length} completed
+                      </p>
+                    </div>
+                    
+                    <div className="round-matches">
+                      {rounds[roundNumber].map((bracket) => 
+                        renderMatchCard(bracket, roundNumber)
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            </Col>
+          </Row>
+        </>
       ) : (
-        <div className="text-center">
-          <p>No brackets to display. Click 'Show Brackets' to fetch data.</p>
-        </div>
+        <Row>
+          <Col>
+            <div className="empty-state text-center py-5">
+              <div className="empty-state-icon mb-4">
+                <i className="fas fa-trophy fa-4x text-muted"></i>
+              </div>
+              <h3 className="text-muted mb-3">No Brackets Available</h3>
+              <p className="text-muted mb-4">
+                Click 'Show Brackets' to load tournament matches, or create new brackets for this division.
+              </p>
+              <Button 
+                className="btn-modern" 
+                onClick={generateBracket}
+                disabled={loading}
+              >
+                <i className="fas fa-eye me-2"></i>
+                Show Brackets
+              </Button>
+            </div>
+          </Col>
+        </Row>
       )}
-    </div>
+    </Container>
   );
 };
 

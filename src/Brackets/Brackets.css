@@ -1,55 +1,251 @@
-/*
- * Flex Layout Specifics
- */
- main {
-  display: flex;
-  flex-direction: row;
-  gap: 3rem; /* Added spacing between rounds */
-  justify-content: center;
-  padding: 2rem;
+/* Modern Tournament Bracket Styles */
+.tournament-bracket-container {
+  background: var(--light-grey, #f5f5f5);
+  min-height: 100vh;
 }
-.round {
+
+.page-header-modern {
+  background: var(--white, #ffffff);
+  padding: 40px 30px;
+  border-radius: var(--border-radius-lg, 12px);
+  box-shadow: var(--shadow-light, 0 2px 8px rgba(0, 0, 0, 0.1));
+  margin-bottom: 30px;
+}
+
+.page-title-modern {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--dark-grey, #1a1a1a);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.page-subtitle-modern {
+  font-size: 1.1rem;
+  margin: 10px 0 0 0;
+  color: var(--text-grey, #666666);
+}
+
+/* Tournament Bracket Grid Layout */
+.tournament-bracket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+  padding: 20px 0;
+}
+
+.tournament-round {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 250px;
-  list-style: none;
-  padding: 0;
+  min-height: 400px;
 }
-.round .spacer { 
-  flex-grow: 1; 
+
+.round-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--light-grey, #f5f5f5);
+  padding: 15px 0;
+  margin-bottom: 20px;
 }
-.round .spacer:first-child,
-.round .spacer:last-child { 
-  flex-grow: 0.5; 
+
+.round-title {
+  margin: 0 0 10px 0;
+  font-weight: 600;
 }
-.round .game-spacer {
+
+.round-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   flex-grow: 1;
+  justify-content: space-around;
 }
 
-/*
-* General Styles
-*/
-body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  font-size: 0.95rem;
-  padding: 20px;
-  background-color: #f8f9fa; /* light Bootstrap bg */
-  line-height: 1.4em;
+/* Match Card Styling */
+.bracket-match-card {
+  border: none !important;
+  border-radius: var(--border-radius-lg, 12px) !important;
+  box-shadow: var(--shadow-light, 0 2px 8px rgba(0, 0, 0, 0.1)) !important;
+  transition: all var(--transition-medium, 0.3s ease) !important;
+  background: var(--white, #ffffff) !important;
+  overflow: hidden;
+  min-height: 240px;
 }
 
-li.game {
-  background: #ffffff;
-  padding: 0.75rem 1rem;
-  margin: 1rem 0;
-  border-radius: 0.75rem;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  text-align: center;
-  transition: background 0.3s;
+.bracket-match-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-medium, 0 4px 16px rgba(0, 0, 0, 0.15)) !important;
+}
+
+.bracket-match-card .card-modern-header {
+  background: var(--light-grey, #f5f5f5) !important;
+  border-bottom: 1px solid var(--border-grey, #e0e0e0) !important;
+  padding: 12px 16px !important;
+}
+
+.bracket-match-card .card-modern-body {
+  padding: 20px !important;
+  background: var(--white, #ffffff) !important;
+}
+
+/* Participant Styling */
+.participant {
+  border-radius: var(--border-radius-md, 8px);
+  border: 2px solid var(--border-grey, #e0e0e0);
+  background: var(--white, #ffffff);
+  transition: all var(--transition-fast, 0.15s ease);
   position: relative;
 }
 
+.participant.winner {
+  border-color: #28a745 !important;
+  background: rgba(40, 167, 69, 0.05) !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.2);
+}
+
+.participant.loser {
+  border-color: var(--border-grey, #e0e0e0) !important;
+  background: #f8f9fa !important;
+  opacity: 0.8;
+}
+
+.participant-name {
+  font-size: 1rem;
+  color: var(--dark-grey, #1a1a1a);
+}
+
+.score-badge {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+}
+
+.vs-divider {
+  position: relative;
+  margin: 10px 0;
+}
+
+.vs-text {
+  background: var(--white, #ffffff);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 2px solid var(--border-grey, #e0e0e0);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+/* Match Actions */
+.match-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-grey, #e0e0e0);
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--white, #ffffff);
+  border-radius: var(--border-radius-lg, 12px);
+  box-shadow: var(--shadow-light, 0 2px 8px rgba(0, 0, 0, 0.1));
+  padding: 60px 40px;
+  margin: 40px 0;
+}
+
+.empty-state-icon {
+  opacity: 0.5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tournament-bracket-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 10px;
+  }
+  
+  .page-title-modern {
+    font-size: 2rem;
+  }
+  
+  .bracket-match-card {
+    min-height: 200px;
+  }
+  
+  .page-header-modern {
+    padding: 30px 20px;
+  }
+  
+  .match-actions .d-flex {
+    flex-direction: column;
+  }
+  
+  .match-actions .d-flex .btn {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tournament-bracket-grid {
+    padding: 5px;
+    gap: 1.5rem;
+  }
+  
+  .page-title-modern {
+    font-size: 1.75rem;
+  }
+  
+  .bracket-match-card .card-modern-body {
+    padding: 15px !important;
+  }
+  
+  .participant {
+    padding: 12px !important;
+  }
+  
+  .empty-state {
+    padding: 40px 20px;
+  }
+}
+
+/* Large screens - multi-column layout */
+@media (min-width: 1200px) {
+  .tournament-bracket-grid {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 4rem;
+  }
+}
+
+/* Animation for loading states */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.loading .bracket-match-card {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Winner celebration effect */
+.participant.winner::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #28a745, #20c997, #28a745, #20c997);
+  border-radius: var(--border-radius-md, 8px);
+  z-index: -1;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* Legacy styles - keeping for backward compatibility */
 li.game:hover {
   background: #e2f0ff; /* light hover effect */
 }

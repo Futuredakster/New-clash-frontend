@@ -1,0 +1,348 @@
+/* Modern Tournament Bracket Styles */
+
+/* Import CSS variables from the main theme */
+:root {
+  /* Fallback values if main theme is not loaded */
+  --primary-black: #000000;
+  --dark-grey: #1a1a1a;
+  --medium-grey: #2d2d2d;
+  --light-grey: #f5f5f5;
+  --border-grey: #e0e0e0;
+  --text-grey: #666666;
+  --white: #ffffff;
+  --accent-grey: #404040;
+  
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.2);
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  --transition-fast: 0.15s ease;
+  --transition-medium: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* Tournament Bracket Container */
+.tournament-bracket-container {
+  background: var(--light-grey);
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Tournament Bracket Grid Layout */
+.tournament-bracket-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 3rem;
+  padding: 20px 0;
+}
+
+.tournament-round {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+}
+
+.round-header {
+  position: sticky;
+  top: 20px;
+  z-index: 10;
+  background: var(--light-grey);
+  padding: 15px 0;
+  margin-bottom: 20px;
+  border-radius: var(--border-radius-lg);
+}
+
+.round-title {
+  margin: 0 0 10px 0;
+  font-weight: 600;
+}
+
+.round-matches {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 1;
+  justify-content: flex-start;
+}
+
+/* Match Card Styling */
+.bracket-match-card {
+  border: none !important;
+  border-radius: var(--border-radius-lg) !important;
+  box-shadow: var(--shadow-light) !important;
+  transition: all var(--transition-medium) !important;
+  background: var(--white) !important;
+  overflow: hidden;
+  min-height: 240px;
+  position: relative;
+}
+
+.bracket-match-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: var(--shadow-medium) !important;
+}
+
+.bracket-match-card .card-modern-header {
+  background: var(--light-grey) !important;
+  border-bottom: 1px solid var(--border-grey) !important;
+  padding: 12px 16px !important;
+}
+
+.bracket-match-card .card-modern-body {
+  padding: 20px !important;
+  background: var(--white) !important;
+}
+
+/* Participant Styling */
+.match-participants .participant {
+  border-radius: var(--border-radius-md);
+  border: 2px solid var(--border-grey);
+  background: var(--white);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.match-participants .participant.winner {
+  border-color: #28a745 !important;
+  background: rgba(40, 167, 69, 0.05) !important;
+  box-shadow: 0 0 15px rgba(40, 167, 69, 0.2);
+}
+
+.match-participants .participant.loser {
+  border-color: var(--border-grey) !important;
+  background: #f8f9fa !important;
+  opacity: 0.8;
+}
+
+.participant-name {
+  font-size: 1rem;
+  color: var(--dark-grey);
+  font-weight: 500;
+}
+
+.score-badge {
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  padding: 6px 12px !important;
+  border-radius: 20px !important;
+}
+
+/* VS Divider */
+.vs-divider {
+  position: relative;
+  margin: 10px 0;
+}
+
+.vs-text {
+  background: var(--white);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 2px solid var(--border-grey);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  display: inline-block;
+}
+
+/* Match Actions */
+.match-actions {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-grey);
+}
+
+/* Tournament Statistics */
+.stat-item {
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+}
+
+.stat-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  transform: translateY(-2px);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Progress bar styling */
+.progress {
+  background-color: var(--border-grey) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.progress-bar {
+  border-radius: 10px !important;
+  transition: width 0.6s ease !important;
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-light);
+  padding: 60px 40px;
+  margin: 40px 0;
+}
+
+.empty-state-icon {
+  opacity: 0.5;
+}
+
+/* Button Enhancements for Bracket */
+.bracket-match-card .btn-modern {
+  background: linear-gradient(135deg, var(--dark-grey) 0%, var(--medium-grey) 100%) !important;
+  border: none !important;
+  color: var(--white) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-medium) !important;
+  box-shadow: var(--shadow-light) !important;
+}
+
+.bracket-match-card .btn-modern:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-medium) !important;
+  background: linear-gradient(135deg, var(--medium-grey) 0%, var(--accent-grey) 100%) !important;
+}
+
+.bracket-match-card .btn-modern-outline {
+  background: transparent !important;
+  border: 2px solid var(--dark-grey) !important;
+  color: var(--dark-grey) !important;
+  font-weight: 500 !important;
+  transition: all var(--transition-medium) !important;
+}
+
+.bracket-match-card .btn-modern-outline:hover {
+  background: var(--dark-grey) !important;
+  color: var(--white) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-light) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tournament-bracket-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 10px;
+  }
+  
+  .bracket-match-card {
+    min-height: 200px;
+  }
+  
+  .match-actions .d-flex {
+    flex-direction: column;
+  }
+  
+  .match-actions .d-flex .btn {
+    margin-bottom: 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  .tournament-bracket-grid {
+    padding: 5px;
+    gap: 1.5rem;
+  }
+  
+  .bracket-match-card .card-modern-body {
+    padding: 15px !important;
+  }
+  
+  .match-participants .participant {
+    padding: 12px !important;
+  }
+  
+  .empty-state {
+    padding: 40px 20px;
+  }
+}
+
+/* Large screens - better spacing */
+@media (min-width: 1200px) {
+  .tournament-bracket-grid {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 4rem;
+  }
+}
+
+/* Winner celebration effect */
+.match-participants .participant.winner::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #28a745, #20c997, #28a745, #20c997);
+  background-size: 400% 400%;
+  border-radius: var(--border-radius-md);
+  z-index: -1;
+  animation: shimmer 2s ease infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Loading animation */
+.loading .spinner-border-sm {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Bracket flow lines - for future enhancement */
+.tournament-round::after {
+  content: '';
+  position: absolute;
+  right: -1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 2px;
+  background: var(--border-grey);
+  z-index: 1;
+}
+
+.tournament-round:last-child::after {
+  display: none;
+}
+
+/* Ensure proper spacing and alignment */
+.tournament-bracket-container .container-fluid {
+  max-width: 1400px;
+}
+
+/* Badge styling consistency */
+.tournament-bracket-container .badge {
+  font-weight: 500 !important;
+  letter-spacing: 0.5px;
+}
+
+/* Card hover states for better interaction feedback */
+.bracket-match-card .card-modern-header:hover {
+  background: rgba(0, 0, 0, 0.02) !important;
+}
