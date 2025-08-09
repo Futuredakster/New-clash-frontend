@@ -347,6 +347,49 @@ body {
   }
 }
 
+/* Status Badge Styles */
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--border-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-published {
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.2);
+}
+
+/* Mobile tournament cards */
+.mobile-tournament-card {
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-grey);
+}
+
+.mobile-tournament-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+.mobile-tournament-image {
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.mobile-tournament-actions {
+  gap: 8px;
+}
+
+.mobile-tournament-actions .btn {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Modern Search Bar */
 .search-modern {
   position: relative;
@@ -584,6 +627,27 @@ body {
     padding: 4px 8px !important;
     font-size: 11px !important;
     white-space: nowrap !important;
+  }
+  
+  /* Mobile tournament cards */
+  .card-modern {
+    margin: 10px 0 !important;
+    border-radius: var(--border-radius-md) !important;
+  }
+  
+  .mobile-tournament-actions .btn {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .mobile-tournament-actions .dropdown-toggle {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+  
+  .status-badge {
+    font-size: 10px !important;
+    padding: 3px 6px !important;
   }
   
   .table-responsive .table-modern .dropdown-modern .dropdown-toggle {
