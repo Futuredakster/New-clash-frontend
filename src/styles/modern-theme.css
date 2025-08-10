@@ -534,8 +534,8 @@ body {
   font-weight: 400;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Responsive Design - Updated for consistency */
+@media (max-width: 991px) {
   .container-modern {
     padding: 0 15px;
   }
@@ -574,6 +574,25 @@ body {
     min-width: unset !important;
   }
   
+  /* Fix for navigation buttons in forms - keep them inline on mobile */
+  .card-modern-footer .d-flex.justify-content-between .btn-modern,
+  .card-modern-footer .d-flex.justify-content-between .btn-modern-outline {
+    width: auto !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    min-width: 120px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* Ensure the container has proper gap */
+  .card-modern-footer .d-flex.justify-content-between {
+    align-items: center !important;
+    gap: 15px !important;
+  }
+  
   /* Ensure container prevents horizontal page scroll */
   body, html {
     overflow-x: hidden !important;
@@ -594,6 +613,27 @@ body {
     margin: 0 0 20px;
   }
   
+  /* Additional fix for very small screens */
+  .card-modern-footer .d-flex.justify-content-between {
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  
+  .card-modern-footer .d-flex.justify-content-between .btn-modern,
+  .card-modern-footer .d-flex.justify-content-between .btn-modern-outline {
+    width: auto !important;
+    margin: 0 !important;
+    flex: 1 !important;
+    min-width: 100px !important;
+    max-width: 150px !important;
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    height: 40px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
   /* Container constraints to prevent overflow */
   .container-fluid,
   .container,
@@ -605,44 +645,214 @@ body {
   
   /* Mobile table - horizontal scroll */
   .table-responsive {
-    max-width: calc(100vw - 30px) !important;
+    max-width: calc(100vw - 20px) !important;
     overflow-x: auto !important;
     display: block !important;
     margin: 15px 0 !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: var(--shadow-light) !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .table-responsive::-webkit-scrollbar {
+    height: 8px !important;
+  }
+
+  .table-responsive::-webkit-scrollbar-track {
+    background: var(--light-grey) !important;
+    border-radius: var(--border-radius-sm) !important;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb {
+    background: var(--border-grey) !important;
+    border-radius: var(--border-radius-sm) !important;
+  }
+
+  .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: var(--text-grey) !important;
   }
   
   .table-responsive .table-modern {
-    min-width: 700px !important;
+    min-width: 800px !important;
+    margin-bottom: 0 !important;
   }
   
   .table-responsive .table-modern th,
   .table-responsive .table-modern td {
-    padding: 8px 12px !important;
+    padding: 10px 12px !important;
     font-size: 12px !important;
     white-space: nowrap !important;
+    vertical-align: middle !important;
+  }
+  
+  .table-responsive .table-modern th {
+    font-size: 11px !important;
+    padding: 12px !important;
+    background: var(--dark-grey) !important;
+    color: var(--white) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
   }
   
   /* Make buttons more compact but readable */
   .table-responsive .table-modern .btn-sm {
-    padding: 4px 8px !important;
+    padding: 6px 8px !important;
     font-size: 11px !important;
     white-space: nowrap !important;
+    min-width: 70px !important;
+    border-radius: var(--border-radius-sm) !important;
   }
   
-  /* Mobile tournament cards */
+  /* Improve dropdown in tables */
+  .table-responsive .table-modern .dropdown-modern .dropdown-toggle {
+    padding: 6px 8px !important;
+    font-size: 11px !important;
+    white-space: nowrap !important;
+    min-width: 80px !important;
+  }
+  
+  /* Status badges in tables */
+  .table-responsive .table-modern .status-badge {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+    border-radius: var(--border-radius-sm) !important;
+  }
+  
+  /* Improve table cell content alignment */
+  .table-responsive .table-modern td {
+    text-align: center !important;
+  }
+  
+  .table-responsive .table-modern td:first-child {
+    text-align: left !important;
+    font-weight: 600 !important;
+    max-width: 150px !important;
+  }
   .card-modern {
     margin: 10px 0 !important;
     border-radius: var(--border-radius-md) !important;
   }
   
+  /* Enhanced mobile tournament card styling */
+  .mobile-tournament-card {
+    margin: 15px 0 !important;
+    border: 1px solid var(--border-grey) !important;
+    box-shadow: var(--shadow-light) !important;
+    transition: all var(--transition-fast) !important;
+  }
+  
+  .mobile-tournament-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-medium) !important;
+  }
+  
+  .mobile-tournament-header {
+    padding: 15px !important;
+    border-bottom: 1px solid var(--border-grey) !important;
+    background: var(--light-grey) !important;
+  }
+  
+  .mobile-tournament-content {
+    padding: 15px !important;
+  }
+  
+  .mobile-tournament-actions {
+    padding: 12px 15px !important;
+    background: var(--light-grey) !important;
+    border-top: 1px solid var(--border-grey) !important;
+  }
+  
   .mobile-tournament-actions .btn {
     font-size: 12px !important;
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
+    margin: 4px 0 !important;
+    min-height: 36px !important;
+    border-radius: var(--border-radius-sm) !important;
   }
   
   .mobile-tournament-actions .dropdown-toggle {
     font-size: 12px !important;
-    padding: 6px 8px !important;
+    padding: 8px 12px !important;
+    min-height: 36px !important;
+  }
+  
+  .mobile-tournament-image {
+    width: 80px !important;
+    height: 60px !important;
+    object-fit: cover !important;
+    border-radius: var(--border-radius-sm) !important;
+  }
+  
+  .mobile-tournament-placeholder {
+    width: 80px !important;
+    height: 60px !important;
+    background: var(--light-grey) !important;
+    border: 1px solid var(--border-grey) !important;
+    border-radius: var(--border-radius-sm) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .mobile-tournament-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    margin-bottom: 8px !important;
+    color: var(--dark-grey) !important;
+  }
+  
+  .mobile-tournament-dates {
+    font-size: 12px !important;
+    color: var(--text-grey) !important;
+    line-height: 1.4 !important;
+  }
+  
+  .mobile-tournament-dates .col-12 {
+    margin-bottom: 4px !important;
+  }
+  
+  /* Additional mobile card improvements for very small screens */
+  @media (max-width: 480px) {
+    .mobile-tournament-card {
+      margin: 12px 0 !important;
+    }
+    
+    .mobile-tournament-header {
+      padding: 12px !important;
+    }
+    
+    .mobile-tournament-content {
+      padding: 12px !important;
+    }
+    
+    .mobile-tournament-actions {
+      padding: 10px 12px !important;
+    }
+    
+    .mobile-tournament-title {
+      font-size: 14px !important;
+      line-height: 1.2 !important;
+    }
+    
+    .mobile-tournament-dates {
+      font-size: 11px !important;
+    }
+    
+    .mobile-tournament-actions .btn {
+      font-size: 11px !important;
+      padding: 6px 8px !important;
+      min-height: 32px !important;
+    }
+    
+    .mobile-tournament-image,
+    .mobile-tournament-placeholder {
+      width: 60px !important;
+      height: 45px !important;
+    }
   }
   
   .status-badge {
@@ -664,29 +874,66 @@ body {
   }
 }
 
-/* Medium screen adjustments with higher specificity */
-@media (max-width: 768px) and (min-width: 577px) {
-  .table-responsive {
-    max-width: calc(100vw - 40px) !important;
-    overflow-x: auto !important;
-    margin: 20px 0 !important;
+/* Medium screen adjustments - ensure mobile card consistency */
+@media (max-width: 991px) and (min-width: 768px) {
+  /* Ensure mobile cards look good on tablets */
+  .mobile-tournament-card {
+    margin: 15px 0 !important;
+    border: 1px solid var(--border-grey) !important;
+    box-shadow: var(--shadow-light) !important;
+    transition: all var(--transition-fast) !important;
   }
   
-  .table-responsive .table-modern {
-    min-width: 800px !important;
+  .mobile-tournament-header {
+    padding: 15px !important;
+    border-bottom: 1px solid var(--border-grey) !important;
+    background: var(--light-grey) !important;
   }
   
-  .table-responsive .table-modern th,
-  .table-responsive .table-modern td {
-    padding: 10px 15px !important;
+  .mobile-tournament-content {
+    padding: 15px !important;
+  }
+  
+  .mobile-tournament-actions {
+    padding: 12px 15px !important;
+    background: var(--light-grey) !important;
+    border-top: 1px solid var(--border-grey) !important;
+  }
+  
+  .mobile-tournament-actions .btn {
     font-size: 13px !important;
-    white-space: nowrap !important;
+    padding: 8px 14px !important;
+    margin: 4px 0 !important;
+    min-height: 38px !important;
+    border-radius: var(--border-radius-sm) !important;
   }
   
-  .table-responsive .table-modern .btn-sm {
-    padding: 6px 10px !important;
+  .mobile-tournament-image {
+    width: 80px !important;
+    height: 60px !important;
+  }
+  
+  .mobile-tournament-placeholder {
+    width: 80px !important;
+    height: 60px !important;
+  }
+  
+  .mobile-tournament-title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+  
+  .mobile-tournament-dates {
     font-size: 12px !important;
-    white-space: nowrap !important;
+  }
+  
+  /* Button fixes for medium mobile screens */
+  .card-modern-footer .d-flex.justify-content-between .btn-modern,
+  .card-modern-footer .d-flex.justify-content-between .btn-modern-outline {
+    width: auto !important;
+    margin: 0 !important;
+    flex: 0 0 auto !important;
+    min-width: 130px !important;
   }
 }
 

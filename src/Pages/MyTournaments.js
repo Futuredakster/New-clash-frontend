@@ -3,6 +3,7 @@ import axios from 'axios';
 import Searchbar from '../Searchbar';
 import TableContent from '../TableContent';
 import {AuthContext} from '../helpers/AuthContext';
+import { Container, Row, Col } from 'react-bootstrap';
 import { link } from '../constant';
 
 
@@ -47,17 +48,31 @@ function MyTournaments() {
 
 
   return (
-    
-    <div>
-      <Searchbar
-      search={search}
-      setSearch={setSearch}
-      />
-      <TableContent
-        items={data}
-        accountId={authState.account_id}
-      />
-    </div>
+    <Container fluid className="fade-in px-3">
+      <Row>
+        <Col>
+          <div className="page-header-modern">
+            <h1 className="page-title-modern">My Tournaments</h1>
+            <p className="page-subtitle-modern">Manage and view all your created tournaments</p>
+          </div>
+          
+          <div className="w-100" style={{ overflowX: 'hidden' }}>
+            <div className="mb-4">
+              <Searchbar
+                search={search}
+                setSearch={setSearch}
+              />
+            </div>
+            <div className="w-100">
+              <TableContent
+                items={data}
+                accountId={authState.account_id}
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 export default MyTournaments;
