@@ -92,6 +92,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
           tournament_id: tournament_id,
         }
         )
+        alert('Tournament started successfully');
     }
   
   
