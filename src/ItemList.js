@@ -8,16 +8,27 @@ import { link } from './constant';
 const ItemList = ({ items, accountId }) => {
   const accessToken = localStorage.getItem("accessToken");
   const [showModal, setShowModal] = useState(false);
+  const [selectedTournamentId, setSelectedTournamentId] = useState(null);
   const [openStates, setOpenStates] = useState(Array(items.length).fill(false));
   const navigate = useNavigate();
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (tournamentId) => {
+    setSelectedTournamentId(tournamentId);
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedTournamentId(null);
+  };
 
-  const toggleDropdown = (index) => {
+  const handleDropdownItemClick = (index, action, ...args) => {
+    // Close the dropdown
     const newOpenStates = [...openStates];
-    newOpenStates[index] = !newOpenStates[index];
+    newOpenStates[index] = false;
     setOpenStates(newOpenStates);
+    
+    // Execute the action
+    action(...args);
   };
 const seeDivision = (tournamentName, tournamentId) =>{
   const queryString = new URLSearchParams({ tournament_name: tournamentName, tournament_id:tournamentId}).toString();
@@ -144,18 +155,21 @@ const seeDivision = (tournamentName, tournamentId) =>{
                   <td>
                     {accountId === item.account_id ? (
                       <div className="dropdown-modern">
-                        <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                        <Dropdown show={openStates[index]} onToggle={(isOpen) => {
+                          const newOpenStates = [...openStates];
+                          newOpenStates[index] = isOpen;
+                          setOpenStates(newOpenStates);
+                        }}>
                           <Dropdown.Toggle variant="outline-dark" size="sm" id={`dropdown-basic-${index}`}>
                             Actions
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
-                            <Dropdown.Item onClick={handleShowModal}>
+                            <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
                               <i className="fas fa-edit me-2"></i>Edit
                             </Dropdown.Item>
-                            <Dropdown.Item onClick={() => onDelete(item.tournament_id)} className="text-danger">
+                            <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
                               <i className="fas fa-trash me-2"></i>Delete
                             </Dropdown.Item>
-                            <CustomModal showModal={showModal} handleClose={handleCloseModal} accountId={accountId} tournament_id={item.tournament_id} />
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
@@ -304,19 +318,22 @@ const seeDivision = (tournamentName, tournamentId) =>{
                 <div className="col-6">
                   {accountId === item.account_id ? (
                     <div className="dropdown-modern w-100">
-                      <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                      <Dropdown show={openStates[index]} onToggle={(isOpen) => {
+                        const newOpenStates = [...openStates];
+                        newOpenStates[index] = isOpen;
+                        setOpenStates(newOpenStates);
+                      }}>
                         <Dropdown.Toggle variant="outline-dark" size="sm" className="w-100">
                           <i className="fas fa-cog me-1"></i>
                           <span className="d-none d-sm-inline">More </span>Actions
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                          <Dropdown.Item onClick={handleShowModal}>
+                          <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
                             <i className="fas fa-edit me-2"></i>Edit Tournament
                           </Dropdown.Item>
-                          <Dropdown.Item onClick={() => onDelete(item.tournament_id)} className="text-danger">
+                          <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
                             <i className="fas fa-trash me-2"></i>Delete Tournament
                           </Dropdown.Item>
-                          <CustomModal showModal={showModal} handleClose={handleCloseModal} accountId={accountId} tournament_id={item.tournament_id} />
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
@@ -338,6 +355,16 @@ const seeDivision = (tournamentName, tournamentId) =>{
           <h5 className="text-muted">No tournaments found</h5>
           <p className="text-muted">Create your first tournament to get started</p>
         </div>
+      )}
+      
+      {/* Modal rendered outside of loops to avoid conflicts */}
+      {selectedTournamentId && (
+        <CustomModal 
+          showModal={showModal} 
+          handleClose={handleCloseModal} 
+          accountId={accountId} 
+          tournament_id={selectedTournamentId} 
+        />
       )}
     </div>
   );

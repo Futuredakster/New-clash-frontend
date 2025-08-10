@@ -368,6 +368,8 @@ body {
 .mobile-tournament-card {
   transition: all var(--transition-fast);
   border: 1px solid var(--border-grey);
+  position: relative; /* Allow dropdown positioning */
+  overflow: visible; /* Don't clip dropdown menus */
 }
 
 .mobile-tournament-card:hover {
@@ -377,7 +379,7 @@ body {
 
 .mobile-tournament-image {
   border-radius: var(--border-radius-sm);
-  overflow: hidden;
+  /* Removed overflow: hidden to prevent dropdown clipping */
 }
 
 .mobile-tournament-actions {
@@ -388,6 +390,33 @@ body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Mobile dropdown menu fixes */
+.mobile-tournament-actions .dropdown-menu {
+  position: absolute !important;
+  z-index: 1050 !important;
+  min-width: 200px !important;
+  transform: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid var(--border-grey) !important;
+}
+
+/* Ensure dropdown toggle is touchable on mobile */
+@media (max-width: 767px) {
+  .mobile-tournament-actions .dropdown-toggle {
+    min-height: 44px !important; /* Apple's recommended touch target size */
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  .mobile-tournament-actions .dropdown-item {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
 }
 
 /* Modern Search Bar */
