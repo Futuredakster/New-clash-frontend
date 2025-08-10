@@ -251,7 +251,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
               <div className="row text-center g-2">
                 <div className="col-6">
                   <small className="text-muted d-block">Divisions</small>
-                  
+                  <span className="badge bg-success">Divisions</span>
                 </div>
                 <div className="col-6">
                   <small className="text-muted d-block">Status</small>
@@ -290,7 +290,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
                      >
                        <i className="fas fa-play me-1"></i>
                        <span className="d-none d-sm-inline">Start</span>
-                       <span className="d-sm-none">Go</span>
+                       <span className="d-sm-none">Start</span>
                      </button>
                   ) : (
                    <button className="btn btn-outline-secondary btn-sm w-100" disabled>

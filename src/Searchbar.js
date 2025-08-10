@@ -11,9 +11,7 @@ const Searchbar= ({search,setSearch}) => {
                         value={search}
                         onChange={(e) => setSearch(e.target.value)} 
                     />
-                    <button type="button" className="btn" aria-label="Search">
-                        <i className="fas fa-search"></i>
-                    </button>
+                   
                 </form>
             </div>
         </div>
