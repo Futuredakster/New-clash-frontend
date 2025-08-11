@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { Container, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
@@ -56,88 +56,136 @@ const CreateDivision = () => {
   };
 
   return (
-    <Container style={{ marginTop: "20vh" }}>
-      <Helmet>
-        <title>Create Division</title>
-        <meta name="description" content="Description of your page" />
-      </Helmet>
-      <Card bg="secondary" text="white">
-        <Card.Body>
-          <h4 className="card-title">Create Division</h4>
-          <p className="card-text">Please complete the form. It's simple</p>
-          <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
-            {(formik) => (
-              <Form>
-                <div className="mb-3">
-                  <label htmlFor="age_group" className="form-label">
-                    Age Group:
-                  </label>
-                  <ErrorMessage name="age_group" component="div" className="text-danger" />
-                  <Field
-                    type="text"
-                    id="age_group"
-                    name="age_group"
-                    placeholder="Enter age group"
-                    className="form-control"
-                  />
-                </div>
+    <Container fluid className="fade-in">
+      <Row className="justify-content-center">
+        <Col xs={12} lg={8} xl={6}>
+          <Helmet>
+            <title>Create Division - Clash</title>
+            <meta name="description" content="Create a new division for your tournament" />
+          </Helmet>
+          
+          <div className="page-header-modern">
+            <h1 className="page-title-modern">Create Division</h1>
+            <p className="page-subtitle-modern">Set up tournament divisions to organize competitors</p>
+          </div>
 
-                <div className="mb-3">
-                  <label htmlFor="proficiency_level" className="form-label">
-                    Proficiency Level:
-                  </label>
-                  <ErrorMessage name="proficiency_level" component="div" className="text-danger" />
-                  <Field
-                    type="text"
-                    id="proficiency_level"
-                    name="proficiency_level"
-                    placeholder="Enter proficiency level"
-                    className="form-control"
-                  />
-                </div>
+          <Card className="card-modern">
+            <Card.Header className="card-modern-header">
+              <h4 className="mb-0">
+                <i className="fas fa-users me-2"></i>
+                Division Details
+              </h4>
+              <small className="text-muted">Define the division parameters for competitor organization</small>
+            </Card.Header>
+            <Card.Body className="card-modern-body">
+              <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+                {(formik) => (
+                  <Form>
+                    <div className="form-group-modern">
+                      <label className="form-label-modern" htmlFor="age_group">
+                        <i className="fas fa-calendar-alt me-2"></i>
+                        Age Group
+                      </label>
+                      <ErrorMessage name="age_group" component="div" className="text-danger mb-2" />
+                      <Field
+                        type="text"
+                        id="age_group"
+                        name="age_group"
+                        placeholder="Enter age group (e.g., 18-25, Under 16)"
+                        className="form-control-modern"
+                      />
+                    </div>
 
-                <div className="mb-3">
-                  <label htmlFor="gender" className="form-label">
-                    Gender:
-                  </label>
-                  <ErrorMessage name="gender" component="div" className="text-danger" />
-                  <Field
-                    as="select"
-                    id="gender"
-                    name="gender"
-                    className="form-control"
-                  >
-                    <option value="" label="Select gender" />
-                    <option value="Male" label="Male" />
-                    <option value="Female" label="Female" />
-                  </Field>
-                </div>
+                    <div className="form-group-modern">
+                      <label className="form-label-modern" htmlFor="proficiency_level">
+                        <i className="fas fa-medal me-2"></i>
+                        Proficiency Level
+                      </label>
+                      <ErrorMessage name="proficiency_level" component="div" className="text-danger mb-2" />
+                      <Field
+                        type="text"
+                        id="proficiency_level"
+                        name="proficiency_level"
+                        placeholder="Enter proficiency level (e.g., Beginner, Intermediate, Advanced)"
+                        className="form-control-modern"
+                      />
+                    </div>
 
-                <div className="mb-3">
-                  <label htmlFor="category" className="form-label">
-                    Category:
-                  </label>
-                  <ErrorMessage name="category" component="div" className="text-danger" />
-                  <Field
-                    as="select"
-                    id="category"
-                    name="category"
-                    className="form-control"
-                  >
-                    <option value="" label="Select category" />
-                    <option value="kata" label="Kata" />
-                    <option value="kumite" label="Kumite" />
-                  </Field>
-                </div>
+                    <Row>
+                      <Col md={6}>
+                        <div className="form-group-modern">
+                          <label className="form-label-modern" htmlFor="gender">
+                            <i className="fas fa-venus-mars me-2"></i>
+                            Gender
+                          </label>
+                          <ErrorMessage name="gender" component="div" className="text-danger mb-2" />
+                          <Field
+                            as="select"
+                            id="gender"
+                            name="gender"
+                            className="form-control-modern"
+                          >
+                            <option value="" label="Select gender" />
+                            <option value="Male" label="Male" />
+                            <option value="Female" label="Female" />
+                          </Field>
+                        </div>
+                      </Col>
+                      <Col md={6}>
+                        <div className="form-group-modern">
+                          <label className="form-label-modern" htmlFor="category">
+                            <i className="fas fa-fist-raised me-2"></i>
+                            Category
+                          </label>
+                          <ErrorMessage name="category" component="div" className="text-danger mb-2" />
+                          <Field
+                            as="select"
+                            id="category"
+                            name="category"
+                            className="form-control-modern"
+                          >
+                            <option value="" label="Select category" />
+                            <option value="kata" label="Kata" />
+                            <option value="kumite" label="Kumite" />
+                          </Field>
+                        </div>
+                      </Col>
+                    </Row>
 
-                <Button type="submit" variant="primary" disabled={formik.isSubmitting}>
-                  Create Division
-                </Button>
-              </Form>
-            )}
-          </Formik>
-        </Card.Body>
-      </Card>
+                    <div className="d-grid gap-2">
+                      <Button 
+                        type="submit" 
+                        className="btn btn-modern"
+                        disabled={formik.isSubmitting}
+                      >
+                        {formik.isSubmitting ? (
+                          <>
+                            <span className="loading-spinner me-2"></span>
+                            Creating Division...
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-plus me-2"></i>
+                            Create Division
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        className="btn btn-modern-outline"
+                        onClick={() => navigate('/Home')}
+                      >
+                        <i className="fas fa-arrow-left me-2"></i>
+                        Back to Dashboard
+                      </Button>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
     </Container>
   );
 };

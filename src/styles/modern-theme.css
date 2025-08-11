@@ -481,7 +481,7 @@ body {
 }
 
 .sidebar-modern .nav-link {
-  color: var(--white);
+  color: var(--white) !important;
   padding: 12px 24px;
   transition: all var(--transition-fast);
   border-radius: 0;
@@ -489,13 +489,17 @@ body {
 }
 
 .sidebar-modern .nav-link:hover {
-  background: var(--medium-grey);
-  color: var(--white);
+  background: var(--medium-grey) !important;
+  color: var(--white) !important;
   border-radius: var(--border-radius-md);
+  text-decoration: none !important;
+  transform: translateX(8px) !important;
+  box-shadow: var(--shadow-medium) !important;
 }
 
 .sidebar-modern .nav-link.active {
-  background: var(--accent-grey);
+  background: var(--accent-grey) !important;
+  color: var(--white) !important;
   border-radius: var(--border-radius-md);
 }
 
@@ -1213,4 +1217,947 @@ body {
   .mobile-nav-section-title {
     font-size: 11px !important;
   }
+}
+
+/* Large screen table styles (Bootstrap lg breakpoint and above) */
+@media (min-width: 992px) {
+  /* Ensure parent containers don't constrain table width */
+  .container-fluid .row .col {
+    max-width: none !important;
+  }
+  
+  /* Override any conflicting global table styles for responsive tables */
+  .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: visible !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    margin: 20px 0 !important;
+  }
+  
+  .table-responsive .table-modern,
+  .table-responsive table.table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    border-radius: var(--border-radius-lg) !important;
+    overflow: visible !important;
+    box-shadow: var(--shadow-light) !important;
+    margin: 0 !important;
+    white-space: normal !important;
+    table-layout: fixed !important;
+    font-size: 13px !important;
+  }
+  
+  .table-modern,
+  table.table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 13px !important;
+  }
+  
+  /* Force override any global table cell styles */
+  .table-modern th,
+  .table-modern td,
+  table.table-modern th,
+  table.table-modern td {
+    padding: 15px 8px !important;
+    font-size: 13px !important;
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    overflow: visible !important;
+    text-overflow: ellipsis !important;
+    vertical-align: top !important;
+    height: auto !important;
+    min-height: 60px !important;
+  }
+  
+  .table-modern th,
+  table.table-modern th {
+    font-size: 11px !important;
+    padding: 12px 8px !important;
+  }
+  
+  /* Force specific column width constraints */
+  .table-modern th:nth-child(1), 
+  .table-modern td:nth-child(1),
+  table.table-modern th:nth-child(1), 
+  table.table-modern td:nth-child(1) {
+    width: 20% !important;
+    max-width: 20% !important;
+  }
+  
+  .table-modern th:nth-child(2), 
+  .table-modern td:nth-child(2),
+  table.table-modern th:nth-child(2), 
+  table.table-modern td:nth-child(2) {
+    width: 12% !important;
+    max-width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(3), 
+  .table-modern td:nth-child(3),
+  table.table-modern th:nth-child(3), 
+  table.table-modern td:nth-child(3) {
+    width: 12% !important;
+    max-width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(4), 
+  .table-modern td:nth-child(4),
+  table.table-modern th:nth-child(4), 
+  table.table-modern td:nth-child(4) {
+    width: 15% !important;
+    max-width: 15% !important;
+  }
+  
+  .table-modern th:nth-child(5), 
+  .table-modern td:nth-child(5),
+  table.table-modern th:nth-child(5), 
+  table.table-modern td:nth-child(5) {
+    width: 12% !important;
+    max-width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(6), 
+  .table-modern td:nth-child(6),
+  table.table-modern th:nth-child(6), 
+  table.table-modern td:nth-child(6) {
+    width: 12% !important;
+    max-width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(7), 
+  .table-modern td:nth-child(7),
+  table.table-modern th:nth-child(7), 
+  table.table-modern td:nth-child(7) {
+    width: 10% !important;
+    max-width: 10% !important;
+  }
+  
+  .table-modern th:nth-child(8), 
+  .table-modern td:nth-child(8),
+  table.table-modern th:nth-child(8), 
+  table.table-modern td:nth-child(8) {
+    width: 7% !important;
+    max-width: 7% !important;
+  }
+  
+  /* Make buttons and content smaller to fit */
+  .table-modern .btn,
+  table.table-modern .btn {
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .table-modern .btn-sm,
+  table.table-modern .btn-sm {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Target specific button classes used in tables */
+  .table-modern .btn-modern,
+  .table-modern .btn-modern-outline,
+  table.table-modern .btn-modern,
+  table.table-modern .btn-modern-outline {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Target Bootstrap Button components */
+  .table-modern .btn-outline-primary,
+  .table-modern .btn-outline-success,
+  .table-modern .btn-outline-dark,
+  table.table-modern .btn-outline-primary,
+  table.table-modern .btn-outline-success,
+  table.table-modern .btn-outline-dark {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Override any Bootstrap button defaults */
+  .table-modern button[class*="btn"],
+  table.table-modern button[class*="btn"] {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Universal button override - catch all buttons in tables */
+  .table-modern button,
+  .table-responsive .table-modern button,
+  table.table-modern button,
+  .d-none.d-lg-block .table-responsive .table-modern button {
+    font-size: 9px !important;
+    padding: 2px 4px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    border: 1px solid !important;
+    text-align: center !important;
+    display: inline-block !important;
+  }
+  
+  /* Smart Dropdown positioning system */
+  /* Base dropdown container styles */
+  .table-modern .dropdown,
+  .table-modern .dropdown-modern,
+  .table-responsive .table-modern .dropdown,
+  .table-responsive .table-modern .dropdown-modern {
+    position: static !important;
+  }
+
+  /* Enhanced dropdown menu positioning */
+  .table-modern .dropdown-menu {
+    position: absolute !important;
+    z-index: 1051 !important;
+    min-width: 160px !important;
+    max-width: 200px !important;
+    
+    /* Default positioning - dropdown opens downward to the right */
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    margin-top: 4px !important;
+    
+    /* Enhanced styling for better visibility */
+    background: var(--white) !important;
+    border: 1px solid var(--border-grey) !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 0 !important;
+  }
+
+  /* Alternative positioning for dropdowns in image-adjacent columns */
+  .table-modern td:nth-child(5) .dropdown-menu,
+  .table-modern td:nth-child(6) .dropdown-menu {
+    /* Position to the left to avoid covering images */
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-20%) !important;
+  }
+
+  /* Smart positioning for last few columns - open leftward */
+  .table-modern td:nth-last-child(1) .dropdown-menu,
+  .table-modern td:nth-last-child(2) .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    transform: translateX(10%) !important;
+  }
+
+  /* Upward positioning for bottom rows */
+  .table-modern tbody tr:nth-last-child(-n+2) .dropdown-menu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* Enhanced visibility when dropdown is open */
+  .table-modern .dropdown.show .dropdown-menu {
+    display: block !important;
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    animation: dropdownFadeIn 0.15s ease-out !important;
+  }
+
+  /* Fade-in animation for smooth opening */
+  @keyframes dropdownFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Ensure dropdown items are properly styled */
+  .table-modern .dropdown-item {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    color: var(--text-dark) !important;
+    white-space: nowrap !important;
+    border: none !important;
+    background: transparent !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .table-modern .dropdown-item:hover {
+    background-color: var(--primary-light) !important;
+    color: var(--primary-dark) !important;
+  }
+
+  .table-modern .dropdown-item.text-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+  }
+
+  /* Ensure table cells allow overflow for dropdowns */
+  .table-modern td {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  /* Prevent dropdown from being cut off by table container */
+  .table-responsive {
+    overflow: visible !important;
+  }
+
+  .table-modern {
+    margin-bottom: 60px !important;
+  }
+  
+  .table-modern .dropdown-item,
+  .table-responsive .table-modern .dropdown-item {
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+    white-space: nowrap !important;
+  }
+  
+  .table-modern td {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  /* Ensure table rows have enough height for dropdowns */
+  .table-modern tr,
+  .table-responsive .table-modern tr {
+    min-height: 60px !important;
+    height: auto !important;
+  }
+  
+  /* Create space below table for dropdowns */
+  .table-responsive,
+  .table-modern {
+    margin-bottom: 100px !important;
+  }
+  
+  .table-modern img,
+  table.table-modern img {
+    max-width: 40px !important;
+    max-height: 40px !important;
+  }
+}
+
+/* Extra large screen table styles (Bootstrap xl breakpoint and above) */
+@media (min-width: 1200px) {
+  /* Ensure parent containers don't constrain table width */
+  .container-fluid .row .col {
+    max-width: none !important;
+  }
+  
+  .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .table-responsive .table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    table-layout: fixed !important;
+    font-size: 14px !important;
+    overflow: visible !important;
+  }
+  
+  .table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 14px !important;
+  }
+  
+  /* Slightly larger text and padding for XL screens */
+  .table-modern td,
+  .table-modern th {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    padding: 18px 10px !important;
+    font-size: 14px !important;
+    overflow: visible !important;
+    text-overflow: ellipsis !important;
+    vertical-align: top !important;
+    height: auto !important;
+    min-height: 70px !important;
+  }
+  
+  .table-modern th {
+    font-size: 12px !important;
+    padding: 14px 10px !important;
+  }
+  
+  /* Optimized column widths for XL screens */
+  .table-modern th:nth-child(1), /* Tournament/Gender */
+  .table-modern td:nth-child(1) {
+    width: 22% !important;
+  }
+  
+  .table-modern th:nth-child(2), /* Start Date/Age Group */
+  .table-modern td:nth-child(2) {
+    width: 13% !important;
+  }
+  
+  .table-modern th:nth-child(3), /* End Date/Proficiency Level */
+  .table-modern td:nth-child(3) {
+    width: 13% !important;
+  }
+  
+  .table-modern th:nth-child(4), /* Divisions/Category */
+  .table-modern td:nth-child(4) {
+    width: 16% !important;
+  }
+  
+  .table-modern th:nth-child(5), /* Image/Actions */
+  .table-modern td:nth-child(5) {
+    width: 13% !important;
+  }
+  
+  .table-modern th:nth-child(6), /* Actions/Participants */
+  .table-modern td:nth-child(6) {
+    width: 13% !important;
+  }
+  
+  .table-modern th:nth-child(7), /* Status/Brackets */
+  .table-modern td:nth-child(7) {
+    width: 10% !important;
+  }
+  
+  /* Slightly larger buttons for XL screens */
+  .table-modern .btn,
+  table.table-modern .btn {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .table-modern .btn-sm,
+  table.table-modern .btn-sm {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Target specific button classes */
+  .table-modern .btn-modern,
+  .table-modern .btn-modern-outline,
+  .table-modern .btn-outline-primary,
+  .table-modern .btn-outline-success,
+  .table-modern .btn-outline-dark,
+  table.table-modern .btn-modern,
+  table.table-modern .btn-modern-outline,
+  table.table-modern .btn-outline-primary,
+  table.table-modern .btn-outline-success,
+  table.table-modern .btn-outline-dark {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Override any Bootstrap button defaults */
+  .table-modern button[class*="btn"],
+  table.table-modern button[class*="btn"] {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Universal button override - catch all buttons in tables */
+  .table-modern button,
+  .table-responsive .table-modern button,
+  table.table-modern button,
+  .d-none.d-lg-block .table-responsive .table-modern button {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    border: 1px solid !important;
+    text-align: center !important;
+    display: inline-block !important;
+  }
+  
+  /* Smart Dropdown positioning system - XL screens */
+  /* Base dropdown container styles */
+  .table-modern .dropdown,
+  .table-modern .dropdown-modern,
+  .table-responsive .table-modern .dropdown,
+  .table-responsive .table-modern .dropdown-modern {
+    position: static !important;
+  }
+
+  /* Enhanced dropdown menu positioning */
+  .table-modern .dropdown-menu {
+    position: absolute !important;
+    z-index: 1051 !important;
+    min-width: 170px !important;
+    max-width: 220px !important;
+    
+    /* Default positioning - dropdown opens downward to the right */
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    margin-top: 4px !important;
+    
+    /* Enhanced styling for better visibility */
+    background: var(--white) !important;
+    border: 1px solid var(--border-grey) !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 0 !important;
+  }
+
+  /* Alternative positioning for dropdowns in image-adjacent columns */
+  .table-modern td:nth-child(5) .dropdown-menu,
+  .table-modern td:nth-child(6) .dropdown-menu {
+    /* Position to the left to avoid covering images */
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-20%) !important;
+  }
+
+  /* Smart positioning for last few columns - open leftward */
+  .table-modern td:nth-last-child(1) .dropdown-menu,
+  .table-modern td:nth-last-child(2) .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    transform: translateX(10%) !important;
+  }
+
+  /* Upward positioning for bottom rows */
+  .table-modern tbody tr:nth-last-child(-n+2) .dropdown-menu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .table-modern .dropdown-item,
+  .table-responsive .table-modern .dropdown-item {
+    font-size: 12px !important;
+    padding: 7px 14px !important;
+    white-space: nowrap !important;
+  }
+  
+  .table-modern td {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  /* Ensure table rows have enough height for dropdowns */
+  .table-modern tr,
+  .table-responsive .table-modern tr {
+    min-height: 70px !important;
+    height: auto !important;
+  }
+  
+  /* Create space below table for dropdowns */
+  .table-responsive,
+  .table-modern {
+    margin-bottom: 120px !important;
+  }
+  
+  /* Slightly larger images for XL screens */
+  .table-modern img {
+    max-width: 45px !important;
+    max-height: 45px !important;
+  }
+}
+
+/* XXL screens (1400px and above) */
+@media (min-width: 1400px) {
+  /* Ensure parent containers don't constrain table width */
+  .container-fluid .row .col {
+    max-width: none !important;
+  }
+  
+  .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  .table-responsive .table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    table-layout: fixed !important;
+    font-size: 15px !important;
+    overflow: visible !important;
+  }
+  
+  .table-modern {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 15px !important;
+  }
+  
+  /* Comfortable sizing for XXL screens */
+  .table-modern td,
+  .table-modern th {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    padding: 20px 12px !important;
+    font-size: 15px !important;
+    overflow: visible !important;
+    text-overflow: ellipsis !important;
+    vertical-align: top !important;
+    height: auto !important;
+    min-height: 80px !important;
+  }
+  
+  .table-modern th {
+    font-size: 13px !important;
+    padding: 16px 12px !important;
+  }
+  
+  /* Generous column widths for XXL screens */
+  .table-modern th:nth-child(1), /* Tournament/Gender */
+  .table-modern td:nth-child(1) {
+    width: 24% !important;
+  }
+  
+  .table-modern th:nth-child(2), /* Start Date/Age Group */
+  .table-modern td:nth-child(2) {
+    width: 14% !important;
+  }
+  
+  .table-modern th:nth-child(3), /* End Date/Proficiency Level */
+  .table-modern td:nth-child(3) {
+    width: 14% !important;
+  }
+  
+  .table-modern th:nth-child(4), /* Divisions/Category */
+  .table-modern td:nth-child(4) {
+    width: 16% !important;
+  }
+  
+  .table-modern th:nth-child(5), /* Image/Actions */
+  .table-modern td:nth-child(5) {
+    width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(6), /* Actions/Participants */
+  .table-modern td:nth-child(6) {
+    width: 12% !important;
+  }
+  
+  .table-modern th:nth-child(7), /* Status/Brackets */
+  .table-modern td:nth-child(7) {
+    width: 8% !important;
+  }
+  
+  /* Comfortable button sizes for XXL screens */
+  .table-modern .btn,
+  table.table-modern .btn {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  .table-modern .btn-sm,
+  table.table-modern .btn-sm {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Target specific button classes */
+  .table-modern .btn-modern,
+  .table-modern .btn-modern-outline,
+  .table-modern .btn-outline-primary,
+  .table-modern .btn-outline-success,
+  .table-modern .btn-outline-dark,
+  table.table-modern .btn-modern,
+  table.table-modern .btn-modern-outline,
+  table.table-modern .btn-outline-primary,
+  table.table-modern .btn-outline-success,
+  table.table-modern .btn-outline-dark {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Override any Bootstrap button defaults */
+  .table-modern button[class*="btn"],
+  table.table-modern button[class*="btn"] {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Universal button override - catch all buttons in tables */
+  .table-modern button,
+  .table-responsive .table-modern button,
+  table.table-modern button,
+  .d-none.d-lg-block .table-responsive .table-modern button {
+    font-size: 11px !important;
+    padding: 3px 6px !important;
+    white-space: nowrap !important;
+    min-width: auto !important;
+    width: auto !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    border: 1px solid !important;
+    text-align: center !important;
+    display: inline-block !important;
+  }
+  
+  /* Smart Dropdown positioning system - XXL screens */
+  /* Base dropdown container styles */
+  .table-modern .dropdown,
+  .table-modern .dropdown-modern,
+  .table-responsive .table-modern .dropdown,
+  .table-responsive .table-modern .dropdown-modern {
+    position: static !important;
+  }
+
+  /* Enhanced dropdown menu positioning */
+  .table-modern .dropdown-menu {
+    position: absolute !important;
+    z-index: 1051 !important;
+    min-width: 180px !important;
+    max-width: 240px !important;
+    
+    /* Default positioning - dropdown opens downward to the right */
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    margin-top: 4px !important;
+    
+    /* Enhanced styling for better visibility */
+    background: var(--white) !important;
+    border: 1px solid var(--border-grey) !important;
+    border-radius: var(--border-radius-md) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 0 !important;
+  }
+
+  /* Alternative positioning for dropdowns in image-adjacent columns */
+  .table-modern td:nth-child(5) .dropdown-menu,
+  .table-modern td:nth-child(6) .dropdown-menu {
+    /* Position to the left to avoid covering images */
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-20%) !important;
+  }
+
+  /* Smart positioning for last few columns - open leftward */
+  .table-modern td:nth-last-child(1) .dropdown-menu,
+  .table-modern td:nth-last-child(2) .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    transform: translateX(10%) !important;
+  }
+
+  /* Upward positioning for bottom rows */
+  .table-modern tbody tr:nth-last-child(-n+2) .dropdown-menu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .table-modern .dropdown-item,
+  .table-responsive .table-modern .dropdown-item {
+    font-size: 13px !important;
+    padding: 8px 16px !important;
+    white-space: nowrap !important;
+  }
+  
+  .table-modern td {
+    position: relative !important;
+    overflow: visible !important;
+  }
+  
+  /* Ensure table rows have enough height for dropdowns */
+  .table-modern tr,
+  .table-responsive .table-modern tr {
+    min-height: 80px !important;
+    height: auto !important;
+  }
+  
+  /* Create space below table for dropdowns */
+  .table-responsive,
+  .table-modern {
+    margin-bottom: 140px !important;
+  }
+  
+  /* Standard image sizes for XXL screens */
+  .table-modern img {
+    max-width: 50px !important;
+    max-height: 50px !important;
+  }
+}
+
+/* Advanced Global Dropdown Positioning System */
+/* This provides intelligent positioning to prevent content overlap */
+
+/* Enhanced global dropdown positioning overrides */
+.table-modern .dropdown-menu {
+  /* Override previous positioning with smarter logic */
+  position: absolute !important;
+  z-index: 1055 !important;
+  
+  /* Better spacing and visibility */
+  margin-top: 6px !important;
+  padding: 8px 0 !important;
+  
+  /* Enhanced visual styling */
+  background: white !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+  
+  /* Smooth animations */
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: all 0.2s ease;
+  pointer-events: none;
+}
+
+.table-modern .dropdown.show .dropdown-menu {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  pointer-events: auto !important;
+}
+
+/* Prevent overlap with images - columns that typically contain images */
+.table-modern td:nth-child(4) .dropdown-menu,
+.table-modern td:nth-child(5) .dropdown-menu {
+  /* Position away from adjacent images */
+  left: -10px !important;
+  right: auto !important;
+}
+
+/* Rightmost columns - ensure dropdown stays on screen */
+.table-modern td:nth-last-child(1) .dropdown-menu,
+.table-modern td:nth-last-child(2) .dropdown-menu {
+  left: auto !important;
+  right: 0 !important;
+}
+
+/* Bottom rows - open upward */
+.table-modern tbody tr:nth-last-child(1) .dropdown-menu,
+.table-modern tbody tr:nth-last-child(2) .dropdown-menu {
+  top: auto !important;
+  bottom: 100% !important;
+  margin-top: 0 !important;
+  margin-bottom: 6px !important;
+  transform: translateY(8px);
+}
+
+.table-modern tbody tr:nth-last-child(1) .dropdown.show .dropdown-menu,
+.table-modern tbody tr:nth-last-child(2) .dropdown.show .dropdown-menu {
+  transform: translateY(0) !important;
+}
+
+/* Enhanced dropdown items styling */
+.table-modern .dropdown-item {
+  padding: 10px 16px !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  color: #333 !important;
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+}
+
+.table-modern .dropdown-item:hover,
+.table-modern .dropdown-item:focus {
+  background-color: #f8f9fa !important;
+  color: #0056b3 !important;
+}
+
+.table-modern .dropdown-item.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.1) !important;
+  color: #dc3545 !important;
+}
+
+/* Ensure containers allow dropdown overflow */
+.table-responsive {
+  overflow: visible !important;
+}
+
+/* Adequate spacing below tables */
+.table-modern,
+.table-responsive {
+  margin-bottom: 80px !important;
 }

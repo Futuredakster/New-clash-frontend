@@ -1,0 +1,151 @@
+/* Advanced Dropdown Positioning System */
+/* This file provides intelligent dropdown positioning to prevent content overlap */
+
+/* Global dropdown positioning overrides */
+.smart-dropdown-positioning {
+  /* Base container setup */
+  .table-modern {
+    position: relative;
+  }
+  
+  .table-modern td {
+    position: relative;
+    overflow: visible;
+  }
+  
+  /* Smart dropdown menu positioning */
+  .table-modern .dropdown-menu {
+    position: absolute !important;
+    z-index: 1055 !important;
+    
+    /* Default: Open downward and to the right */
+    top: 100% !important;
+    left: auto !important;
+    right: 0 !important;
+    
+    /* Spacing and styling */
+    margin-top: 6px !important;
+    min-width: 160px !important;
+    max-width: 220px !important;
+    
+    background: white !important;
+    border: 1px solid #dee2e6 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+    padding: 8px 0 !important;
+  }
+  
+  /* Prevent overlap with images in adjacent columns */
+  .table-modern td:nth-child(4) .dropdown-menu,
+  .table-modern td:nth-child(5) .dropdown-menu {
+    /* These columns are often next to images - position away from them */
+    left: 0 !important;
+    right: auto !important;
+    transform: translateX(-15px) !important;
+  }
+  
+  /* Rightmost columns - ensure dropdown doesn't go off-screen */
+  .table-modern td:nth-last-child(1) .dropdown-menu,
+  .table-modern td:nth-last-child(2) .dropdown-menu,
+  .table-modern td:nth-last-child(3) .dropdown-menu {
+    left: auto !important;
+    right: 0 !important;
+    transform: translateX(5px) !important;
+  }
+  
+  /* Bottom rows - open upward to prevent cutting off */
+  .table-modern tbody tr:nth-last-child(1) .dropdown-menu,
+  .table-modern tbody tr:nth-last-child(2) .dropdown-menu {
+    top: auto !important;
+    bottom: 100% !important;
+    margin-top: 0 !important;
+    margin-bottom: 6px !important;
+  }
+  
+  /* Animation for smooth opening */
+  .table-modern .dropdown-menu {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+    pointer-events: none;
+  }
+  
+  .table-modern .dropdown.show .dropdown-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  
+  /* Enhanced dropdown items */
+  .table-modern .dropdown-item {
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    color: #333 !important;
+    border: none !important;
+    background: transparent !important;
+    transition: all 0.15s ease !important;
+  }
+  
+  .table-modern .dropdown-item:hover,
+  .table-modern .dropdown-item:focus {
+    background-color: #f8f9fa !important;
+    color: #0056b3 !important;
+  }
+  
+  .table-modern .dropdown-item.text-danger:hover {
+    background-color: rgba(220, 53, 69, 0.1) !important;
+    color: #dc3545 !important;
+  }
+  
+  /* Ensure table container doesn't clip dropdowns */
+  .table-responsive {
+    overflow: visible !important;
+  }
+  
+  /* Add breathing room below tables */
+  .table-modern,
+  .table-responsive {
+    margin-bottom: 80px !important;
+  }
+}
+
+/* Apply smart positioning by default */
+body {
+  @extend .smart-dropdown-positioning;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .table-modern .dropdown-menu {
+    min-width: 140px !important;
+    font-size: 13px !important;
+  }
+  
+  .table-modern .dropdown-item {
+    padding: 8px 12px !important;
+    font-size: 13px !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .table-modern .dropdown-menu {
+    min-width: 180px !important;
+  }
+  
+  .table-modern .dropdown-item {
+    padding: 12px 18px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (min-width: 1400px) {
+  .table-modern .dropdown-menu {
+    min-width: 200px !important;
+  }
+  
+  .table-modern .dropdown-item {
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+  }
+}

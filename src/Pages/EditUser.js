@@ -133,14 +133,16 @@ const EditUser = () => {
                         </div>
                       </div>
                       
-                      <Button 
-                        variant="dark" 
-                        className="btn-modern w-100" 
-                        onClick={handleShowAccountModal}
-                      >
-                        <i className="fas fa-edit me-2"></i>
-                        Edit Account Information
-                      </Button>
+                      <div className="d-grid gap-2">
+                        <Button 
+                          variant="dark" 
+                          className="btn-modern" 
+                          onClick={handleShowAccountModal}
+                        >
+                          <i className="fas fa-edit me-2"></i>
+                          Edit Account Information
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="text-center text-muted py-4">
@@ -184,10 +186,10 @@ const EditUser = () => {
                         </div>
                       </div>
                       
-                      <div className="d-grid gap-2">
+                      <div className="d-grid">
                         <Button 
                           variant="dark" 
-                          className="btn-modern" 
+                          className="btn-modern mb-4" 
                           onClick={handleShowUserModal}
                         >
                           <i className="fas fa-edit me-2"></i>
@@ -196,6 +198,7 @@ const EditUser = () => {
                         <Button 
                           variant="outline-dark" 
                           className="btn-modern-outline" 
+                          style={{ marginTop: '1rem' }}
                           onClick={handleShowPasswordModal}
                         >
                           <i className="fas fa-lock me-2"></i>
