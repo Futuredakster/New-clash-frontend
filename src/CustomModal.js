@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { link } from './constant';
@@ -13,6 +13,9 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
     tournament_id: tournament_id
   });
   const [imageFile, setImageFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -28,6 +31,10 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setErrorMessage("");
+    setSuccessMessage("");
+    
     const accessToken = localStorage.getItem("accessToken");
     const data = new FormData();
 
@@ -48,65 +55,114 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
         }
       });
       console.log('Tournament data updated successfully');
-      handleClose(); // Close the modal after successful update
-      window.location.reload();
+      setSuccessMessage('Tournament updated successfully!');
+      setTimeout(() => {
+        handleClose();
+        window.location.reload();
+      }, 1500);
     } catch (error) {
-      console.error('Error updating tournament:', error.response.data);
-      // Handle error (e.g., display error message to user)
+      console.error('Error updating tournament:', error.response?.data);
+      setErrorMessage(error.response?.data?.message || 'Error updating tournament');
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false}>
+    <Modal show={showModal} onHide={handleClose} backdrop="static" keyboard={false} className="modal-modern">
       <Modal.Header closeButton>
-        <Modal.Title>Edit Tournament</Modal.Title>
+        <Modal.Title>
+          <i className="fas fa-edit me-2"></i>
+          Edit Tournament
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <form onSubmit={handleSubmit} encType="multipart/form-data">
-          <div>
-            <label htmlFor="tournament_name">Name:</label>
-            <input
+        {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+        {successMessage && <Alert variant="success">{successMessage}</Alert>}
+        
+        <Form onSubmit={handleSubmit} encType="multipart/form-data" className="form-modern">
+          <Form.Group className="form-group-modern">
+            <Form.Label htmlFor="tournament_name" className="form-label-modern">
+              Tournament Name
+            </Form.Label>
+            <Form.Control
               type="text"
               id="tournament_name"
               name="tournament_name"
               value={formData.tournament_name}
               onChange={handleInputChange}
+              className="form-control-modern"
+              placeholder="Enter tournament name"
+              required
             />
-          </div>
-          <div>
-            <label htmlFor="start_date">Start Date:</label>
-            <input
+          </Form.Group>
+
+          <Form.Group className="form-group-modern">
+            <Form.Label htmlFor="start_date" className="form-label-modern">
+              Start Date
+            </Form.Label>
+            <Form.Control
               type="date"
               id="start_date"
               name="start_date"
               value={formData.start_date}
               onChange={handleInputChange}
+              className="form-control-modern"
+              required
             />
-          </div>
-          <div>
-            <label htmlFor="end_date">End Date:</label>
-            <input
+          </Form.Group>
+
+          <Form.Group className="form-group-modern">
+            <Form.Label htmlFor="end_date" className="form-label-modern">
+              End Date
+            </Form.Label>
+            <Form.Control
               type="date"
               id="end_date"
               name="end_date"
               value={formData.end_date}
               onChange={handleInputChange}
+              className="form-control-modern"
+              required
             />
-          </div>
-          <div>
-            <label htmlFor="image">Image:</label>
-            <input
+          </Form.Group>
+
+          <Form.Group className="form-group-modern">
+            <Form.Label htmlFor="image" className="form-label-modern">
+              Tournament Image
+            </Form.Label>
+            <Form.Control
               type="file"
               id="image"
               name="image"
               onChange={handleFileChange}
+              className="form-control-modern"
+              accept="image/*"
             />
+            <Form.Text className="text-muted">
+              Upload a new image to replace the current tournament image (optional)
+            </Form.Text>
+          </Form.Group>
+
+          <div className="d-flex justify-content-end mt-4">
+            <Button 
+              type="submit" 
+              className="btn-modern me-2" 
+              disabled={isSubmitting}
+            >
+              <i className="fas fa-save me-2"></i>
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </Button>
           </div>
-          <button type="submit">Save Changes</button>
-        </form>
+        </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button 
+          variant="secondary" 
+          onClick={handleClose} 
+          className="btn-modern-outline"
+          disabled={isSubmitting}
+        >
+          <i className="fas fa-times me-2"></i>
           Close
         </Button>
       </Modal.Footer>
