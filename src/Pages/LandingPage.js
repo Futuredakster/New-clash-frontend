@@ -34,7 +34,7 @@ function LandingPage() {
         onClick={() => navigate('/ParticipetnVer')}
       >
         <i className="fas fa-envelope-open-text me-2"></i>
-        VERIFY EMAIL
+        SEE YOUR TOURNAMENTS
       </Button>
     </div>
   );
