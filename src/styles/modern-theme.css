@@ -2394,3 +2394,169 @@ body {
   border-radius: var(--border-radius-lg);
   margin: 20px 0;
 }
+
+/* Tournament Cards Specific Styles */
+.tournament-details {
+  background: var(--light-grey);
+  padding: 15px;
+  border-radius: var(--border-radius-md);
+  margin: 15px 0;
+}
+
+.tournament-details .fas {
+  width: 16px;
+  text-align: center;
+}
+
+.card-modern .tournament-details {
+  background: rgba(245, 245, 245, 0.7);
+  border: 1px solid var(--border-grey);
+}
+
+/* Tournament status badges */
+.tournament-status {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 2;
+}
+
+/* Tournament image overlay */
+.tournament-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-medium);
+}
+
+.card-modern:hover .tournament-image-overlay {
+  opacity: 1;
+}
+
+/* Tournament stats styling */
+.stat-item {
+  padding: 10px;
+  transition: transform var(--transition-fast);
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+}
+
+.stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+/* Enhanced fade-in animation */
+.fade-in {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Staggered animation for tournament cards */
+.card-modern {
+  animation: slideInCard 0.5s ease-out backwards;
+}
+
+.card-modern:nth-child(1) { animation-delay: 0.1s; }
+.card-modern:nth-child(2) { animation-delay: 0.2s; }
+.card-modern:nth-child(3) { animation-delay: 0.3s; }
+.card-modern:nth-child(4) { animation-delay: 0.4s; }
+.card-modern:nth-child(5) { animation-delay: 0.5s; }
+.card-modern:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes slideInCard {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Tournament card image enhancements */
+.card-modern .card-img-top {
+  transition: transform var(--transition-medium);
+}
+
+.card-modern:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+/* Loading spinner enhancement */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.3em;
+}
+
+/* Responsive tournament grid improvements */
+@media (max-width: 991px) {
+  .stat-number {
+    font-size: 1.75rem;
+  }
+  
+  .stat-label {
+    font-size: 0.8rem;
+  }
+  
+  .tournament-details {
+    padding: 12px;
+    margin: 12px 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  
+  .stat-label {
+    font-size: 0.75rem;
+  }
+  
+  .tournament-details {
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .card-modern .card-img-top,
+  .card-modern .bg-light {
+    height: 150px !important;
+  }
+  
+  .page-title-modern {
+    font-size: 1.75rem;
+  }
+  
+  .page-subtitle-modern {
+    font-size: 1rem;
+  }
+}

@@ -3,13 +3,14 @@ import axios from 'axios';
 import Searchbar from '../Searchbar';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import '../Divisions.css';
+import { Container, Row, Col, Card, Alert, Spinner, Badge } from 'react-bootstrap';
 import { link } from '../constant';
 
 const CompetitorView = ({ setProps }) => {
     const [data, setData] = useState([]);
     const [search, setSearch] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const handleViewDetails = (tournament) => {
@@ -21,55 +22,187 @@ const CompetitorView = ({ setProps }) => {
     };
 
     useEffect(() => {
-        axios.get(`${link}/tournaments/praticipent`, {
-            params: {
-                tournament_name: search,
-            },
-        })
-            .then(response => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get(`${link}/tournaments/praticipent`, {
+                    params: {
+                        tournament_name: search,
+                    },
+                });
+                
                 if (response.data.error) {
                     setError(response.data.error);
+                    setData([]);
                 } else {
                     setData(response.data);
                     setError('');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error fetching data:', error);
-                setError('An error occurred while fetching data.');
-            });
+                setError('An error occurred while fetching tournaments.');
+                setData([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, [search]);
 
-    return (
-        <div className="container mt-5">
-            <Searchbar
-                search={search}
-                setSearch={setSearch}
-            />
-            {error && <div className="alert alert-danger">{error}</div>}
-            <div className="row">
-                {data.map((item, index) => (
-                    <div key={index} className="col-md-4 mb-4">
-                        <div className="card h-100">
-                            {item.imageUrl &&
-                                <img src={item.imageUrl} className="card-img-top" alt={item.tournament_name} />
-                            }
-                            <div className="card-body">
-                                <h5 className="card-title">{item.tournament_name}</h5>
-                                <p className="card-text">Start Date: {item.start_date}</p>
-                                <p className="card-text">End Date: {item.end_date}</p>
-                                <button 
-                                    className="btn btn-primary"
-                                    onClick={() => handleViewDetails(item)}
-                                >
-                                    View Details
-                                </button>
-                            </div>
+    // Loading state
+    if (loading) {
+        return (
+            <Container fluid className="container-modern fade-in">
+                <div className="page-header-modern">
+                    <h1 className="page-title-modern">
+                        <i className="fas fa-trophy me-3"></i>
+                        Available Tournaments
+                    </h1>
+                    <p className="page-subtitle-modern">
+                        Discover and join competitive tournaments
+                    </p>
+                </div>
+                <Row className="justify-content-center">
+                    <Col xs={12} md={8} lg={6}>
+                        <div className="text-center py-5">
+                            <Spinner animation="border" variant="primary" className="mb-3" />
+                            <p className="text-muted">Loading tournaments...</p>
                         </div>
-                    </div>
-                ))}
+                    </Col>
+                </Row>
+            </Container>
+        );
+    }
+
+    return (
+        <Container fluid className="container-modern fade-in">
+            {/* Header Section */}
+            <div className="page-header-modern">
+                <h1 className="page-title-modern">
+                    <i className="fas fa-trophy me-3"></i>
+                    Available Tournaments
+                </h1>
+                <p className="page-subtitle-modern">
+                    Discover and join competitive tournaments • {data.length} tournament{data.length !== 1 ? 's' : ''} available
+                </p>
             </div>
-        </div>
+
+            {/* Search Section */}
+            <Row className="justify-content-center mb-4">
+                <Col xs={12} lg={8}>
+                    <Searchbar
+                        search={search}
+                        setSearch={setSearch}
+                    />
+                </Col>
+            </Row>
+
+            {/* Error Alert */}
+            {error && (
+                <Row className="justify-content-center mb-4">
+                    <Col xs={12} lg={8}>
+                        <Alert variant="danger" className="text-center">
+                            <i className="fas fa-exclamation-triangle me-2"></i>
+                            {error}
+                        </Alert>
+                    </Col>
+                </Row>
+            )}
+
+            {/* Content Section */}
+            <Row className="justify-content-center">
+                <Col xs={12} lg={10}>
+                    {data.length === 0 && !loading ? (
+                        <div className="text-center py-5">
+                            <i className="fas fa-trophy fa-4x text-muted mb-4"></i>
+                            <h5 className="text-muted mb-3">No tournaments found</h5>
+                            <p className="text-muted">
+                                {search ? `No tournaments match "${search}". Try a different search term.` : 'No tournaments are currently available.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Tournaments Grid */}
+                            <Row className="g-4">
+                                {data.map((item, index) => (
+                                    <Col xs={12} sm={6} lg={4} key={index}>
+                                        <Card className="card-modern h-100">
+                                            {/* Tournament Image */}
+                                            {item.imageUrl ? (
+                                                <div className="position-relative overflow-hidden" style={{ height: '200px' }}>
+                                                    <img 
+                                                        src={item.imageUrl} 
+                                                        className="card-img-top w-100 h-100" 
+                                                        alt={item.tournament_name}
+                                                        style={{ objectFit: 'cover' }}
+                                                    />
+                                                    <div className="position-absolute top-0 end-0 m-3">
+                                                        <Badge bg="dark" className="px-3 py-2">
+                                                            <i className="fas fa-calendar me-1"></i>
+                                                            Tournament
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="d-flex align-items-center justify-content-center bg-light" style={{ height: '200px' }}>
+                                                    <div className="text-center">
+                                                        <i className="fas fa-trophy fa-3x text-muted mb-2"></i>
+                                                        <p className="text-muted mb-0 small">Tournament Image</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <Card.Body className="card-modern-body">
+                                                <h5 className="card-title mb-3">{item.tournament_name}</h5>
+                                                
+                                                <div className="tournament-details mb-4">
+                                                    <div className="d-flex align-items-center mb-2">
+                                                        <i className="fas fa-calendar-start me-2 text-success"></i>
+                                                        <small className="text-muted">
+                                                            <strong>Start:</strong> {new Date(item.start_date).toLocaleDateString()}
+                                                        </small>
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <i className="fas fa-calendar-end me-2 text-danger"></i>
+                                                        <small className="text-muted">
+                                                            <strong>End:</strong> {new Date(item.end_date).toLocaleDateString()}
+                                                        </small>
+                                                    </div>
+                                                </div>
+
+                                                {/* Tournament Status */}
+                                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                                    <Badge 
+                                                        bg={new Date(item.start_date) > new Date() ? 'warning' : 'success'} 
+                                                        className="px-3 py-2"
+                                                    >
+                                                        <i className={`fas ${new Date(item.start_date) > new Date() ? 'fa-clock' : 'fa-play'} me-1`}></i>
+                                                        {new Date(item.start_date) > new Date() ? 'Upcoming' : 'Active'}
+                                                    </Badge>
+                                                </div>
+                                            </Card.Body>
+
+                                            <div className="card-modern-footer">
+                                                <div className="d-grid">
+                                                    <button 
+                                                        className="btn btn-modern"
+                                                        onClick={() => handleViewDetails(item)}
+                                                    >
+                                                        <i className="fas fa-eye me-2"></i>
+                                                        View Details
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </Card>
+                                    </Col>
+                                ))}
+                            </Row>
+                        </>
+                    )}
+                </Col>
+            </Row>
+        </Container>
     );
 }
 
