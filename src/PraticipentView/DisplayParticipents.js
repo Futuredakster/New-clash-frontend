@@ -94,28 +94,8 @@ const DisplayParticipants = () => {
             </div>
           ) : (
             <>
-              {/* Participants Grid */}
-              <Row className="g-3">
-                {data.map((participant, index) => (
-                  <Col xs={12} sm={6} md={4} key={index}>
-                    <Card className="card-modern h-100">
-                      <Card.Body className="card-modern-body text-center">
-                        <div className="participant-avatar mb-3">
-                          <i className="fas fa-user-circle fa-3x text-muted"></i>
-                        </div>
-                        <h6 className="participant-name mb-2">{participant.name}</h6>
-                        <Badge bg="primary" className="participant-badge">
-                          <i className="fas fa-id-badge me-1"></i>
-                          Participant #{index + 1}
-                        </Badge>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-
-              {/* Summary Card */}
-              <Card className="card-modern mt-4">
+              {/* Summary Card - Moved to top */}
+              <Card className="card-modern mb-4">
                 <Card.Header className="card-modern-header">
                   <h5 className="mb-0">
                     <i className="fas fa-chart-bar me-2"></i>
@@ -134,16 +114,6 @@ const DisplayParticipants = () => {
                     </Col>
                     <Col xs={6} md={3}>
                       <div className="stat-item">
-                        <h3 className="stat-number text-success mb-1">
-                          {divisionName ? '1' : '0'}
-                        </h3>
-                        <p className="stat-label text-muted mb-0">
-                          Active Division{divisionName ? '' : 's'}
-                        </p>
-                      </div>
-                    </Col>
-                    <Col xs={6} md={3}>
-                      <div className="stat-item">
                         <h3 className="stat-number text-info mb-1">
                           {Math.ceil(data.length / 2)}
                         </h3>
@@ -152,7 +122,7 @@ const DisplayParticipants = () => {
                         </p>
                       </div>
                     </Col>
-                    <Col xs={6} md={3}>
+                    <Col xs={12} md={6}>
                       <div className="stat-item">
                         <h3 className="stat-number text-warning mb-1">
                           {data.length > 0 ? Math.ceil(Math.log2(data.length)) : 0}
@@ -165,6 +135,26 @@ const DisplayParticipants = () => {
                   </Row>
                 </Card.Body>
               </Card>
+
+              {/* Participants Grid - Now below summary */}
+              <Row className="g-3">
+                {data.map((participant, index) => (
+                  <Col xs={12} sm={6} md={4} key={index}>
+                    <Card className="card-modern h-100">
+                      <Card.Body className="card-modern-body text-center">
+                        <div className="participant-avatar mb-3">
+                          <i className="fas fa-user-circle fa-3x text-muted"></i>
+                        </div>
+                        <h6 className="participant-name mb-2">{participant.name}</h6>
+                        <Badge bg="primary" className="participant-badge">
+                          <i className="fas fa-id-badge me-1"></i>
+                          Participant #{index + 1}
+                        </Badge>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </>
           )}
         </Col>

@@ -104,7 +104,39 @@ const SeeParticepents = () => {
             </div>
           ) : (
             <>
-              {/* Participants Grid */}
+              {/* Summary Card - Moved to top */}
+              <Card className="card-modern mb-4">
+                <Card.Header className="card-modern-header">
+                  <h5 className="mb-0">
+                    <i className="fas fa-chart-pie me-2"></i>
+                    My Registration Summary
+                  </h5>
+                </Card.Header>
+                <Card.Body className="card-modern-body">
+                  <Row className="text-center g-3">
+                    <Col xs={6} md={6}>
+                      <div className="stat-item">
+                        <h3 className="stat-number text-success mb-1">{data.length}</h3>
+                        <p className="stat-label text-muted mb-0">
+                          Active Registrations
+                        </p>
+                      </div>
+                    </Col>
+                    <Col xs={6} md={6}>
+                      <div className="stat-item">
+                        <h3 className="stat-number text-primary mb-1">
+                          <i className="fas fa-trophy"></i>
+                        </h3>
+                        <p className="stat-label text-muted mb-0">
+                          Tournament Ready
+                        </p>
+                      </div>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+
+              {/* Participants Grid - Now below summary */}
               <Row className="g-3">
                 {data.map((participant, index) => (
                   <Col xs={12} sm={6} md={4} key={index}>
@@ -123,48 +155,6 @@ const SeeParticepents = () => {
                   </Col>
                 ))}
               </Row>
-
-              {/* Summary Card */}
-              <Card className="card-modern mt-4">
-                <Card.Header className="card-modern-header">
-                  <h5 className="mb-0">
-                    <i className="fas fa-chart-pie me-2"></i>
-                    My Registration Summary
-                  </h5>
-                </Card.Header>
-                <Card.Body className="card-modern-body">
-                  <Row className="text-center g-3">
-                    <Col xs={6} md={4}>
-                      <div className="stat-item">
-                        <h3 className="stat-number text-success mb-1">{data.length}</h3>
-                        <p className="stat-label text-muted mb-0">
-                          Active Registrations
-                        </p>
-                      </div>
-                    </Col>
-                    <Col xs={6} md={4}>
-                      <div className="stat-item">
-                        <h3 className="stat-number text-info mb-1">
-                          {divisionName ? '1' : data.length}
-                        </h3>
-                        <p className="stat-label text-muted mb-0">
-                          Division{data.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    </Col>
-                    <Col xs={12} md={4}>
-                      <div className="stat-item">
-                        <h3 className="stat-number text-primary mb-1">
-                          <i className="fas fa-trophy"></i>
-                        </h3>
-                        <p className="stat-label text-muted mb-0">
-                          Tournament Ready
-                        </p>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card.Body>
-              </Card>
             </>
           )}
         </Col>

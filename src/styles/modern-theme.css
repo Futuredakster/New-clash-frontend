@@ -141,6 +141,20 @@ body {
   border-top: 1px solid var(--border-grey);
 }
 
+/* Ensure buttons in card footers are properly centered */
+.card-modern-footer .btn-modern {
+  min-width: unset !important;
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.card-modern-footer .d-grid .btn-modern {
+  margin: 0 auto !important;
+}
+
 /* Modern Form Styles */
 .form-modern {
   background: var(--white);

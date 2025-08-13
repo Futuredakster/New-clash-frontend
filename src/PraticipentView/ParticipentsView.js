@@ -86,28 +86,8 @@ const ParticipantsView = () => {
             </div>
           ) : (
             <>
-              {/* Participants Grid */}
-              <Row className="g-3">
-                {data.map((participant, index) => (
-                  <Col xs={12} sm={6} md={4} lg={3} key={index}>
-                    <Card className="card-modern h-100">
-                      <Card.Body className="card-modern-body text-center">
-                        <div className="participant-avatar mb-3">
-                          <i className="fas fa-user-circle fa-3x text-muted"></i>
-                        </div>
-                        <h6 className="participant-name mb-2">{participant.name}</h6>
-                        <Badge bg="info" className="participant-badge">
-                          <i className="fas fa-id-badge me-1"></i>
-                          ID: {participant.id || index + 1}
-                        </Badge>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-
-              {/* Summary Card */}
-              <Card className="card-modern mt-4">
+              {/* Summary Card - Moved to top */}
+              <Card className="card-modern mb-4">
                 <Card.Header className="card-modern-header">
                   <h5 className="mb-0">
                     <i className="fas fa-chart-bar me-2"></i>
@@ -157,6 +137,26 @@ const ParticipantsView = () => {
                   </Row>
                 </Card.Body>
               </Card>
+
+              {/* Participants Grid - Now below summary */}
+              <Row className="g-3">
+                {data.map((participant, index) => (
+                  <Col xs={12} sm={6} md={4} lg={3} key={index}>
+                    <Card className="card-modern h-100">
+                      <Card.Body className="card-modern-body text-center">
+                        <div className="participant-avatar mb-3">
+                          <i className="fas fa-user-circle fa-3x text-muted"></i>
+                        </div>
+                        <h6 className="participant-name mb-2">{participant.name}</h6>
+                        <Badge bg="info" className="participant-badge">
+                          <i className="fas fa-id-badge me-1"></i>
+                          ID: {participant.id || index + 1}
+                        </Badge>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
             </>
           )}
         </Col>

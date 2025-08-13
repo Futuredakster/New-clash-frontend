@@ -186,7 +186,7 @@ const CompetitorView = ({ setProps }) => {
                                             <div className="card-modern-footer">
                                                 <div className="d-grid">
                                                     <button 
-                                                        className="btn btn-modern"
+                                                        className="btn btn-modern d-flex align-items-center justify-content-center"
                                                         onClick={() => handleViewDetails(item)}
                                                     >
                                                         <i className="fas fa-eye me-2"></i>
