@@ -88,9 +88,9 @@ const SeeDivisions = () => {
   }, [tournament_id]);
 
   return (
-    <Container fluid className="fade-in px-3">
+    <Container fluid className="fade-in px-2 px-md-3">
       <Row>
-        <Col>
+        <Col xs={12} className="px-1 px-md-3">
           <div className="page-header-modern">
             <h1 className="page-title-modern">{tournament_name}</h1>
             <p className="page-subtitle-modern">Manage divisions for this tournament</p>
@@ -173,7 +173,7 @@ const SeeDivisions = () => {
           <div className="d-lg-none">
             {data.map((item, index) => (
               <Card key={index} className="card-modern mb-3 slide-up">
-                <Card.Body>
+                <Card.Body className="p-3">
                   <div className="row">
                     <div className="col-12">
                       <h6 className="card-title mb-3 fw-bold">
@@ -205,48 +205,57 @@ const SeeDivisions = () => {
                     </div>
                   </div>
                   
-                  <hr className="my-3" />
-                  
-                  <div className="row g-2">
-                    <div className="col-6 col-sm-4">
-                      <Button 
-                        variant="outline-primary" 
-                        size="sm"
-                        className="w-100"
-                        onClick={() => forPart(item.division_id)}
-                      >
-                        <i className="fas fa-users me-1"></i>
-                        <span className="d-none d-sm-inline">Participants</span>
-                        <span className="d-sm-none">Parts</span>
-                      </Button>
-                    </div>
-                    <div className="col-6 col-sm-4">
-                      <Button 
-                        variant="outline-success" 
-                        size="sm"
-                        className="w-100"
-                        onClick={() => forBrack(item.division_id)}
-                      >
-                        <i className="fas fa-sitemap me-1"></i>
-                        <span className="d-none d-sm-inline">Brackets</span>
-                        <span className="d-sm-none">Brack</span>
-                      </Button>
-                    </div>
-                    <div className="col-12 col-sm-4">
-                      <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
-                        <Dropdown.Toggle variant="outline-dark" size="sm" className="w-100">
-                          <i className="fas fa-ellipsis-v me-1"></i>Actions
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={handleShowModal}>
-                            <i className="fas fa-edit me-2"></i>Edit Division
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
-                            <i className="fas fa-trash me-2"></i>Delete
-                          </Dropdown.Item>
-                          <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
-                        </Dropdown.Menu>
-                      </Dropdown>
+                  <div className="container-fluid p-0">
+                    <hr className="my-3 mx-1" style={{ maxWidth: '92%', margin: '1rem auto' }} />
+                    
+                    <div className="row g-2 mx-1">
+                      <div className="col-12 col-sm-4 px-1">
+                        <Button 
+                          variant="outline-primary" 
+                          size="sm"
+                          className="w-100"
+                          style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          onClick={() => forPart(item.division_id)}
+                        >
+                          <i className="fas fa-users me-1"></i>
+                          <span className="d-none d-sm-inline">Participants</span>
+                          <span className="d-sm-none">Participants</span>
+                        </Button>
+                      </div>
+                      <div className="col-12 col-sm-4 px-1">
+                        <Button 
+                          variant="outline-success" 
+                          size="sm"
+                          className="w-100"
+                          style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          onClick={() => forBrack(item.division_id)}
+                        >
+                          <i className="fas fa-sitemap me-1"></i>
+                          <span className="d-none d-sm-inline">Brackets</span>
+                          <span className="d-sm-none">Brackets</span>
+                        </Button>
+                      </div>
+                      <div className="col-12 col-sm-4 px-1">
+                        <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                          <Dropdown.Toggle 
+                            variant="outline-dark" 
+                            size="sm" 
+                            className="w-100"
+                            style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          >
+                            <i className="fas fa-ellipsis-v me-1"></i>Actions
+                          </Dropdown.Toggle>
+                          <Dropdown.Menu>
+                            <Dropdown.Item onClick={handleShowModal}>
+                              <i className="fas fa-edit me-2"></i>Edit Division
+                            </Dropdown.Item>
+                            <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
+                              <i className="fas fa-trash me-2"></i>Delete
+                            </Dropdown.Item>
+                            <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
+                          </Dropdown.Menu>
+                        </Dropdown>
+                      </div>
                     </div>
                   </div>
                 </Card.Body>

@@ -13,7 +13,8 @@ export default function ViewerStream({ token }) {
     const hostIdRef = useRef(null);
     const [showPlayButton, setShowPlayButton] = useState(false); // New state
     const [remoteStreamReady, setRemoteStreamReady] = useState(false); // To track if stream arrived
-     const navigate = useNavigate();
+    const [isFullscreen, setIsFullscreen] = useState(false); // Track fullscreen state
+    const navigate = useNavigate();
 
     const handlePlayClick = () => {
         if (remoteVideoRef.current) {
@@ -26,6 +27,37 @@ export default function ViewerStream({ token }) {
             });
         }
     };
+
+    const handleFullscreenToggle = () => {
+        const videoContainer = remoteVideoRef.current?.parentElement;
+        if (!videoContainer) return;
+
+        if (!document.fullscreenElement) {
+            videoContainer.requestFullscreen().then(() => {
+                setIsFullscreen(true);
+            }).catch(err => {
+                console.error('Error attempting to enable fullscreen:', err);
+            });
+        } else {
+            document.exitFullscreen().then(() => {
+                setIsFullscreen(false);
+            }).catch(err => {
+                console.error('Error attempting to exit fullscreen:', err);
+            });
+        }
+    };
+
+    // Listen for fullscreen changes
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        };
+    }, []);
 
     useEffect(() => {
         console.log('ViewerStream: Component mounted. Initializing...');
@@ -235,6 +267,29 @@ export default function ViewerStream({ token }) {
                                                     LIVE
                                                 </div>
                                             )}
+
+                                            {/* Fullscreen button overlay */}
+                                            {remoteStreamReady && (
+                                                <div className="position-absolute top-0 end-0 m-3">
+                                                    <Button
+                                                        onClick={handleFullscreenToggle}
+                                                        variant="dark"
+                                                        size="sm"
+                                                        className="opacity-75"
+                                                        style={{
+                                                            borderRadius: '8px',
+                                                            fontSize: '0.9rem',
+                                                            padding: '8px 12px',
+                                                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)',
+                                                            transition: 'opacity 0.3s ease'
+                                                        }}
+                                                        onMouseEnter={(e) => e.target.style.opacity = '1'}
+                                                        onMouseLeave={(e) => e.target.style.opacity = '0.75'}
+                                                    >
+                                                        <i className={`fas ${isFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
                                     </Col>
                                     
@@ -292,30 +347,7 @@ export default function ViewerStream({ token }) {
                                                     </Alert>
                                                 )}
                                                 
-                                                <div className="mt-4">
-                                                    <h6 className="fw-bold mb-2" style={{color: '#1a1a1a'}}>Viewer Controls</h6>
-                                                    <div className="d-grid gap-2">
-                                                        <Button 
-                                                            variant="outline-secondary" 
-                                                            size="sm"
-                                                            className="btn-modern-outline"
-                                                            style={{fontSize: '0.85rem'}}
-                                                            disabled={!remoteStreamReady}
-                                                        >
-                                                            <i className="fas fa-expand me-2"></i>
-                                                            Fullscreen
-                                                        </Button>
-                                                        <Button 
-                                                            variant="outline-secondary" 
-                                                            size="sm"
-                                                            className="btn-modern-outline"
-                                                            style={{fontSize: '0.85rem'}}
-                                                        >
-                                                            <i className="fas fa-share me-2"></i>
-                                                            Share Stream
-                                                        </Button>
-                                                    </div>
-                                                </div>
+
                                             </Card.Body>
                                         </Card>
                                     </Col>

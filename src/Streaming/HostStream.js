@@ -258,29 +258,7 @@ export default function HostStream({ token }) {
                                                     </div>
                                                 </Alert>
                                                 
-                                                <div className="mt-4">
-                                                    <h6 className="fw-bold mb-2" style={{color: '#1a1a1a'}}>Stream Controls</h6>
-                                                    <div className="d-grid gap-2">
-                                                        <Button 
-                                                            variant="outline-secondary" 
-                                                            size="sm"
-                                                            className="btn-modern-outline"
-                                                            style={{fontSize: '0.85rem'}}
-                                                        >
-                                                            <i className="fas fa-cog me-2"></i>
-                                                            Settings
-                                                        </Button>
-                                                        <Button 
-                                                            variant="outline-secondary" 
-                                                            size="sm"
-                                                            className="btn-modern-outline"
-                                                            style={{fontSize: '0.85rem'}}
-                                                        >
-                                                            <i className="fas fa-share me-2"></i>
-                                                            Share Stream
-                                                        </Button>
-                                                    </div>
-                                                </div>
+
                                             </Card.Body>
                                         </Card>
                                     </Col>
