@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'; // Import useState
 import io from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Alert, Spinner } from 'react-bootstrap';
 import { link } from '../constant';
 
 const SOCKET_SERVER_URL = link;
@@ -144,44 +145,186 @@ export default function ViewerStream({ token }) {
     }, [token]);
 
     return (
-        <div>
-            <h2>Viewer Stream</h2>
-            <div style={{ position: 'relative', width: '600px', height: '450px', backgroundColor: 'lightgray', border: '2px solid black' }}>
-                <video
-                    ref={remoteVideoRef}
-                    autoPlay={false} // Change to false, we'll manually play
-                    playsInline
-                    style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                />
-                {showPlayButton && ( // Conditionally render the button
-                    <button
-                        onClick={handlePlayClick}
-                        style={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            padding: '10px 20px',
-                            fontSize: '1.2em',
-                            cursor: 'pointer',
-                            zIndex: 10,
-                        }}
-                    >
-                        Play Stream
-                    </button>
-                )}
-                {!remoteStreamReady && !showPlayButton && (
-                    <p style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', color: 'gray' }}>
-                        Waiting for host stream...
-                    </p>
-                )}
-            </div>
-            <button
-                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px' }}
-                onClick={() => navigate('/TournamentView')}
-            >
-                Exist Stream
-            </button>
+        <div className="min-vh-100" style={{background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)'}}>
+            <Container fluid className="py-4">
+                <Row className="justify-content-center">
+                    <Col xl={10}>
+                        <Card className="card-modern shadow-lg border-0">
+                            <Card.Header className="card-modern-header">
+                                <Row className="align-items-center">
+                                    <Col>
+                                        <h2 className="mb-0 fw-bold" style={{color: '#1a1a1a'}}>
+                                            <i className="fas fa-tv me-3" style={{color: '#28a745'}}></i>
+                                            Live Stream - Viewer
+                                        </h2>
+                                        <small className="text-muted mt-1 d-block">
+                                            <i className="fas fa-eye me-2" style={{color: '#28a745'}}></i>
+                                            Watching live broadcast
+                                        </small>
+                                    </Col>
+                                    <Col xs="auto">
+                                        <Button
+                                            variant="outline-secondary"
+                                            className="btn-modern-outline"
+                                            onClick={() => navigate('/TournamentView')}
+                                        >
+                                            <i className="fas fa-times me-2"></i>
+                                            Exit Stream
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Card.Header>
+                            
+                            <Card.Body className="card-modern-body p-4">
+                                <Row>
+                                    <Col lg={8}>
+                                        <div className="position-relative mb-4">
+                                            <div 
+                                                className="ratio ratio-16x9 rounded overflow-hidden shadow-lg"
+                                                style={{backgroundColor: '#000000', border: '3px solid #1a1a1a'}}
+                                            >
+                                                <video
+                                                    ref={remoteVideoRef}
+                                                    autoPlay={false}
+                                                    playsInline
+                                                    className="w-100 h-100"
+                                                    style={{objectFit: 'contain'}}
+                                                />
+                                                
+                                                {/* Play button overlay */}
+                                                {showPlayButton && (
+                                                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
+                                                        <Button
+                                                            onClick={handlePlayClick}
+                                                            className="btn-modern btn-lg"
+                                                            style={{
+                                                                borderRadius: '50%',
+                                                                width: '80px',
+                                                                height: '80px',
+                                                                fontSize: '2rem',
+                                                                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                                                                zIndex: 10
+                                                            }}
+                                                        >
+                                                            <i className="fas fa-play"></i>
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                                
+                                                {/* Loading state */}
+                                                {!remoteStreamReady && !showPlayButton && (
+                                                    <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center flex-column text-white">
+                                                        <Spinner animation="border" variant="light" className="mb-3" />
+                                                        <p className="mb-0 fw-semibold">Connecting to stream...</p>
+                                                        <small className="text-light opacity-75">Please wait while we establish connection</small>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            
+                                            {/* Live indicator (only show when stream is active) */}
+                                            {remoteStreamReady && (
+                                                <div 
+                                                    className="position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold"
+                                                    style={{
+                                                        background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
+                                                        fontSize: '0.85rem',
+                                                        boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)'
+                                                    }}
+                                                >
+                                                    <i className="fas fa-circle me-2 pulse-animation"></i>
+                                                    LIVE
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Col>
+                                    
+                                    <Col lg={4}>
+                                        <Card className="border-0 h-100" style={{background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'}}>
+                                            <Card.Header className="bg-transparent border-0 pb-2">
+                                                <h5 className="mb-0 fw-bold" style={{color: '#1a1a1a'}}>
+                                                    <i className="fas fa-info-circle me-2" style={{color: '#17a2b8'}}></i>
+                                                    Stream Status
+                                                </h5>
+                                            </Card.Header>
+                                            <Card.Body className="pt-0">
+                                                <div className="mb-3">
+                                                    <label className="form-label-modern">Connection Status</label>
+                                                    <div className="d-flex align-items-center">
+                                                        {remoteStreamReady ? (
+                                                            <>
+                                                                <div className="bg-success rounded-circle me-2" style={{width: '8px', height: '8px'}}></div>
+                                                                <span className="text-success fw-semibold">Connected</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                <div className="bg-warning rounded-circle me-2" style={{width: '8px', height: '8px'}}></div>
+                                                                <span className="text-warning fw-semibold">Connecting...</span>
+                                                            </>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="mb-3">
+                                                    <label className="form-label-modern">Stream Quality</label>
+                                                    <div className="d-flex align-items-center">
+                                                        <i className="fas fa-video me-2 text-primary"></i>
+                                                        <span className="fw-semibold">
+                                                            {remoteStreamReady ? 'HD Quality' : 'Waiting for stream...'}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                
+                                                {!remoteStreamReady && (
+                                                    <Alert variant="warning" className="mb-3 border-0" style={{background: 'rgba(255, 193, 7, 0.1)'}}>
+                                                        <div className="small">
+                                                            <i className="fas fa-clock me-2"></i>
+                                                            Waiting for the host to start streaming...
+                                                        </div>
+                                                    </Alert>
+                                                )}
+                                                
+                                                {remoteStreamReady && (
+                                                    <Alert variant="success" className="mb-3 border-0" style={{background: 'rgba(40, 167, 69, 0.1)'}}>
+                                                        <div className="small">
+                                                            <i className="fas fa-check-circle me-2"></i>
+                                                            Stream is live and ready to watch!
+                                                        </div>
+                                                    </Alert>
+                                                )}
+                                                
+                                                <div className="mt-4">
+                                                    <h6 className="fw-bold mb-2" style={{color: '#1a1a1a'}}>Viewer Controls</h6>
+                                                    <div className="d-grid gap-2">
+                                                        <Button 
+                                                            variant="outline-secondary" 
+                                                            size="sm"
+                                                            className="btn-modern-outline"
+                                                            style={{fontSize: '0.85rem'}}
+                                                            disabled={!remoteStreamReady}
+                                                        >
+                                                            <i className="fas fa-expand me-2"></i>
+                                                            Fullscreen
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline-secondary" 
+                                                            size="sm"
+                                                            className="btn-modern-outline"
+                                                            style={{fontSize: '0.85rem'}}
+                                                        >
+                                                            <i className="fas fa-share me-2"></i>
+                                                            Share Stream
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         </div>
     );
 }

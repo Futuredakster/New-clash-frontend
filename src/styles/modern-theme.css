@@ -2574,3 +2574,17 @@ body {
     font-size: 1rem;
   }
 }
+
+/* Animation for pulse effect */
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.5; 
+  }
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}

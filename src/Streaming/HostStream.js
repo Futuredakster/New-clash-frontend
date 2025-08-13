@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { Container, Row, Col, Card, Button, Alert } from 'react-bootstrap';
 import { link } from '../constant';
 
 const SOCKET_SERVER_URL = link;
@@ -161,21 +162,134 @@ export default function HostStream({ token }) {
     }, [token]); // Dependency array: Re-run effect if token changes
 
     return (
-        <div>
-            <h2>Host Stream</h2>
-            <video
-                ref={localVideoRef}
-                autoPlay
-                 // Mute local preview for the host
-                playsInline // Good practice for mobile Safari
-                style={{ width: '600px', border: '2px solid black', backgroundColor: 'lightgray' }}
-            />
-           <button
-                style={{ marginTop: '20px', padding: '10px 20px', backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px' }}
-                onClick={() => navigate('/home')}
-            >
-                End Stream
-            </button>
+        <div className="min-vh-100" style={{background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)'}}>
+            <Container fluid className="py-4">
+                <Row className="justify-content-center">
+                    <Col xl={10}>
+                        <Card className="card-modern shadow-lg border-0">
+                            <Card.Header className="card-modern-header">
+                                <Row className="align-items-center">
+                                    <Col>
+                                        <h2 className="mb-0 fw-bold" style={{color: '#1a1a1a'}}>
+                                            <i className="fas fa-broadcast-tower me-3" style={{color: '#dc3545'}}></i>
+                                            Live Stream - Host View
+                                        </h2>
+                                        <small className="text-muted mt-1 d-block">
+                                            <i className="fas fa-circle text-danger me-2 pulse-animation"></i>
+                                            You are currently broadcasting live
+                                        </small>
+                                    </Col>
+                                    <Col xs="auto">
+                                        <Button
+                                            variant="danger"
+                                            className="btn-modern-outline"
+                                            onClick={() => navigate('/home')}
+                                            style={{borderColor: '#dc3545', color: '#dc3545'}}
+                                        >
+                                            <i className="fas fa-stop me-2"></i>
+                                            End Stream
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            </Card.Header>
+                            
+                            <Card.Body className="card-modern-body p-4">
+                                <Row>
+                                    <Col lg={8}>
+                                        <div className="position-relative mb-4">
+                                            <div 
+                                                className="ratio ratio-16x9 rounded overflow-hidden shadow-lg"
+                                                style={{backgroundColor: '#000000', border: '3px solid #1a1a1a'}}
+                                            >
+                                                <video
+                                                    ref={localVideoRef}
+                                                    autoPlay
+                                                    muted
+                                                    playsInline
+                                                    className="w-100 h-100"
+                                                    style={{objectFit: 'cover'}}
+                                                />
+                                            </div>
+                                            
+                                            {/* Live indicator overlay */}
+                                            <div 
+                                                className="position-absolute top-0 start-0 m-3 px-3 py-1 rounded-pill text-white fw-bold"
+                                                style={{
+                                                    background: 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)',
+                                                    fontSize: '0.85rem',
+                                                    boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)'
+                                                }}
+                                            >
+                                                <i className="fas fa-circle me-2 pulse-animation"></i>
+                                                LIVE
+                                            </div>
+                                        </div>
+                                    </Col>
+                                    
+                                    <Col lg={4}>
+                                        <Card className="border-0 h-100" style={{background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)'}}>
+                                            <Card.Header className="bg-transparent border-0 pb-2">
+                                                <h5 className="mb-0 fw-bold" style={{color: '#1a1a1a'}}>
+                                                    <i className="fas fa-info-circle me-2" style={{color: '#17a2b8'}}></i>
+                                                    Stream Information
+                                                </h5>
+                                            </Card.Header>
+                                            <Card.Body className="pt-0">
+                                                <div className="mb-3">
+                                                    <label className="form-label-modern">Stream Quality</label>
+                                                    <div className="d-flex align-items-center">
+                                                        <div className="bg-success rounded-circle me-2" style={{width: '8px', height: '8px'}}></div>
+                                                        <span className="text-success fw-semibold">HD Quality</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="mb-3">
+                                                    <label className="form-label-modern">Viewers</label>
+                                                    <div className="d-flex align-items-center">
+                                                        <i className="fas fa-eye me-2 text-primary"></i>
+                                                        <span className="fw-semibold">Connected viewers will appear here</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                <Alert variant="info" className="mb-3 border-0" style={{background: 'rgba(23, 162, 184, 0.1)'}}>
+                                                    <div className="small">
+                                                        <i className="fas fa-share-alt me-2"></i>
+                                                        Share your viewer token with others to let them watch your stream!
+                                                    </div>
+                                                </Alert>
+                                                
+                                                <div className="mt-4">
+                                                    <h6 className="fw-bold mb-2" style={{color: '#1a1a1a'}}>Stream Controls</h6>
+                                                    <div className="d-grid gap-2">
+                                                        <Button 
+                                                            variant="outline-secondary" 
+                                                            size="sm"
+                                                            className="btn-modern-outline"
+                                                            style={{fontSize: '0.85rem'}}
+                                                        >
+                                                            <i className="fas fa-cog me-2"></i>
+                                                            Settings
+                                                        </Button>
+                                                        <Button 
+                                                            variant="outline-secondary" 
+                                                            size="sm"
+                                                            className="btn-modern-outline"
+                                                            style={{fontSize: '0.85rem'}}
+                                                        >
+                                                            <i className="fas fa-share me-2"></i>
+                                                            Share Stream
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                    </Col>
+                </Row>
+            </Container>
         </div>
     );
 }

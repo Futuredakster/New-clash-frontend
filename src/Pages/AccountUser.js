@@ -51,6 +51,35 @@ const AccountUser = () =>{
 
       const progressPercentage = ((pages + 1) / FormTitles.length) * 100;
 
+      // Validation function to check if current page fields are filled
+      const isCurrentPageValid = () => {
+        switch (pages) {
+          case 0: // Account Type
+            return info.account_type.trim() !== "";
+          case 1: // Account Name
+            return info.account_name.trim() !== "";
+          case 2: // Account Description
+            return info.account_description.trim() !== "";
+          case 3: // Credentials (Email)
+            return info.email.trim() !== "";
+          case 4: // Identity (Username)
+            return info.username.trim() !== "";
+          case 5: // Password
+            return info.password_hash.trim() !== "";
+          default:
+            return false;
+        }
+      };
+
+      // Check if all fields are filled for final submission
+      const isAllFieldsValid = () => {
+        return info.account_type.trim() !== "" &&
+               info.account_name.trim() !== "" &&
+               info.account_description.trim() !== "" &&
+               info.email.trim() !== "" &&
+               info.username.trim() !== "" &&
+               info.password_hash.trim() !== "";
+      };
 
     return (
         <div style={{
@@ -105,31 +134,36 @@ const AccountUser = () =>{
                                     
                                     <Button
                                         className="btn-modern"
+                                        disabled={pages === FormTitles.length - 1 ? !isAllFieldsValid() : !isCurrentPageValid()}
                                         onClick={() => {
                                             if (pages === FormTitles.length - 1) {
-                                                var postData = { 
-                                                    account:{
-                                                        account_type:info.account_type,
-                                                        account_name:info.account_name,
-                                                        account_description:info.account_description,
-                                                    }, 
-                                                    user:{
-                                                        email:info.email,
-                                                        password_hash:info.password_hash,
-                                                        username:info.username,
-                                                    } 
+                                                if (isAllFieldsValid()) {
+                                                    var postData = { 
+                                                        account:{
+                                                            account_type:info.account_type,
+                                                            account_name:info.account_name,
+                                                            account_description:info.account_description,
+                                                        }, 
+                                                        user:{
+                                                            email:info.email,
+                                                            password_hash:info.password_hash,
+                                                            username:info.username,
+                                                        } 
+                                                    }
+                                                    console.log(postData);
+                                                    axios.post(`${link}/accounts/user`, postData)
+                                                    .then((response) => {
+                                                        navigate('/Login');
+                                                        console.log("Request successful:", response);
+                                                    })
+                                                    .catch((error) => {
+                                                        console.error("Error:", error);
+                                                    });
                                                 }
-                                                console.log(postData);
-                                                axios.post(`${link}/accounts/user`, postData)
-                                                .then((response) => {
-                                                    navigate('/Login');
-                                                    console.log("Request successful:", response);
-                                                })
-                                                .catch((error) => {
-                                                    console.error("Error:", error);
-                                                });
                                             } else {
-                                                setPages((currPage) => currPage + 1);
+                                                if (isCurrentPageValid()) {
+                                                    setPages((currPage) => currPage + 1);
+                                                }
                                             }
                                         }}
                                     >
