@@ -160,6 +160,299 @@ const TournamentBracket = () => {
     }
   }
 
+  const handlePrint = () => {
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    
+    // Get the tournament data
+    const tournamentData = {
+      rounds,
+      stats: tournamentStats,
+      bracketData,
+      divisionId: division_id,
+      lastRefresh
+    };
+
+    // Generate print-friendly HTML
+    const printHTML = generatePrintHTML(tournamentData);
+    
+    // Write the HTML to the new window
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+    
+    // Wait for content to load, then print
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.close();
+    };
+  };
+
+  const generatePrintHTML = (data) => {
+    const { rounds, stats, lastRefresh } = data;
+    
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Tournament Bracket - Division ${division_id}</title>
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
+            body {
+              font-family: 'Arial', sans-serif;
+              background: white;
+              color: #333;
+              line-height: 1.4;
+              font-size: 12px;
+            }
+            
+            .print-header {
+              text-align: center;
+              margin-bottom: 30px;
+              padding-bottom: 20px;
+              border-bottom: 2px solid #333;
+            }
+            
+            .print-title {
+              font-size: 24px;
+              font-weight: bold;
+              margin-bottom: 8px;
+            }
+            
+            .print-subtitle {
+              font-size: 14px;
+              color: #666;
+              margin-bottom: 10px;
+            }
+            
+            .print-stats {
+              display: flex;
+              justify-content: center;
+              gap: 40px;
+              margin-bottom: 10px;
+            }
+            
+            .stat-item {
+              text-align: center;
+            }
+            
+            .stat-number {
+              font-size: 18px;
+              font-weight: bold;
+              color: #333;
+            }
+            
+            .stat-label {
+              font-size: 11px;
+              color: #666;
+            }
+            
+            .rounds-container {
+              display: grid;
+              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+              gap: 30px;
+              margin-top: 20px;
+            }
+            
+            .round-section {
+              break-inside: avoid;
+              margin-bottom: 30px;
+            }
+            
+            .round-header {
+              text-align: center;
+              margin-bottom: 15px;
+              padding: 8px;
+              background: #f5f5f5;
+              border: 1px solid #ddd;
+              border-radius: 4px;
+            }
+            
+            .round-title {
+              font-size: 16px;
+              font-weight: bold;
+              margin-bottom: 4px;
+            }
+            
+            .round-info {
+              font-size: 10px;
+              color: #666;
+            }
+            
+            .match-card {
+              border: 1px solid #ddd;
+              border-radius: 4px;
+              margin-bottom: 15px;
+              background: white;
+              break-inside: avoid;
+            }
+            
+            .match-header {
+              background: #f8f9fa;
+              padding: 8px 12px;
+              border-bottom: 1px solid #ddd;
+              font-size: 11px;
+              font-weight: bold;
+            }
+            
+            .match-body {
+              padding: 12px;
+            }
+            
+            .participant {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 8px;
+              margin-bottom: 4px;
+              border: 1px solid #eee;
+              border-radius: 3px;
+              background: #fafafa;
+            }
+            
+            .participant.winner {
+              background: #d4edda;
+              border-color: #c3e6cb;
+              font-weight: bold;
+            }
+            
+            .participant.loser {
+              background: #f8d7da;
+              border-color: #f5c6cb;
+              opacity: 0.7;
+            }
+            
+            .participant-name {
+              font-size: 12px;
+            }
+            
+            .participant-score {
+              font-size: 12px;
+              font-weight: bold;
+              min-width: 30px;
+              text-align: center;
+              padding: 2px 6px;
+              background: white;
+              border: 1px solid #ddd;
+              border-radius: 2px;
+            }
+            
+            .participant.winner .participant-score {
+              background: #28a745;
+              color: white;
+              border-color: #28a745;
+            }
+            
+            .vs-divider {
+              text-align: center;
+              margin: 4px 0;
+              font-size: 10px;
+              color: #666;
+              font-weight: bold;
+            }
+            
+            .bye-match {
+              font-style: italic;
+              color: #666;
+            }
+            
+            .print-footer {
+              margin-top: 30px;
+              padding-top: 20px;
+              border-top: 1px solid #ddd;
+              text-align: center;
+              font-size: 10px;
+              color: #666;
+            }
+            
+            @media print {
+              .rounds-container {
+                grid-template-columns: repeat(2, 1fr);
+              }
+              
+              .round-section {
+                page-break-inside: avoid;
+              }
+              
+              .match-card {
+                page-break-inside: avoid;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="print-header">
+            <div class="print-title">🏆 Tournament Bracket</div>
+            <div class="print-subtitle">Division ${division_id}</div>
+            <div class="print-stats">
+              <div class="stat-item">
+                <div class="stat-number">${stats.totalRounds}</div>
+                <div class="stat-label">Total Rounds</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">${stats.totalMatches}</div>
+                <div class="stat-label">Total Matches</div>
+              </div>
+            </div>
+            ${lastRefresh ? `<div style="font-size: 10px; color: #666; margin-top: 10px;">Printed: ${lastRefresh.toLocaleString()}</div>` : ''}
+          </div>
+          
+          <div class="rounds-container">
+            ${Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).map(roundNumber => `
+              <div class="round-section">
+                <div class="round-header">
+                  <div class="round-title">Round ${roundNumber}</div>
+                  <div class="round-info">
+                    ${rounds[roundNumber].length} match${rounds[roundNumber].length !== 1 ? 'es' : ''} • 
+                    ${rounds[roundNumber].filter(b => b.winner && b.winner !== null).length} completed
+                  </div>
+                </div>
+                
+                <div class="round-matches">
+                  ${rounds[roundNumber].map(bracket => {
+                    const isWinner1 = bracket.winner === 'user1';
+                    const isWinner2 = bracket.winner === 'user2';
+                    const hasWinner = bracket.winner && bracket.winner !== null;
+                    const isBye = bracket.user1 === 'Bye' || bracket.user2 === 'Bye';
+                    
+                    return `
+                      <div class="match-card ${isBye ? 'bye-match' : ''}">
+                        <div class="match-header">
+                          Match #${bracket.bracket_id}
+                          ${hasWinner ? ' • Complete' : ''}
+                          ${isBye ? ' • Bye' : ''}
+                        </div>
+                        <div class="match-body">
+                          <div class="participant ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''}">
+                            <span class="participant-name">${bracket.user1}</span>
+                            <span class="participant-score">${bracket.score1}</span>
+                          </div>
+                          <div class="vs-divider">VS</div>
+                          <div class="participant ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''}">
+                            <span class="participant-name">${bracket.user2}</span>
+                            <span class="participant-score">${bracket.score2}</span>
+                          </div>
+                        </div>
+                      </div>
+                    `;
+                  }).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="print-footer">
+            Generated by Tournament Management System
+          </div>
+        </body>
+      </html>
+    `;
+  };
+
   const rounds = bracketData.reduce((acc, bracket) => {
     (acc[bracket.round] = acc[bracket.round] || []).push(bracket);
     return acc;
@@ -349,6 +642,19 @@ const TournamentBracket = () => {
               <i className="fas fa-sync-alt me-2"></i>
               Refresh
             </Button>
+
+            {Object.keys(rounds).length > 0 && (
+              <Button 
+                className="btn-modern-outline" 
+                onClick={handlePrint}
+                disabled={loading}
+                size="lg"
+                variant="info"
+              >
+                <i className="fas fa-print me-2"></i>
+                Print Bracket
+              </Button>
+            )}
             
             <Button 
               className="btn-modern-outline" 

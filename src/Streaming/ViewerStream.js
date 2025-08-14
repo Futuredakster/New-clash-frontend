@@ -28,39 +28,114 @@ export default function ViewerStream({ token }) {
         }
     };
 
+    // Test fullscreen API availability
+    const testFullscreenSupport = () => {
+        const elem = remoteVideoRef.current;
+        if (!elem) return false;
+        
+        const hasFullscreen = !!(elem.requestFullscreen || 
+                               elem.webkitRequestFullscreen || 
+                               elem.mozRequestFullScreen || 
+                               elem.msRequestFullscreen);
+        
+        console.log('Fullscreen API support:', {
+            standard: !!elem.requestFullscreen,
+            webkit: !!elem.webkitRequestFullscreen,
+            moz: !!elem.mozRequestFullScreen,
+            ms: !!elem.msRequestFullscreen,
+            overall: hasFullscreen
+        });
+        
+        return hasFullscreen;
+    };
+
     const handleFullscreenToggle = () => {
-        const videoContainer = remoteVideoRef.current?.parentElement;
-        if (!videoContainer) return;
+        const videoElement = remoteVideoRef.current;
+        if (!videoElement) {
+            console.error('Video element not found');
+            return;
+        }
+
+        // Test fullscreen support first
+        if (!testFullscreenSupport()) {
+            alert('Fullscreen mode is not supported in your browser');
+            return;
+        }
 
         if (!document.fullscreenElement) {
-            videoContainer.requestFullscreen().then(() => {
-                setIsFullscreen(true);
-            }).catch(err => {
-                console.error('Error attempting to enable fullscreen:', err);
-            });
+            // Try different fullscreen methods for browser compatibility
+            const requestFullscreen = videoElement.requestFullscreen || 
+                                    videoElement.webkitRequestFullscreen || 
+                                    videoElement.mozRequestFullScreen || 
+                                    videoElement.msRequestFullscreen;
+            
+            if (requestFullscreen) {
+                requestFullscreen.call(videoElement).then(() => {
+                    setIsFullscreen(true);
+                    console.log('Entered fullscreen mode');
+                }).catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                    alert('Fullscreen mode is not supported or blocked by your browser');
+                });
+            } else {
+                console.error('Fullscreen API not supported');
+                alert('Fullscreen mode is not supported in your browser');
+            }
         } else {
-            document.exitFullscreen().then(() => {
-                setIsFullscreen(false);
-            }).catch(err => {
-                console.error('Error attempting to exit fullscreen:', err);
-            });
+            // Try different exit fullscreen methods for browser compatibility
+            const exitFullscreen = document.exitFullscreen || 
+                                  document.webkitExitFullscreen || 
+                                  document.mozCancelFullScreen || 
+                                  document.msExitFullscreen;
+            
+            if (exitFullscreen) {
+                exitFullscreen.call(document).then(() => {
+                    setIsFullscreen(false);
+                    console.log('Exited fullscreen mode');
+                }).catch(err => {
+                    console.error('Error attempting to exit fullscreen:', err);
+                });
+            }
         }
     };
 
     // Listen for fullscreen changes
     useEffect(() => {
         const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
+            // Check different fullscreen properties for browser compatibility
+            const isCurrentlyFullscreen = !!(document.fullscreenElement || 
+                                           document.webkitFullscreenElement || 
+                                           document.mozFullScreenElement || 
+                                           document.msFullscreenElement);
+            setIsFullscreen(isCurrentlyFullscreen);
         };
 
+        // Add event listeners for different browsers
         document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
         return () => {
             document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
         };
     }, []);
 
     useEffect(() => {
         console.log('ViewerStream: Component mounted. Initializing...');
+
+        // Add keyboard event listener for fullscreen toggle (F key or F11)
+        const handleKeyPress = (event) => {
+            if (event.key === 'f' || event.key === 'F') {
+                event.preventDefault();
+                handleFullscreenToggle();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
 
         socketRef.current = io(SOCKET_SERVER_URL, { auth: { token } });
 
@@ -163,6 +238,10 @@ export default function ViewerStream({ token }) {
 
         return () => {
             console.log('ViewerStream: Component unmounting. Performing cleanup...');
+            
+            // Remove keyboard event listener
+            document.removeEventListener('keydown', handleKeyPress);
+            
             if (socketRef.current) {
                 socketRef.current.disconnect();
                 console.log('Viewer: Socket disconnected.');
@@ -220,8 +299,43 @@ export default function ViewerStream({ token }) {
                                                     autoPlay={false}
                                                     playsInline
                                                     className="w-100 h-100"
-                                                    style={{objectFit: 'contain'}}
+                                                    style={{
+                                                        objectFit: 'contain',
+                                                        backgroundColor: '#000000'
+                                                    }}
+                                                    onDoubleClick={handleFullscreenToggle}
+                                                    title="Double-click or press 'F' for fullscreen"
                                                 />
+                                                
+                                                {/* Add fullscreen styles */}
+                                                <style>
+                                                    {`
+                                                        video:fullscreen {
+                                                            width: 100vw !important;
+                                                            height: 100vh !important;
+                                                            object-fit: contain;
+                                                            background-color: #000000;
+                                                        }
+                                                        video:-webkit-full-screen {
+                                                            width: 100vw !important;
+                                                            height: 100vh !important;
+                                                            object-fit: contain;
+                                                            background-color: #000000;
+                                                        }
+                                                        video:-moz-full-screen {
+                                                            width: 100vw !important;
+                                                            height: 100vh !important;
+                                                            object-fit: contain;
+                                                            background-color: #000000;
+                                                        }
+                                                        video:-ms-fullscreen {
+                                                            width: 100vw !important;
+                                                            height: 100vh !important;
+                                                            object-fit: contain;
+                                                            background-color: #000000;
+                                                        }
+                                                    `}
+                                                </style>
                                                 
                                                 {/* Play button overlay */}
                                                 {showPlayButton && (
@@ -285,8 +399,10 @@ export default function ViewerStream({ token }) {
                                                         }}
                                                         onMouseEnter={(e) => e.target.style.opacity = '1'}
                                                         onMouseLeave={(e) => e.target.style.opacity = '0.75'}
+                                                        title={isFullscreen ? 'Exit fullscreen (F key or double-click)' : 'Enter fullscreen (F key or double-click)'}
                                                     >
-                                                        <i className={`fas ${isFullscreen ? 'fa-compress' : 'fa-expand'}`}></i>
+                                                        <i className={`fas ${isFullscreen ? 'fa-compress' : 'fa-expand'} me-1`}></i>
+                                                        {isFullscreen ? 'Exit' : 'Full'}
                                                     </Button>
                                                 </div>
                                             )}
@@ -345,6 +461,29 @@ export default function ViewerStream({ token }) {
                                                             Stream is live and ready to watch!
                                                         </div>
                                                     </Alert>
+                                                )}
+                                                
+                                                {remoteStreamReady && (
+                                                    <div className="mb-3 p-2 rounded" style={{background: 'rgba(23, 162, 184, 0.1)'}}>
+                                                        <h6 className="mb-2 fw-bold" style={{color: '#17a2b8', fontSize: '0.85rem'}}>
+                                                            <i className="fas fa-keyboard me-2"></i>
+                                                            Controls
+                                                        </h6>
+                                                        <div className="small text-muted">
+                                                            <div className="mb-1">
+                                                                <i className="fas fa-mouse-pointer me-2 text-primary"></i>
+                                                                Double-click video for fullscreen
+                                                            </div>
+                                                            <div className="mb-1">
+                                                                <i className="fas fa-keyboard me-2 text-primary"></i>
+                                                                Press <kbd className="px-1 py-0 bg-light border rounded">F</kbd> key for fullscreen
+                                                            </div>
+                                                            <div>
+                                                                <i className="fas fa-expand me-2 text-primary"></i>
+                                                                Click fullscreen button
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 )}
                                                 
 
