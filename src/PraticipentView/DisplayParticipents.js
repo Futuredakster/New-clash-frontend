@@ -104,7 +104,7 @@ const DisplayParticipants = () => {
                 </Card.Header>
                 <Card.Body className="card-modern-body">
                   <Row className="text-center g-3">
-                    <Col xs={6} md={3}>
+                    <Col xs={4}>
                       <div className="stat-item">
                         <h3 className="stat-number text-primary mb-1">{data.length}</h3>
                         <p className="stat-label text-muted mb-0">
@@ -112,23 +112,23 @@ const DisplayParticipants = () => {
                         </p>
                       </div>
                     </Col>
-                    <Col xs={6} md={3}>
-                      <div className="stat-item">
-                        <h3 className="stat-number text-info mb-1">
-                          {Math.ceil(data.length / 2)}
-                        </h3>
-                        <p className="stat-label text-muted mb-0">
-                          Potential Matches
-                        </p>
-                      </div>
-                    </Col>
-                    <Col xs={12} md={6}>
+                    <Col xs={4}>
                       <div className="stat-item">
                         <h3 className="stat-number text-warning mb-1">
                           {data.length > 0 ? Math.ceil(Math.log2(data.length)) : 0}
                         </h3>
                         <p className="stat-label text-muted mb-0">
                           Tournament Rounds
+                        </p>
+                      </div>
+                    </Col>
+                    <Col xs={4}>
+                      <div className="stat-item">
+                        <h3 className="stat-number text-info mb-1">
+                          {data.length > 0 ? data.length - 1 : 0}
+                        </h3>
+                        <p className="stat-label text-muted mb-0">
+                          Potential Matches
                         </p>
                       </div>
                     </Col>

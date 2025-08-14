@@ -24,7 +24,6 @@ const CompetitorView = ({ setProps }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true);
                 const response = await axios.get(`${link}/tournaments/praticipent`, {
                     params: {
                         tournament_name: search,
@@ -43,12 +42,15 @@ const CompetitorView = ({ setProps }) => {
                 setError('An error occurred while fetching tournaments.');
                 setData([]);
             } finally {
-                setLoading(false);
+                // Only clear loading after the first successful load
+                if (loading) {
+                    setLoading(false);
+                }
             }
         };
 
         fetchData();
-    }, [search]);
+    }, [search, loading]);
 
     // Loading state
     if (loading) {

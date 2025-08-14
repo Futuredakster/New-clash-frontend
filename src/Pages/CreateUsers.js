@@ -55,9 +55,13 @@ function CreateUsers() {
 
   const nextPage = () => {
     if (pages === FormTitles.length - 1) {
-      handleSubmit();
+      if (isAllFieldsValid()) {
+        handleSubmit();
+      }
     } else {
-      setPages((currPage) => currPage + 1);
+      if (isCurrentPageValid()) {
+        setPages((currPage) => currPage + 1);
+      }
     }
   };
 
@@ -66,6 +70,27 @@ function CreateUsers() {
   };
 
   const progressPercentage = ((pages + 1) / FormTitles.length) * 100;
+
+  // Validation function to check if current page fields are filled
+  const isCurrentPageValid = () => {
+    switch (pages) {
+      case 0: // Credentials (Email)
+        return info.email.trim() !== "";
+      case 1: // Password
+        return info.password_hash.trim() !== "";
+      case 2: // Identity (Username)
+        return info.username.trim() !== "";
+      default:
+        return false;
+    }
+  };
+
+  // Check if all fields are filled for final submission
+  const isAllFieldsValid = () => {
+    return info.email.trim() !== "" &&
+           info.password_hash.trim() !== "" &&
+           info.username.trim() !== "";
+  };
 
   return (
     <Container className="py-5">
@@ -132,6 +157,7 @@ function CreateUsers() {
                 <Col>
                   <Button
                     variant="dark"
+                    disabled={pages === FormTitles.length - 1 ? !isAllFieldsValid() : !isCurrentPageValid()}
                     onClick={nextPage}
                     className="w-100 btn-modern"
                   >
