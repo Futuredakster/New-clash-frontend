@@ -84,15 +84,30 @@ const TournamentBracket = () => {
       fetchedBrackets = fetchedBrackets.sort((a, b) => a.bracket_id - b.bracket_id);
 
       // Structure the brackets into rounds and include the next round
-      const newBrackets = fetchedBrackets.map((bracket) => ({
-        bracket_id: bracket.bracket_id,
-        user1: bracket.user1 || 'Bye',
-        user2: bracket.user2 || 'Bye',
-        score1: bracket.points_user1 || 0,
-        score2: bracket.points_user2 || 0,
-        winner: bracket.winner,
-        round: bracket.round,
-      }));
+      const newBrackets = fetchedBrackets.map((bracket) => {
+        // Compute winner from win_user1 and win_user2 fields
+        let winner = null;
+        if (bracket.win_user1 && !bracket.win_user2) {
+          winner = 'user1';
+        } else if (bracket.win_user2 && !bracket.win_user1) {
+          winner = 'user2';
+        }
+        
+        return {
+          bracket_id: bracket.bracket_id,
+          user1: bracket.user1 || 'Bye',
+          user2: bracket.user2 || 'Bye',
+          score1: bracket.points_user1 || 0,
+          score2: bracket.points_user2 || 0,
+          winner: winner,
+          round: bracket.round,
+          win_user1: bracket.win_user1,
+          win_user2: bracket.win_user2,
+          is_complete: bracket.is_complete,
+          participant_id1: bracket.participant_id1,
+          participant_id2: bracket.participant_id2
+        };
+      });
 
       setBracketData(newBrackets);
       setLastRefresh(new Date());
@@ -180,15 +195,26 @@ const TournamentBracket = () => {
     printWindow.document.write(printHTML);
     printWindow.document.close();
     
-    // Wait for content to load, then print
+    // Wait for content to load, then setup canvas and print
     printWindow.onload = () => {
-      printWindow.print();
-      printWindow.close();
+      // Call the canvas setup function in the print window
+      if (printWindow.setupConnections) {
+        printWindow.setupConnections();
+      }
+      
+      // Wait a bit more for canvas to draw, then print
+      setTimeout(() => {
+        printWindow.print();
+        printWindow.close();
+      }, 1500);
     };
   };
 
   const generatePrintHTML = (data) => {
     const { rounds, stats, lastRefresh } = data;
+    
+    // Generate traditional tournament bracket structure
+    const bracketHTML = generateTraditionalBracket(rounds);
     
     return `
       <!DOCTYPE html>
@@ -203,11 +229,14 @@ const TournamentBracket = () => {
             }
             
             body {
-              font-family: 'Arial', sans-serif;
+              font-family: 'Courier New', monospace;
               background: white;
               color: #333;
-              line-height: 1.4;
-              font-size: 12px;
+              line-height: 1.2;
+              font-size: 11px;
+              padding: 20px;
+              min-width: 1400px;
+              overflow-x: auto;
             }
             
             .print-header {
@@ -221,12 +250,14 @@ const TournamentBracket = () => {
               font-size: 24px;
               font-weight: bold;
               margin-bottom: 8px;
+              font-family: Arial, sans-serif;
             }
             
             .print-subtitle {
               font-size: 14px;
               color: #666;
               margin-bottom: 10px;
+              font-family: Arial, sans-serif;
             }
             
             .print-stats {
@@ -234,6 +265,7 @@ const TournamentBracket = () => {
               justify-content: center;
               gap: 40px;
               margin-bottom: 10px;
+              font-family: Arial, sans-serif;
             }
             
             .stat-item {
@@ -251,111 +283,156 @@ const TournamentBracket = () => {
               color: #666;
             }
             
-            .rounds-container {
-              display: grid;
-              grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-              gap: 30px;
-              margin-top: 20px;
+            .bracket-container {
+              display: flex;
+              justify-content: center;
+              align-items: flex-start;
+              gap: 100px;
+              margin: 40px 0;
+              min-height: 600px;
+              position: relative;
+              width: 100%;
+              max-width: none;
             }
             
-            .round-section {
-              break-inside: avoid;
-              margin-bottom: 30px;
+            .bracket-side {
+              flex: 1;
+              display: flex;
+              flex-direction: column;
+              align-items: stretch;
+              position: relative;
             }
             
-            .round-header {
+            .bracket-left {
+              align-items: flex-end;
+            }
+            
+            .bracket-right {
+              align-items: flex-start;
+            }
+            
+            .bracket-center {
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              justify-content: center;
+              min-width: 300px;
+              position: relative;
+              z-index: 10;
+              flex-shrink: 0;
+              gap: 20px;
+            }
+            
+            .round-column {
+              display: flex;
+              flex-direction: column;
+              gap: 20px;
+              margin: 0 15px;
+              min-width: 200px;
+              position: relative;
+              flex-shrink: 0;
+            }
+            
+            .round-header-bracket {
               text-align: center;
-              margin-bottom: 15px;
-              padding: 8px;
-              background: #f5f5f5;
-              border: 1px solid #ddd;
-              border-radius: 4px;
-            }
-            
-            .round-title {
-              font-size: 16px;
               font-weight: bold;
-              margin-bottom: 4px;
+              margin-bottom: 10px;
+              padding: 5px;
+              border: 1px solid #333;
+              background: #f0f0f0;
+              font-family: Arial, sans-serif;
             }
             
-            .round-info {
-              font-size: 10px;
-              color: #666;
-            }
-            
-            .match-card {
-              border: 1px solid #ddd;
-              border-radius: 4px;
-              margin-bottom: 15px;
+            .match-bracket {
+              border: 2px solid #333;
               background: white;
-              break-inside: avoid;
+              margin: 5px 0;
+              position: relative;
+              min-height: 80px;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              z-index: 5;
             }
             
-            .match-header {
-              background: #f8f9fa;
+            .participant-bracket {
               padding: 8px 12px;
-              border-bottom: 1px solid #ddd;
-              font-size: 11px;
-              font-weight: bold;
-            }
-            
-            .match-body {
-              padding: 12px;
-            }
-            
-            .participant {
+              border-bottom: 1px solid #333;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              padding: 8px;
-              margin-bottom: 4px;
-              border: 1px solid #eee;
-              border-radius: 3px;
               background: #fafafa;
             }
             
-            .participant.winner {
+            .participant-bracket:last-child {
+              border-bottom: none;
+            }
+            
+            .participant-bracket.winner {
               background: #d4edda;
-              border-color: #c3e6cb;
               font-weight: bold;
             }
             
-            .participant.loser {
+            .participant-bracket.loser {
               background: #f8d7da;
-              border-color: #f5c6cb;
               opacity: 0.7;
             }
             
             .participant-name {
-              font-size: 12px;
+              max-width: 120px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
             }
             
             .participant-score {
-              font-size: 12px;
               font-weight: bold;
-              min-width: 30px;
+              margin-left: 10px;
+              min-width: 20px;
               text-align: center;
-              padding: 2px 6px;
-              background: white;
-              border: 1px solid #ddd;
-              border-radius: 2px;
             }
             
-            .participant.winner .participant-score {
-              background: #28a745;
-              color: white;
-              border-color: #28a745;
+            /* Simple Connection Lines - Hidden, using canvas instead */
+            .line-horizontal-left {
+              display: none;
             }
             
-            .vs-divider {
+            .line-horizontal-right {
+              display: none;
+            }
+            
+            /* Connection arrows - Hidden, using canvas instead */
+            .line-horizontal-left::after {
+              display: none;
+            }
+            
+            .line-horizontal-right::after {
+              display: none;
+            }
+            
+            .champion-area {
               text-align: center;
-              margin: 4px 0;
-              font-size: 10px;
-              color: #666;
+              padding: 20px;
+              border: 3px solid #333;
+              background: #fff3cd;
+              margin: 20px 0;
+              border-radius: 8px;
+            }
+            
+            .champion-title {
+              font-size: 18px;
               font-weight: bold;
+              margin-bottom: 10px;
+              font-family: Arial, sans-serif;
             }
             
-            .bye-match {
+            .champion-name {
+              font-size: 16px;
+              font-weight: bold;
+              color: #d63384;
+            }
+            
+            .bye-indicator {
               font-style: italic;
               color: #666;
             }
@@ -367,18 +444,19 @@ const TournamentBracket = () => {
               text-align: center;
               font-size: 10px;
               color: #666;
+              font-family: Arial, sans-serif;
             }
             
             @media print {
-              .rounds-container {
-                grid-template-columns: repeat(2, 1fr);
+              body {
+                font-size: 10px;
               }
               
-              .round-section {
+              .bracket-container {
                 page-break-inside: avoid;
               }
               
-              .match-card {
+              .match-bracket {
                 page-break-inside: avoid;
               }
             }
@@ -401,55 +479,355 @@ const TournamentBracket = () => {
             ${lastRefresh ? `<div style="font-size: 10px; color: #666; margin-top: 10px;">Printed: ${lastRefresh.toLocaleString()}</div>` : ''}
           </div>
           
-          <div class="rounds-container">
-            ${Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).map(roundNumber => `
-              <div class="round-section">
-                <div class="round-header">
-                  <div class="round-title">Round ${roundNumber}</div>
-                  <div class="round-info">
-                    ${rounds[roundNumber].length} match${rounds[roundNumber].length !== 1 ? 'es' : ''} • 
-                    ${rounds[roundNumber].filter(b => b.winner && b.winner !== null).length} completed
-                  </div>
-                </div>
+          ${bracketHTML}
+          
+          <script>
+            // Draw connecting lines using Canvas like the mock code
+            window.setupConnections = function() {
+              setTimeout(() => {
+                console.log('Setting up canvas connections...');
                 
-                <div class="round-matches">
-                  ${rounds[roundNumber].map(bracket => {
-                    const isWinner1 = bracket.winner === 'user1';
-                    const isWinner2 = bracket.winner === 'user2';
-                    const hasWinner = bracket.winner && bracket.winner !== null;
-                    const isBye = bracket.user1 === 'Bye' || bracket.user2 === 'Bye';
+                // Create canvas overlay for drawing lines
+                const canvas = document.createElement('canvas');
+                const wrapper = document.querySelector('.bracket-container');
+                if (!wrapper) {
+                  console.log('No bracket container found');
+                  return;
+                }
+                
+                console.log('Found bracket container, creating canvas...');
+                
+                canvas.style.position = 'absolute';
+                canvas.style.top = '0';
+                canvas.style.left = '0';
+                canvas.style.pointerEvents = 'none';
+                canvas.style.zIndex = '1';
+                canvas.width = wrapper.offsetWidth;
+                canvas.height = wrapper.offsetHeight;
+                
+                wrapper.style.position = 'relative';
+                wrapper.appendChild(canvas);
+                
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 3;
+                
+                console.log('Canvas size: ' + canvas.width + 'x' + canvas.height);
+                
+                // Find all matches with connection lines
+                const connectionElements = document.querySelectorAll('[data-target-bracket]');
+                console.log('Found ' + connectionElements.length + ' connection elements');
+                
+                connectionElements.forEach(line => {
+                  const sourceMatch = line.closest('.match-bracket');
+                  const targetBracketId = line.dataset.targetBracket;
+                  
+                  if (!sourceMatch || !targetBracketId) {
+                    console.log('Missing source or target for connection');
+                    return;
+                  }
+                  
+                  // Find the target bracket
+                  const targetMatch = document.querySelector('[data-bracket-id="' + targetBracketId + '"]');
+                  
+                  if (targetMatch) {
+                    const sourceRect = sourceMatch.getBoundingClientRect();
+                    const targetRect = targetMatch.getBoundingClientRect();
+                    const wrapperRect = wrapper.getBoundingClientRect();
                     
-                    return `
-                      <div class="match-card ${isBye ? 'bye-match' : ''}">
-                        <div class="match-header">
-                          Match #${bracket.bracket_id}
-                          ${hasWinner ? ' • Complete' : ''}
-                          ${isBye ? ' • Bye' : ''}
-                        </div>
-                        <div class="match-body">
-                          <div class="participant ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''}">
-                            <span class="participant-name">${bracket.user1}</span>
-                            <span class="participant-score">${bracket.score1}</span>
-                          </div>
-                          <div class="vs-divider">VS</div>
-                          <div class="participant ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''}">
-                            <span class="participant-name">${bracket.user2}</span>
-                            <span class="participant-score">${bracket.score2}</span>
-                          </div>
-                        </div>
-                      </div>
-                    `;
-                  }).join('')}
-                </div>
-              </div>
-            `).join('')}
-          </div>
+                    const isLeftSide = line.classList.contains('line-horizontal-left');
+                    
+                    // Calculate connection points relative to wrapper
+                    let startX, startY, endX, endY;
+                    
+                    if (isLeftSide) {
+                      // Left side: from right edge of source to left edge of target
+                      startX = sourceRect.right - wrapperRect.left;
+                      startY = sourceRect.top + sourceRect.height / 2 - wrapperRect.top;
+                      endX = targetRect.left - wrapperRect.left;
+                      endY = targetRect.top + targetRect.height / 2 - wrapperRect.top;
+                    } else {
+                      // Right side: from left edge of source to right edge of target  
+                      startX = sourceRect.left - wrapperRect.left;
+                      startY = sourceRect.top + sourceRect.height / 2 - wrapperRect.top;
+                      endX = targetRect.right - wrapperRect.left;
+                      endY = targetRect.top + targetRect.height / 2 - wrapperRect.top;
+                    }
+                    
+                    console.log('Drawing connection from ' + sourceMatch.dataset.bracketId + ' to ' + targetBracketId + ': (' + startX.toFixed(1) + ',' + startY.toFixed(1) + ') -> (' + endX.toFixed(1) + ',' + endY.toFixed(1) + ')');
+                    
+                    // Draw curved line like in the mock code
+                    const cpX = (startX + endX) / 2;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.bezierCurveTo(cpX, startY, cpX, endY, endX, endY);
+                    ctx.stroke();
+                  } else {
+                    console.log('Target bracket not found: ' + targetBracketId);
+                  }
+                });
+                
+                console.log('Canvas connections setup complete');
+              }, 100);
+            };
+            
+            // Run when page loads
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', setupConnections);
+            } else {
+              setupConnections();
+            }
+          </script>
           
           <div class="print-footer">
             Generated by Tournament Management System
           </div>
         </body>
       </html>
+    `;
+  };
+
+  const generateTraditionalBracket = (rounds) => {
+    if (!rounds || Object.keys(rounds).length === 0) {
+      return '<div class="bracket-container"><div class="no-brackets">No brackets available</div></div>';
+    }
+
+    const sortedRounds = Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b));
+    const finalRound = sortedRounds[sortedRounds.length - 1];
+    const champion = rounds[finalRound]?.[0]?.winner ? 
+      (rounds[finalRound][0].winner === 'user1' ? rounds[finalRound][0].user1 : rounds[finalRound][0].user2) : 
+      'TBD';
+
+    // Build connection mapping based on participant IDs between consecutive rounds
+    const connections = {};
+    
+    for (let i = 0; i < sortedRounds.length - 1; i++) {
+      const currentRound = sortedRounds[i];
+      const nextRound = sortedRounds[i + 1];
+      
+      const currentRoundMatches = rounds[currentRound] || [];
+      const nextRoundMatches = rounds[nextRound] || [];
+      
+      // For each match in current round, find which next round match it connects to
+      currentRoundMatches.forEach(currentMatch => {
+        // Only create connection if current match has a winner
+        if (!currentMatch.winner) return;
+        
+        // Find next round match that contains the winner's participant_id
+        const winnerParticipantId = currentMatch.winner === 'user1' ? 
+          currentMatch.participant_id1 : currentMatch.participant_id2;
+          
+        const targetMatch = nextRoundMatches.find(nextMatch => 
+          nextMatch.participant_id1 === winnerParticipantId || 
+          nextMatch.participant_id2 === winnerParticipantId
+        );
+        
+        if (targetMatch) {
+          connections[currentMatch.bracket_id] = {
+            targetBracketId: targetMatch.bracket_id,
+            targetRound: nextRound,
+            winnerParticipantId: winnerParticipantId
+          };
+        }
+      });
+    }
+
+    // Traditional bracket logic: 
+    const leftRounds = [];
+    const rightRounds = [];
+    
+    if (sortedRounds.length === 1) {
+      // Single round - split matches between left and right sides
+      const singleRound = sortedRounds[0];
+      const allMatches = rounds[singleRound];
+      const midPoint = Math.ceil(allMatches.length / 2);
+      
+      leftRounds.push({
+        round: singleRound,
+        matches: allMatches.slice(0, midPoint),
+        side: 'left'
+      });
+      
+      if (allMatches.length > midPoint) {
+        rightRounds.push({
+          round: singleRound,
+          matches: allMatches.slice(midPoint),
+          side: 'right'
+        });
+      }
+    } else {
+      // Multiple rounds - only process ROUND 1 for left/right split
+      // Rounds 2+ will go in the center
+      const firstRound = sortedRounds[0];
+      const roundMatches = rounds[firstRound];
+      const midPoint = Math.ceil(roundMatches.length / 2);
+      
+      // Left side gets first half of round 1 matches
+      leftRounds.push({
+        round: firstRound,
+        matches: roundMatches.slice(0, midPoint),
+        side: 'left'
+      });
+      
+      // Right side gets second half of round 1 matches (if any)
+      if (roundMatches.length > midPoint) {
+        rightRounds.push({
+          round: firstRound,
+          matches: roundMatches.slice(midPoint),
+          side: 'right'
+        });
+      }
+    }
+
+    const renderMatch = (bracket, isLeftSide = false, isRightSide = false, hasNextRound = false, matchIndex = 0) => {
+      const isWinner1 = bracket.winner === 'user1';
+      const isWinner2 = bracket.winner === 'user2';
+      const hasWinner = bracket.winner && bracket.winner !== null;
+      const isBye = bracket.user1 === 'Bye' || bracket.user2 === 'Bye';
+      
+      // Check if this match has a connection to next round
+      const connection = connections[bracket.bracket_id];
+      const shouldShowConnection = hasWinner && hasNextRound && connection;
+      
+      // Debug logging
+      if (hasWinner && hasNextRound) {
+        console.log(`Bracket ${bracket.bracket_id}: Winner=${bracket.winner}, Connection found=${!!connection}`);
+        if (connection) {
+          console.log(`  -> Connects to bracket ${connection.targetBracketId} (participant ${connection.winnerParticipantId})`);
+        }
+      }
+      
+      // Create simple CSS line for connection
+      let connectionLine = '';
+      if (shouldShowConnection) {
+        connectionLine = `
+          <div class="${isLeftSide ? 'line-horizontal-left' : 'line-horizontal-right'}" 
+               data-target-bracket="${connection.targetBracketId}"
+               style="display: block !important; visibility: visible !important;"></div>
+        `;
+      }
+      
+      return `
+        <div class="match-bracket ${isBye ? 'bye-indicator' : ''}" 
+             style="position: relative;" 
+             data-bracket-id="${bracket.bracket_id}"
+             data-round="${bracket.round}"
+             data-match-index="${matchIndex}">
+          <div class="participant-bracket ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''}">
+            <span class="participant-name">${bracket.user1}</span>
+            <span class="participant-score">${bracket.score1}</span>
+          </div>
+          <div class="participant-bracket ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''}">
+            <span class="participant-name">${bracket.user2}</span>
+            <span class="participant-score">${bracket.score2}</span>
+          </div>
+          ${connectionLine}
+        </div>
+      `;
+    };
+
+    const renderRoundColumn = (roundData) => {
+      return `
+        <div class="round-column">
+          <div class="round-header-bracket">Round ${roundData.round}</div>
+          ${roundData.matches.map(match => renderMatch(match)).join('')}
+        </div>
+      `;
+    };
+
+    // Group rounds by side and render them in order
+    const renderSide = (roundsArray, side) => {
+      // Group by round number
+      const roundGroups = {};
+      roundsArray.forEach(roundData => {
+        if (!roundGroups[roundData.round]) {
+          roundGroups[roundData.round] = [];
+        }
+        roundGroups[roundData.round].push(...roundData.matches);
+      });
+
+      // Sort rounds and render
+      const sortedRoundNumbers = Object.keys(roundGroups).sort((a, b) => {
+        return side === 'left' ? parseInt(a) - parseInt(b) : parseInt(b) - parseInt(a);
+      });
+
+      return sortedRoundNumbers.map(roundNumber => {
+        const hasNextRound = parseInt(roundNumber) < parseInt(finalRound);
+        const isLeftSide = side === 'left';
+        const isRightSide = side === 'right';
+        
+        return `
+          <div class="round-column" data-round="${roundNumber}" data-side="${side}">
+            <div class="round-header-bracket">Round ${roundNumber}</div>
+            ${roundGroups[roundNumber].map((match, index) => 
+              renderMatch(match, isLeftSide, isRightSide, hasNextRound, index)
+            ).join('')}
+          </div>
+        `;
+      }).join('');
+    };
+
+    // Generate left side (rounds progress right to left toward center)
+    const leftSideHTML = renderSide(leftRounds, 'left');
+    
+    // Generate right side (rounds progress left to right toward center)  
+    const rightSideHTML = renderSide(rightRounds, 'right');
+
+    // Generate center (latest/highest round and champion)
+    const finalRoundMatches = rounds[finalRound] || [];
+    
+    // Generate center section with middle rounds (2, 3, etc.) displayed horizontally
+    const middleRounds = sortedRounds.filter(round => parseInt(round) > 1);
+    
+    const centerHTML = middleRounds.length === 0 ? `
+      <div class="bracket-center">
+        <div class="champion-area">
+          <div class="champion-title">🏆 TOURNAMENT</div>
+          <div class="champion-name">Round ${finalRound} - ${finalRoundMatches.length} Match${finalRoundMatches.length !== 1 ? 'es' : ''}</div>
+          <div style="font-size: 12px; margin-top: 10px; color: #666;">
+            ${stats.totalMatches} Total Matches Across ${stats.totalRounds} Round${stats.totalRounds !== 1 ? 's' : ''}
+          </div>
+        </div>
+      </div>
+    ` : `
+      <div class="bracket-center">
+        ${middleRounds.map(roundNumber => {
+          const roundMatches = rounds[roundNumber] || [];
+          const isLastRound = parseInt(roundNumber) === parseInt(finalRound);
+          const hasNextRound = !isLastRound; // Center rounds have next rounds except the final one
+          return `
+            <div class="round-column">
+              <div class="round-header-bracket">Round ${roundNumber}${isLastRound && roundMatches.length === 1 ? ' - Final' : ''}</div>
+              ${roundMatches.length > 0 ? 
+                roundMatches.map(match => renderMatch(match, false, false, hasNextRound)).join('') : 
+                '<div class="match-bracket">No matches yet</div>'
+              }
+              
+              ${isLastRound && roundMatches.length === 1 && champion !== 'TBD' ? `
+                <div class="champion-area">
+                  <div class="champion-title">🏆 CHAMPION</div>
+                  <div class="champion-name">${champion}</div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    return `
+      <div class="bracket-container">
+        <div class="bracket-side bracket-left">
+          ${leftSideHTML}
+        </div>
+        
+        ${centerHTML}
+        
+        <div class="bracket-side bracket-right">
+          ${rightSideHTML}
+        </div>
+      </div>
     `;
   };
 
