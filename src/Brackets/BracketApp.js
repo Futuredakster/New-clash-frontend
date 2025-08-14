@@ -512,9 +512,9 @@ const TournamentBracket = () => {
         <Card.Body className="card-modern-body p-3">
           <div className="match-participants">
             {/* Player 1 */}
-            <div className={`participant ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''} p-3 mb-2`}>
+            <div className={`participant ${isWinner1 ? 'winner' : ''} ${hasWinner && !isWinner1 ? 'loser' : ''} mb-2`}>
               <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center flex-grow-1 me-2">
                   <i className={`fas ${bracket.user1 === 'Bye' ? 'fa-ban' : 'fa-user'} me-2 text-muted`}></i>
                   <span className="participant-name fw-medium">{bracket.user1}</span>
                   {isWinner1 && <i className="fas fa-crown ms-2 text-warning"></i>}
@@ -530,9 +530,9 @@ const TournamentBracket = () => {
             </div>
 
             {/* Player 2 */}
-            <div className={`participant ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''} p-3 mb-3`}>
+            <div className={`participant ${isWinner2 ? 'winner' : ''} ${hasWinner && !isWinner2 ? 'loser' : ''} mb-3`}>
               <div className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
+                <div className="d-flex align-items-center flex-grow-1 me-2">
                   <i className={`fas ${bracket.user2 === 'Bye' ? 'fa-ban' : 'fa-user'} me-2 text-muted`}></i>
                   <span className="participant-name fw-medium">{bracket.user2}</span>
                   {isWinner2 && <i className="fas fa-crown ms-2 text-warning"></i>}
@@ -545,28 +545,28 @@ const TournamentBracket = () => {
           </div>
 
           <div className="match-actions">
-            <div className="d-grid gap-2">
+            <div className="d-grid">
               <Button
                 variant="primary"
                 size="sm"
-                className="btn-modern"
+                className="btn-modern mb-2"
                 onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
                 disabled={isBye}
               >
-                <i className="fas fa-edit me-2"></i>
-                {isComplete ? 'Update Score' : 'Manage Score'}
+                <i className="fas fa-edit me-1"></i>
+                <span className="button-text">{isComplete ? 'Update Score' : 'Manage Score'}</span>
               </Button>
               
-              <div className="d-flex gap-2">
+              <div className="d-flex">
                 <Button
                   variant="success"
                   size="sm"
-                  className="btn-modern flex-fill"
+                  className="btn-modern me-1 flex-fill"
                   onClick={() => navigate(`/stream?bracket_id=${bracket.bracket_id}`)}
                   disabled={isBye}
                 >
                   <i className="fas fa-video me-1"></i>
-                  Stream
+                  <span className="button-text">Stream</span>
                 </Button>
                 
                 <Button
@@ -575,9 +575,9 @@ const TournamentBracket = () => {
                   className="btn-modern-outline"
                   onClick={() => deleteBracket(bracket.bracket_id)}
                   disabled={loading}
+                  title="Delete Match"
                 >
-                  <i className="fas fa-trash me-1"></i>
-                  Delete
+                  <i className="fas fa-trash"></i>
                 </Button>
               </div>
             </div>
@@ -714,7 +714,7 @@ const TournamentBracket = () => {
           {/* Tournament Rounds */}
           <Row>
             <Col>
-              <div className="tournament-bracket-grid">
+              <div className={`tournament-bracket-grid rounds-${Object.keys(rounds).length >= 5 ? '5-plus' : Object.keys(rounds).length}`}>
                 {Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b)).map((roundNumber) => (
                   <div key={roundNumber} className="tournament-round">
                     <div className="round-header text-center mb-4">

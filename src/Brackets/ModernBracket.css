@@ -30,20 +30,239 @@
   background: var(--light-grey);
   min-height: 100vh;
   font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  position: relative;
 }
 
-/* Tournament Bracket Grid Layout */
+/* Scroll hint for horizontal scrolling */
+.tournament-bracket-container::after {
+  content: 'Scroll horizontally to view all rounds →';
+  position: sticky;
+  bottom: 20px;
+  right: 20px;
+  background: var(--dark-grey);
+  color: var(--white);
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 100;
+  display: none;
+}
+
+/* Show scroll hint only when there are 4+ rounds */
+@media (min-width: 769px) {
+  .tournament-bracket-grid.rounds-4::after,
+  .tournament-bracket-grid.rounds-5-plus::after {
+    content: 'Scroll horizontally to view all rounds →';
+    position: sticky;
+    bottom: 20px;
+    right: 20px;
+    background: var(--dark-grey);
+    color: var(--white);
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 100;
+    display: block;
+    margin-left: auto;
+    width: fit-content;
+  }
+}
+
+/* Tournament Bracket Grid Layout - Dynamic Sizing */
 .tournament-bracket-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 3rem;
-  padding: 20px 0;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 20px 10px;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  align-items: flex-start;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+}
+
+/* Prevent overflow for 1-3 rounds */
+.tournament-bracket-grid.rounds-1,
+.tournament-bracket-grid.rounds-2,
+.tournament-bracket-grid.rounds-3 {
+  overflow-x: visible;
+  justify-content: center;
+}
+
+/* Allow horizontal scroll for 4+ rounds */
+.tournament-bracket-grid.rounds-4,
+.tournament-bracket-grid.rounds-5-plus {
+  overflow-x: auto;
+  justify-content: flex-start;
+}
+
+/* Dynamic round sizing based on number of rounds */
+.tournament-round {
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  flex: 1 1 auto;
+  transition: all 0.3s ease;
+}
+
+/* Fallback for browsers without :has() support */
+.tournament-round {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+/* 1 Round - Full width but contained */
+.tournament-bracket-grid.rounds-1 .tournament-round,
+.tournament-bracket-grid:has(.tournament-round:nth-child(1):last-child) .tournament-round {
+  min-width: calc(100% - 40px);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* 2 Rounds - Half width each with proper spacing */
+.tournament-bracket-grid.rounds-2 .tournament-round,
+.tournament-bracket-grid:has(.tournament-round:nth-child(2):last-child) .tournament-round {
+  min-width: calc(50% - 20px);
+  max-width: 450px;
+}
+
+/* 3 Rounds - Third width each with proper spacing */
+.tournament-bracket-grid.rounds-3 .tournament-round,
+.tournament-bracket-grid:has(.tournament-round:nth-child(3):last-child) .tournament-round {
+  min-width: calc(33.333% - 15px);
+  max-width: 350px;
+}
+
+/* 4+ Rounds - Fixed size with horizontal scroll */
+.tournament-bracket-grid.rounds-4 .tournament-round,
+.tournament-bracket-grid.rounds-5-plus .tournament-round,
+.tournament-bracket-grid:has(.tournament-round:nth-child(4)) .tournament-round {
+  min-width: 320px;
+  max-width: 350px;
+  flex: 0 0 auto;
+}
+
+/* Custom scrollbar for horizontal scrolling */
+.tournament-bracket-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tournament-bracket-grid::-webkit-scrollbar-track {
+  background: var(--border-grey);
+  border-radius: 4px;
+}
+
+.tournament-bracket-grid::-webkit-scrollbar-thumb {
+  background: var(--dark-grey);
+  border-radius: 4px;
+}
+
+.tournament-bracket-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--medium-grey);
 }
 
 .tournament-round {
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  min-height: 300px;
+  min-width: 280px;
+  flex: 0 0 auto;
+}
+
+/* For smaller screens, allow stacking */
+@media (max-width: 768px) {
+  .tournament-bracket-grid {
+    flex-direction: column;
+    overflow-x: visible;
+  }
+  
+  .tournament-round {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    flex: 1;
+    margin: 0 !important;
+  }
+  
+  /* Override all dynamic sizing on mobile */
+  .tournament-bracket-grid.rounds-1 .tournament-round,
+  .tournament-bracket-grid.rounds-2 .tournament-round,
+  .tournament-bracket-grid.rounds-3 .tournament-round,
+  .tournament-bracket-grid.rounds-4 .tournament-round,
+  .tournament-bracket-grid.rounds-5-plus .tournament-round {
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* For medium screens - adjust dynamic sizing */
+@media (min-width: 769px) and (max-width: 1199px) {
+  /* 1 Round - Contained width on medium screens */
+  .tournament-bracket-grid.rounds-1 .tournament-round {
+    min-width: calc(100% - 30px);
+    max-width: 600px;
+  }
+  
+  /* 2 Rounds - Slightly smaller */
+  .tournament-bracket-grid.rounds-2 .tournament-round {
+    min-width: calc(50% - 15px);
+    max-width: 350px;
+  }
+  
+  /* 3 Rounds - Still fit in viewport */
+  .tournament-bracket-grid.rounds-3 .tournament-round {
+    min-width: calc(33.333% - 10px);
+    max-width: 280px;
+  }
+  
+  /* 4+ Rounds - Fixed size with horizontal scroll */
+  .tournament-bracket-grid.rounds-4 .tournament-round,
+  .tournament-bracket-grid.rounds-5-plus .tournament-round {
+    min-width: 300px;
+    max-width: 320px;
+    flex: 0 0 auto;
+  }
+  
+  /* Ensure horizontal scroll for 4+ rounds on medium screens */
+  .tournament-bracket-grid.rounds-4,
+  .tournament-bracket-grid.rounds-5-plus {
+    overflow-x: auto !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* For medium screens */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .tournament-round {
+    min-width: 260px;
+  }
+}
+
+/* For large screens */
+@media (min-width: 1200px) {
+  .tournament-bracket-grid {
+    gap: 2rem;
+  }
+  
+  .tournament-round {
+    min-width: 300px;
+  }
+}
+
+/* For very wide screens */
+@media (min-width: 1600px) {
+  .tournament-bracket-grid {
+    gap: 2.5rem;
+  }
+  
+  .tournament-round {
+    min-width: 320px;
+  }
 }
 
 .round-header {
@@ -77,8 +296,29 @@
   transition: all var(--transition-medium) !important;
   background: var(--white) !important;
   overflow: hidden;
-  min-height: 240px;
+  min-height: 200px;
+  max-width: 100%;
   position: relative;
+}
+
+/* Larger cards for single round display */
+.tournament-bracket-grid.rounds-1 .bracket-match-card {
+  min-height: 250px;
+  margin-bottom: 20px;
+}
+
+/* Medium cards for 2-3 rounds */
+.tournament-bracket-grid.rounds-2 .bracket-match-card,
+.tournament-bracket-grid.rounds-3 .bracket-match-card {
+  min-height: 220px;
+  margin-bottom: 15px;
+}
+
+/* Compact cards for 4+ rounds */
+.tournament-bracket-grid.rounds-4 .bracket-match-card,
+.tournament-bracket-grid.rounds-5-plus .bracket-match-card {
+  min-height: 180px;
+  margin-bottom: 12px;
 }
 
 .bracket-match-card:hover {
@@ -93,8 +333,24 @@
 }
 
 .bracket-match-card .card-modern-body {
-  padding: 20px !important;
+  padding: 16px !important;
   background: var(--white) !important;
+}
+
+/* Match Participants Container */
+.match-participants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* Mobile improvements for match participants */
+@media (max-width: 768px) {
+  .match-participants {
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
 }
 
 /* Participant Styling */
@@ -104,6 +360,27 @@
   background: var(--white);
   transition: all var(--transition-fast);
   position: relative;
+  padding: 10px 12px;
+}
+
+/* Mobile improvements for participant cards */
+@media (max-width: 768px) {
+  .match-participants .participant {
+    padding: 14px 16px !important;
+    border-width: 3px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* Ensure Bootstrap flex classes work properly on mobile */
+  .match-participants .participant .d-flex {
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  
+  .match-participants .participant .flex-grow-1 {
+    min-width: 0 !important; /* Allows text truncation to work */
+  }
 }
 
 .match-participants .participant.winner {
@@ -118,40 +395,250 @@
   opacity: 0.8;
 }
 
+/* Enhanced winner/loser visibility on mobile */
+@media (max-width: 768px) {
+  .match-participants .participant.winner {
+    border-color: #28a745 !important;
+    background: rgba(40, 167, 69, 0.1) !important;
+    box-shadow: 0 0 20px rgba(40, 167, 69, 0.3) !important;
+    border-width: 4px !important;
+  }
+  
+  .match-participants .participant.loser {
+    border-color: #dc3545 !important;
+    background: rgba(220, 53, 69, 0.05) !important;
+    opacity: 0.7 !important;
+    border-width: 3px !important;
+  }
+}
+
 .participant-name {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: var(--dark-grey);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+/* Mobile-first approach - ensure text is always readable */
+@media (max-width: 768px) {
+  .participant-name {
+    font-size: 1rem !important;
+    max-width: 200px !important;
+    font-weight: 600 !important;
+  }
+}
+
+/* Dynamic font sizing based on number of rounds - only for desktop */
+@media (min-width: 769px) {
+  .tournament-bracket-grid.rounds-1 .participant-name {
+    font-size: 1.1rem;
+    max-width: 300px;
+  }
+
+  .tournament-bracket-grid.rounds-2 .participant-name {
+    font-size: 1rem;
+    max-width: 220px;
+  }
+
+  .tournament-bracket-grid.rounds-3 .participant-name {
+    font-size: 0.95rem;
+    max-width: 200px;
+  }
+
+  .tournament-bracket-grid.rounds-4 .participant-name,
+  .tournament-bracket-grid.rounds-5-plus .participant-name {
+    font-size: 0.85rem;
+    max-width: 160px;
+  }
 }
 
 .score-badge {
-  font-size: 1rem !important;
+  font-size: 0.9rem !important;
   font-weight: 600 !important;
-  padding: 6px 12px !important;
-  border-radius: 20px !important;
+  padding: 4px 10px !important;
+  border-radius: 16px !important;
+  min-width: 40px;
+  text-align: center;
+}
+
+/* Mobile-first approach for score badges */
+@media (max-width: 768px) {
+  .score-badge {
+    font-size: 1rem !important;
+    padding: 8px 12px !important;
+    min-width: 45px !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Bootstrap Badge overrides for mobile */
+  .match-participants .badge {
+    font-size: 1rem !important;
+    padding: 8px 12px !important;
+    min-width: 45px !important;
+    font-weight: 700 !important;
+    border-radius: 20px !important;
+  }
+  
+  .match-participants .badge.bg-success {
+    background-color: #28a745 !important;
+  }
+  
+  .match-participants .badge.bg-light {
+    background-color: #f8f9fa !important;
+    color: #333 !important;
+    border: 2px solid #dee2e6 !important;
+  }
+}
+
+/* Dynamic score badge sizing - only for desktop */
+@media (min-width: 769px) {
+  .tournament-bracket-grid.rounds-1 .score-badge {
+    font-size: 1.1rem !important;
+    padding: 6px 14px !important;
+    min-width: 50px;
+  }
+
+  .tournament-bracket-grid.rounds-2 .score-badge {
+    font-size: 1rem !important;
+    padding: 5px 12px !important;
+    min-width: 45px;
+  }
+
+  .tournament-bracket-grid.rounds-4 .score-badge,
+  .tournament-bracket-grid.rounds-5-plus .score-badge {
+    font-size: 0.8rem !important;
+    padding: 3px 8px !important;
+    min-width: 35px;
+  }
 }
 
 /* VS Divider */
 .vs-divider {
   position: relative;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .vs-text {
   background: var(--white);
-  padding: 5px 15px;
-  border-radius: 20px;
+  padding: 4px 12px;
+  border-radius: 16px;
   border: 2px solid var(--border-grey);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   letter-spacing: 1px;
   display: inline-block;
 }
 
+/* Mobile improvements for VS divider */
+@media (max-width: 768px) {
+  .vs-divider {
+    margin: 12px 0 !important;
+  }
+  
+  .vs-text {
+    font-size: 1rem !important;
+    padding: 8px 16px !important;
+    font-weight: 700 !important;
+    border-width: 3px !important;
+  }
+}
+
 /* Match Actions */
 .match-actions {
-  margin-top: 15px;
-  padding-top: 15px;
+  margin-top: 12px;
+  padding-top: 12px;
   border-top: 1px solid var(--border-grey);
+}
+
+/* Button container styling */
+.match-actions .d-grid {
+  width: 100%;
+}
+
+.match-actions .d-flex {
+  width: 100%;
+  align-items: stretch;
+}
+
+/* General button styling for match actions */
+.match-actions .btn {
+  font-size: 0.75rem !important;
+  padding: 6px 8px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease !important;
+}
+
+/* Mobile-first button styling */
+@media (max-width: 768px) {
+  .match-actions .btn {
+    font-size: 0.9rem !important;
+    padding: 12px 16px !important;
+    min-height: 44px !important;
+    font-weight: 600 !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* Dynamic button sizing */
+.tournament-bracket-grid.rounds-1 .match-actions .btn {
+  font-size: 0.9rem !important;
+  padding: 8px 12px !important;
+  min-height: 38px;
+}
+
+.tournament-bracket-grid.rounds-2 .match-actions .btn {
+  font-size: 0.8rem !important;
+  padding: 7px 10px !important;
+  min-height: 35px;
+}
+
+.tournament-bracket-grid.rounds-4 .match-actions .btn,
+.tournament-bracket-grid.rounds-5-plus .match-actions .btn {
+  font-size: 0.7rem !important;
+  padding: 5px 6px !important;
+  min-height: 28px;
+}
+
+.match-actions .btn-sm {
+  font-size: 0.7rem !important;
+  padding: 4px 6px !important;
+  min-height: 28px;
+}
+
+/* Primary button (Manage Score) */
+.match-actions .btn-modern {
+  max-width: 100%;
+  flex: 1;
+}
+
+/* Secondary buttons container */
+.match-actions .d-flex .btn {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Stream button specific styling */
+.match-actions .btn-success {
+  flex: 2 !important; /* Give more space to stream button */
+}
+
+/* Delete button specific styling */
+.match-actions .btn-outline-danger,
+.match-actions .btn-modern-outline {
+  flex: 0 0 auto !important; /* Fixed width for delete button */
+  min-width: 40px !important;
+  max-width: 40px !important;
+  padding: 4px 6px !important;
 }
 
 /* Tournament Statistics */
@@ -212,6 +699,7 @@
   font-weight: 500 !important;
   transition: all var(--transition-medium) !important;
   box-shadow: var(--shadow-light) !important;
+  width: 100%;
 }
 
 .bracket-match-card .btn-modern:hover {
@@ -226,6 +714,7 @@
   color: var(--dark-grey) !important;
   font-weight: 500 !important;
   transition: all var(--transition-medium) !important;
+  width: 100%;
 }
 
 .bracket-match-card .btn-modern-outline:hover {
@@ -235,35 +724,85 @@
   box-shadow: var(--shadow-light) !important;
 }
 
-/* Responsive Design */
+/* Bootstrap button overrides for better sizing */
+.bracket-match-card .btn-success {
+  background: #28a745 !important;
+  border-color: #28a745 !important;
+}
+
+.bracket-match-card .btn-success:hover {
+  background: #218838 !important;
+  border-color: #1e7e34 !important;
+  transform: translateY(-1px) !important;
+}
+
+.bracket-match-card .btn-outline-danger {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+}
+
+.bracket-match-card .btn-outline-danger:hover {
+  background: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Responsive Design - Mobile specific adjustments */
 @media (max-width: 768px) {
-  .tournament-bracket-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    padding: 10px;
-  }
-  
   .bracket-match-card {
-    min-height: 200px;
+    min-height: 220px;
+    margin-bottom: 20px;
   }
   
   .match-actions .d-flex {
     flex-direction: column;
+    gap: 8px;
   }
   
   .match-actions .d-flex .btn {
-    margin-bottom: 8px;
+    margin-bottom: 0;
+    flex: none;
+    max-width: 100%;
+  }
+  
+  .match-actions .btn-outline-danger,
+  .match-actions .btn-modern-outline {
+    max-width: 100% !important;
+    min-width: auto !important;
+  }
+  
+  .participant-name {
+    max-width: 200px;
+    font-size: 1rem !important;
+  }
+  
+  /* Larger, more readable buttons on mobile */
+  .match-actions .btn {
+    font-size: 0.9rem !important;
+    padding: 12px 16px !important;
+    min-height: 44px;
+    font-weight: 600 !important;
+  }
+  
+  /* Override any dynamic sizing for mobile */
+  .tournament-bracket-grid.rounds-4 .participant-name,
+  .tournament-bracket-grid.rounds-5-plus .participant-name {
+    font-size: 1rem !important;
+    max-width: 200px !important;
+  }
+  
+  .tournament-bracket-grid.rounds-4 .score-badge,
+  .tournament-bracket-grid.rounds-5-plus .score-badge {
+    font-size: 1rem !important;
+    padding: 8px 12px !important;
+    min-width: 45px !important;
   }
 }
 
 @media (max-width: 576px) {
-  .tournament-bracket-grid {
-    padding: 5px;
-    gap: 1.5rem;
-  }
-  
   .bracket-match-card .card-modern-body {
-    padding: 15px !important;
+    padding: 16px !important;
   }
   
   .match-participants .participant {
@@ -273,13 +812,90 @@
   .empty-state {
     padding: 40px 20px;
   }
-}
-
-/* Large screens - better spacing */
-@media (min-width: 1200px) {
-  .tournament-bracket-grid {
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 4rem;
+  
+  .participant-name {
+    font-size: 1.1rem !important;
+    max-width: 250px !important;
+    font-weight: 600 !important;
+  }
+  
+  .score-badge {
+    font-size: 1.1rem !important;
+    padding: 8px 12px !important;
+    min-width: 50px !important;
+    font-weight: 700 !important;
+  }
+  
+  /* Larger, more accessible buttons on very small screens */
+  .match-actions .btn {
+    font-size: 1rem !important;
+    padding: 14px 20px !important;
+    min-height: 48px !important;
+    font-weight: 600 !important;
+  }
+  
+  .match-actions .d-grid {
+    gap: 10px !important;
+  }
+  
+  /* Show button text on mobile - it's important for usability */
+  .match-actions .button-text {
+    display: inline !important;
+  }
+  
+  .match-actions .btn i {
+    margin-right: 8px !important;
+  }
+  
+  /* Make header text larger and more readable */
+  .page-title-modern {
+    font-size: 2rem !important;
+  }
+  
+  .page-subtitle-modern {
+    font-size: 1.2rem !important;
+  }
+  
+  /* Round titles should be larger */
+  .round-title {
+    font-size: 1.4rem !important;
+  }
+  
+  /* Card header improvements for mobile */
+  .bracket-match-card .card-modern-header {
+    padding: 16px !important;
+  }
+  
+  .bracket-match-card .card-modern-header .d-flex {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  
+  .bracket-match-card .card-modern-header .badge {
+    font-size: 0.9rem !important;
+    padding: 6px 12px !important;
+  }
+  
+  .bracket-match-card .card-modern-header small {
+    font-size: 0.9rem !important;
+    color: #666 !important;
+  }
+  
+  /* VS text should be more prominent */
+  .vs-text {
+    font-size: 1rem !important;
+    padding: 8px 16px !important;
+    font-weight: 700 !important;
+  }
+  
+  /* FontAwesome icons should be larger on mobile */
+  .match-participants .participant .fas {
+    font-size: 1.1rem !important;
+  }
+  
+  .match-participants .participant .fa-crown {
+    font-size: 1.2rem !important;
+    color: #ffc107 !important;
   }
 }
 
@@ -333,7 +949,54 @@
 
 /* Ensure proper spacing and alignment */
 .tournament-bracket-container .container-fluid {
-  max-width: 1400px;
+  max-width: 100%;
+  overflow-x: hidden;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow */
+.tournament-bracket-container {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+/* Better button sizing in match actions */
+.match-actions .d-grid .btn {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.match-actions .d-flex .btn {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Specific gap control */
+.match-actions .d-grid {
+  gap: 6px !important;
+}
+
+.match-actions .d-flex {
+  gap: 4px !important;
+}
+
+/* Button icon spacing */
+.match-actions .btn i {
+  margin-right: 4px !important;
+}
+
+/* Prevent button text wrapping */
+.match-actions .btn {
+  text-wrap: nowrap;
 }
 
 /* Badge styling consistency */
