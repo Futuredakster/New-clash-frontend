@@ -24,7 +24,7 @@ const CompetitorView = ({ setProps }) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${link}/tournaments/praticipent`, {
+                const response = await axios.get(`${link}/tournaments/signup`, {
                     params: {
                         tournament_name: search,
                     },
@@ -162,13 +162,19 @@ const CompetitorView = ({ setProps }) => {
                                                     <div className="d-flex align-items-center mb-2">
                                                         <i className="fas fa-calendar-start me-2 text-success"></i>
                                                         <small className="text-muted">
-                                                            <strong>Start:</strong> {new Date(item.start_date).toLocaleDateString()}
+                                                            <strong>Start:</strong> {new Date(item.start_date + 'T00:00:00').toLocaleDateString()}
                                                         </small>
                                                     </div>
                                                     <div className="d-flex align-items-center">
                                                         <i className="fas fa-calendar-end me-2 text-danger"></i>
                                                         <small className="text-muted">
-                                                            <strong>End:</strong> {new Date(item.end_date).toLocaleDateString()}
+                                                            <strong>End:</strong> {new Date(item.end_date + 'T00:00:00').toLocaleDateString()}
+                                                        </small>
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <i className="fas fa-calendar-end me-2 text-danger"></i>
+                                                        <small className="text-muted">
+                                                            <strong>Signup by:</strong> {item.signup_duedate ? new Date(item.signup_duedate + 'T00:00:00').toLocaleDateString() : 'N/A'}
                                                         </small>
                                                     </div>
                                                 </div>
@@ -176,11 +182,11 @@ const CompetitorView = ({ setProps }) => {
                                                 {/* Tournament Status */}
                                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                                     <Badge 
-                                                        bg={new Date(item.start_date) > new Date() ? 'warning' : 'success'} 
+                                                        bg={new Date(item.start_date + 'T00:00:00') > new Date() ? 'warning' : 'success'} 
                                                         className="px-3 py-2"
                                                     >
-                                                        <i className={`fas ${new Date(item.start_date) > new Date() ? 'fa-clock' : 'fa-play'} me-1`}></i>
-                                                        {new Date(item.start_date) > new Date() ? 'Upcoming' : 'Active'}
+                                                        <i className={`fas ${new Date(item.start_date + 'T00:00:00') > new Date() ? 'fa-clock' : 'fa-play'} me-1`}></i>
+                                                        {new Date(item.start_date + 'T00:00:00') > new Date() ? 'Upcoming' : 'Active'}
                                                     </Badge>
                                                 </div>
                                             </Card.Body>

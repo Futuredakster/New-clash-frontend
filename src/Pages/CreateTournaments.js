@@ -16,6 +16,7 @@ const CreateTournaments = () => {
     end_date: "",
     is_published: false,
     image: null,
+    signup_duedate: "",
   };
 
   const validationSchema = Yup.object().shape({
@@ -24,6 +25,7 @@ const CreateTournaments = () => {
     end_date: Yup.date().nullable().required("End Date is required"),
     is_published: Yup.boolean().required("Publication status is required"),
     image: Yup.mixed().required("Image is required"),
+    signup_duedate: Yup.date().nullable().required("Signup Due Date is required"),
   });
 
   const onSubmit = async (values, { setSubmitting }) => {
@@ -33,6 +35,7 @@ const CreateTournaments = () => {
     formData.append("end_date", values.end_date);
     formData.append("is_published", values.is_published);
     formData.append("image", values.image);
+    formData.append("signup_duedate", values.signup_duedate);
 
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -121,6 +124,16 @@ const CreateTournaments = () => {
                         </div>
                       </Col>
                     </Row>
+
+                    <div className="form-group-modern">
+                      <label className="form-label-modern" htmlFor="signup_duedate">
+                        <i className="fas fa-clock me-2"></i>
+                        Signup Due Date
+                      </label>
+                      <ErrorMessage name="signup_duedate" component="div" className="text-danger mb-2" />
+                      <Field type="date" id="signup_duedate" name="signup_duedate" className="form-control-modern" />
+                      <small className="text-muted">Last date for participants to register</small>
+                    </div>
 
                     <div className="form-group-modern">
                       <label className="form-label-modern" htmlFor="image">

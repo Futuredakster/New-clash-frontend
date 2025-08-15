@@ -9,6 +9,7 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
     tournament_name: "",
     start_date: "",
     end_date: "",
+    signup_duedate: "",
     account_id: accountId,
     tournament_id: tournament_id
   });
@@ -41,6 +42,7 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
     data.append('tournament_name', formData.tournament_name);
     data.append('start_date', formData.start_date);
     data.append('end_date', formData.end_date);
+    data.append('signup_duedate', formData.signup_duedate);
     data.append('account_id', formData.account_id);
     data.append('tournament_id', formData.tournament_id);
     if (imageFile) {
@@ -92,7 +94,6 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
               onChange={handleInputChange}
               className="form-control-modern"
               placeholder="Enter tournament name"
-              required
             />
           </Form.Group>
 
@@ -107,7 +108,6 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
               value={formData.start_date}
               onChange={handleInputChange}
               className="form-control-modern"
-              required
             />
           </Form.Group>
 
@@ -122,8 +122,25 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
               value={formData.end_date}
               onChange={handleInputChange}
               className="form-control-modern"
-              required
             />
+          </Form.Group>
+
+          <Form.Group className="form-group-modern">
+            <Form.Label htmlFor="signup_duedate" className="form-label-modern">
+              <i className="fas fa-clock me-2"></i>
+              Signup Due Date
+            </Form.Label>
+            <Form.Control
+              type="date"
+              id="signup_duedate"
+              name="signup_duedate"
+              value={formData.signup_duedate}
+              onChange={handleInputChange}
+              className="form-control-modern"
+            />
+            <Form.Text className="text-muted">
+              Last date for participants to register
+            </Form.Text>
           </Form.Group>
 
           <Form.Group className="form-group-modern">
