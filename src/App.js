@@ -28,6 +28,7 @@ import ParticipentBracket from './PraticipentView/ParticipentBracket';
 import WatchPage from './Streaming/WatchPage';
 import CreateStream from './Streaming/CreateStream';
 import GetViewerToken from './Streaming/GetViewerToken';
+import ViewerTour from './Viewer/ViewerTour';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -131,6 +132,7 @@ useEffect(() => {
           <Route path="/watch" element={<WatchPage />} />
           <Route path="/stream" element={<CreateStream />} />
           <Route path ="/viewer" element={<GetViewerToken/>} />
+          <Route path ="/ViewerTour" element={<ViewerTour setProps={setProps} />} />
           </Routes>
         </div>
       </div>

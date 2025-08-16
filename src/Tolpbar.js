@@ -89,7 +89,7 @@ const Tolpbar = () => {
                         <Nav className="ms-auto align-items-center">
                             {!authState.status ? (
                                 <>
-                                    <Nav.Link as={Link} to="/CompetitorView" className="text-dark">
+                                    <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
                                         Browse Tournaments
                                     </Nav.Link>
                                     <Nav.Link as={Link} to="/Login">
@@ -257,7 +257,7 @@ const Tolpbar = () => {
 
                                 {/* Guest Navigation Menu */}
                                 <nav className="mobile-nav p-3">
-                                    <Link to="/CompetitorView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                    <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
                                         Browse Tournaments
                                     </Link>

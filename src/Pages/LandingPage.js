@@ -33,8 +33,16 @@ function LandingPage() {
         size="lg"
         onClick={() => navigate('/ParticipetnVer')}
       >
-        <i className="fas fa-envelope-open-text me-2"></i>
+        <i className="fas fa-list-check me-2"></i>
         SEE YOUR TOURNAMENTS
+      </Button>
+       <Button
+        className="btn btn-modern-outline"
+        size="lg"
+        onClick={() => navigate('/ViewerTour')}
+      >
+        <i className="fas fa-tv me-2"></i>
+        SEE MATCHES AND TOURNAMENTS
       </Button>
     </div>
   );
