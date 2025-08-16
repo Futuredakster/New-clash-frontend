@@ -31,6 +31,7 @@ import GetViewerToken from './Streaming/GetViewerToken';
 import ViewerTour from './Viewer/ViewerTour';
 import { ViewerDivisions } from './Viewer/ViewerDivisions';
 import ViewerBrackets from './Viewer/ViewerBrackets';
+import ViewRecordings from './Viewer/ViewRecordings';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -137,7 +138,8 @@ useEffect(() => {
           <Route path ="/ViewerTour" element={<ViewerTour setProps={setProps} />} />
           <Route path ="/ViewerDivisions" element={<ViewerDivisions props={props} setProps={setProps} setDivision={setDivision}/>} />
           <Route path ="/ViewerBrackets" element={<ViewerBrackets />} />
-          
+          <Route path ="/ViewRecordings" element={<ViewRecordings />} />
+
           </Routes>
         </div>
       </div>

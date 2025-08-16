@@ -30,14 +30,15 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
     navigate(`/DisplayParticipents?${queryString}`);
   };
 
-  const handleViewBrackets = (item) => {
+  const handleViewRecordings = (item) => {
     setDivision(item);
     const queryString = new URLSearchParams({
       division_id: item.division_id,
     }).toString();
-    navigate(`/ViewerBrackets?${queryString}`);
+    navigate(`/ViewRecordings?${queryString}`, {
+      state: { divisionName: item.division_name }
+    });
   };
-
 
   const fetchTournamentDetails = async () => {
     try {
@@ -166,6 +167,23 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
                   >
                     <i className="fas fa-sitemap me-2"></i>
                     View Brackets
+                  </button>
+                  <button 
+                    className="btn btn-modern text-center" 
+                    onClick={() => handleViewRecordings(item)}
+                    style={{
+                      width: '100%', 
+                      minWidth: '0', 
+                      padding: '0.5rem 1rem',
+                      margin: '0',
+                      border: '1px solid',
+                      boxSizing: 'border-box',
+                      backgroundColor: 'transparent',
+                      color: '#dc3545'
+                    }}
+                  >
+                    <i className="fas fa-video me-2"></i>
+                    View Recordings
                   </button>
                   <button 
                     className="btn btn-modern text-center" 
