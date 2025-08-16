@@ -29,6 +29,8 @@ import WatchPage from './Streaming/WatchPage';
 import CreateStream from './Streaming/CreateStream';
 import GetViewerToken from './Streaming/GetViewerToken';
 import ViewerTour from './Viewer/ViewerTour';
+import { ViewerDivisions } from './Viewer/ViewerDivisions';
+import ViewerBrackets from './Viewer/ViewerBrackets';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -133,6 +135,9 @@ useEffect(() => {
           <Route path="/stream" element={<CreateStream />} />
           <Route path ="/viewer" element={<GetViewerToken/>} />
           <Route path ="/ViewerTour" element={<ViewerTour setProps={setProps} />} />
+          <Route path ="/ViewerDivisions" element={<ViewerDivisions props={props} setProps={setProps} setDivision={setDivision}/>} />
+          <Route path ="/ViewerBrackets" element={<ViewerBrackets />} />
+          
           </Routes>
         </div>
       </div>

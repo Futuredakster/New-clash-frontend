@@ -18,7 +18,7 @@ const ViewerTour = ({ setProps }) => {
         const queryString = new URLSearchParams({
             tournament_id: tournament.tournament_id,
         }).toString();
-        navigate(`/Divisions?${queryString}`);
+        navigate(`/ViewerDivisions?${queryString}`);
     };
 
     useEffect(() => {

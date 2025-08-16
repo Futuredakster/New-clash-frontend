@@ -59,7 +59,7 @@ const CompetitorView = ({ setProps }) => {
                 <div className="page-header-modern">
                     <h1 className="page-title-modern">
                         <i className="fas fa-trophy me-3"></i>
-                        Available Tournaments
+                        Upcoming Tournaments
                     </h1>
                     <p className="page-subtitle-modern">
                         Discover and join competitive tournaments
@@ -83,7 +83,7 @@ const CompetitorView = ({ setProps }) => {
             <div className="page-header-modern">
                 <h1 className="page-title-modern">
                     <i className="fas fa-trophy me-3"></i>
-                    Available Tournaments
+                    Upcoming Tournaments
                 </h1>
                 <p className="page-subtitle-modern">
                     Discover and join competitive tournaments • {data.length} tournament{data.length !== 1 ? 's' : ''} available
