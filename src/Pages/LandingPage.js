@@ -14,35 +14,31 @@ function LandingPage() {
     <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
       <Button
         className="btn btn-modern"
-        size="lg"
         onClick={() => navigate('/AccountUser')}
       >
         <i className="fas fa-trophy me-2"></i>
-        CREATE TOURNAMENTS
+        <span>CREATE TOURNAMENTS</span>
       </Button>
       <Button
         className="btn btn-modern-outline"
-        size="lg"
         onClick={() => navigate('/CompetitorView')}
       >
         <i className="fas fa-users me-2"></i>
-        JOIN TOURNAMENT
+        <span>JOIN TOURNAMENT</span>
       </Button>
       <Button
         className="btn btn-modern-outline"
-        size="lg"
         onClick={() => navigate('/ParticipetnVer')}
       >
         <i className="fas fa-list-check me-2"></i>
-        SEE YOUR TOURNAMENTS
+        <span>SEE YOUR TOURNAMENTS</span>
       </Button>
        <Button
         className="btn btn-modern-outline"
-        size="lg"
         onClick={() => navigate('/ViewerTour')}
       >
         <i className="fas fa-tv me-2"></i>
-        SEE MATCHES AND TOURNAMENTS
+        <span>SEE MATCHES AND TOURNAMENTS</span>
       </Button>
     </div>
   );

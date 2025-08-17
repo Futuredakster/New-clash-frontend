@@ -99,8 +99,8 @@ const ViewRecordings = () => {
                     <Col xl={10}>
                         <Card className="shadow-lg border-0">
                             <Card.Header className="bg-primary text-white">
-                                <Row className="align-items-center">
-                                    <Col>
+                                <Row className="align-items-center flex-column flex-sm-row text-center text-sm-start">
+                                    <Col xs={12} sm>
                                         <h2 className="mb-0 fw-bold">
                                             <i className="fas fa-video me-3"></i>
                                             Division Recordings
@@ -111,7 +111,7 @@ const ViewRecordings = () => {
                                             </small>
                                         )}
                                     </Col>
-                                    <Col xs="auto">
+                                    <Col xs={12} sm="auto" className="mt-3 mt-sm-0 text-center text-sm-end">
                                         <Button
                                             variant="light"
                                             onClick={() => navigate(-1)}
