@@ -2,11 +2,15 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Card, Alert, Spinner, Badge } from 'react-bootstrap';
 import { link } from '../constant';
+import { useLocation } from 'react-router-dom';
 
 const ParticipantsView = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const division_id = queryParams.get('division_id');
 
   useEffect(() => {
     const token = localStorage.getItem('participantAccessToken');
@@ -17,19 +21,22 @@ const ParticipantsView = () => {
     }
 
     axios.get(`${link}/participants/All`, {
-      headers: {
-        participantAccessToken: token,
-      },
-    })
-    .then(response => {
-      setData(response.data);
-      setLoading(false);
-    })
-    .catch(err => {
-      setError(err);
-      setLoading(false);
-    });
-  }, []);
+    headers: {
+      participantAccessToken: token,
+    },
+    params: {
+      division_id, // <-- pass division_id as query param
+    },
+  })
+  .then(response => {
+    setData(response.data);
+    setLoading(false);
+  })
+  .catch(err => {
+    setError(err);
+    setLoading(false);
+  });
+}, [division_id]);
 
   if (loading) {
     return (

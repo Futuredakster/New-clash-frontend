@@ -35,11 +35,11 @@ const DivisionsView = () => {
     fetchDivisions();
   }, []);
 
-  const handleViewParticipants = () => {
-    navigate('/ParticipentsView');
+  const handleViewParticipants = (division_id) => {
+    navigate(`/ParticipentsView?division_id=${division_id}`);
   };
-  const handleViewBrackets = () => {
-    navigate('/ParticipentBracket');
+  const handleViewBrackets = (division_id) => {
+    navigate(`/ParticipentBracket?division_id=${division_id}`);
   };
 
   return (
@@ -60,22 +60,27 @@ const DivisionsView = () => {
               <p><strong>Proficiency Level:</strong> {division.proficiency_level}</p>
               <p><strong>Category:</strong> {division.category}</p>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="time-display" style={{ marginTop: '20px' }}>
+               <div className="time-display" style={{ marginTop: '20px' }}>
         <h2>Total Time: {(time / 60).toFixed(2)} minutes</h2>
       </div>
 
       <div className="buttons">
-        <button className="btn btn-primary" onClick={handleViewParticipants}>
-          View All Participants
-        </button>
-        <button className="btn btn-primary" onClick={handleViewBrackets}>
+        <button
+        className="btn btn-primary"
+        onClick={() => handleViewParticipants(division.division_id)}
+      >
+        View All Participants
+      </button>
+
+        <button className="btn btn-primary" onClick={() =>handleViewBrackets(division.division_id)}>
           View All Brackets
         </button>
       </div>
+          </div>
+        ))}
+      </div>
+
+   
     </div>
   );
 };

@@ -10,6 +10,9 @@ import { Container, Row, Col, Button, Card, Badge } from 'react-bootstrap';
 const ParticipentBracket = () => {
   const [bracketData, setBracketData] = useState([]);
     const navigate = useNavigate();
+       const location = useLocation();
+      const queryParams = new URLSearchParams(location.search);
+      const division_id = queryParams.get('division_id');
 
   const generateBracket = async () => {
     const token = localStorage.getItem('participantAccessToken');
@@ -22,6 +25,9 @@ const ParticipentBracket = () => {
       const response = await axios.get(`${link}/brackets/participent`, {
         headers: {
             participantAccessToken: token,
+        },
+        params: {
+          division_id, // Pass the division_id as a query parameter
         },
       });
 
