@@ -23,7 +23,8 @@ function Login() {
         username: response.data.username,
         id: response.data.id,
         status: true,
-        account_id: response.data.account_id
+        account_id: response.data.account_id,
+        role: response.data.role
       });
       navigate('/Home');
       }

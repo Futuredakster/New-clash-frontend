@@ -81,7 +81,7 @@ useEffect(() => {
       } else {
         console.log(response.data.username);
         console.log(response.data.account_id)
-        setAuthState({username:response.data.username, id:response.data.id, status:true,account_id:response.data.account_id});
+        setAuthState({username:response.data.username, id:response.data.id, status:true,account_id:response.data.account_id, role:response.data.role});
       }
     });
   }

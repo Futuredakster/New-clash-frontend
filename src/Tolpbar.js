@@ -12,6 +12,8 @@ const Tolpbar = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [setUp, setSetUp] = useState(false);
+
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -38,11 +40,45 @@ const Tolpbar = () => {
         };
 
         fetchAccountInfo();
-    }, []);
+        isSetUp();
 
+    }, [authState.status]);
+
+     const isSetUp = async () => {
+         const accessToken = localStorage.getItem('accessToken');
+            try {
+                const response = await axios.get(`${link}/users/status`, {
+                    headers: { accessToken },
+                });
+                if(response.data.message === true){
+                   setSetUp(true);
+                   
+                } else {
+                    setSetUp(false);
+                }
+            } catch (error) {
+                console.error('Error checking setup status:', error);
+                throw error;
+            }
+        };
+
+        const fetchPayUrl= async () => {
+             const accessToken = localStorage.getItem('accessToken');
+            try {
+                const response = await axios.get(`${link}/users/connect`, {
+                    headers: { accessToken },
+                });
+                window.location.href =response.data.url; 
+            } catch (error) {
+                console.error('Error fetching payment URL:', error);
+                throw error;
+            }
+        }
     const logout = () => {
         localStorage.removeItem("accessToken");
-        setAuthState({ username: "", id: 0, status: false, account_id: 0 });
+        setAuthState({ username: "", id: 0, status: false, account_id: 0, role: "" });
+        setUser(null);
+        setSetUp(false);
         navigate("/LandingPage");
     };
 
@@ -55,6 +91,14 @@ const Tolpbar = () => {
         }
         return authState.username;
     };
+
+    const checkUserRole = () => {
+        if (user && user.role) {
+            return user.role;
+        }
+        return authState.role || '';
+    };
+
 
     return (
         <>
@@ -89,6 +133,7 @@ const Tolpbar = () => {
                         <Nav className="ms-auto align-items-center">
                             {!authState.status ? (
                                 <>
+                              
                                     <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
                                         Browse Tournaments
                                     </Nav.Link>
@@ -107,6 +152,15 @@ const Tolpbar = () => {
                                 </>
                             ) : (
                                 <>
+                                    {authState.role?.toLowerCase() === 'host' && setUp === false && (
+                                <button onClick={()=>  fetchPayUrl()} className="text-dark">
+                                Set Up Payment
+                                </button>
+                            )}
+
+                            {authState.role?.toLowerCase() === 'host' && setUp === true && (
+                                <h1>Congrats {checkUsername()}! Your payment is set up.</h1>
+                            )}
                                     <Nav.Link as={Link} to="/Home" className="text-dark">
                                         <i className="fas fa-home me-1"></i>
                                         Dashboard
@@ -126,14 +180,14 @@ const Tolpbar = () => {
                                                  style={{width: '32px', height: '32px'}}>
                                                 <i className="fas fa-user"></i>
                                             </div>
-                                            <span className="d-none d-md-inline">{checkUsername()}</span>
+                                            <span className="d-none d-md-inline">{checkUsername()} <span className="text-muted" style={{fontSize: '0.9em'}}>({checkUserRole() || authState.role})</span></span>
                                             <i className="fas fa-chevron-down ms-1"></i>
                                         </Dropdown.Toggle>
 
                                         <Dropdown.Menu className="dropdown-modern">
                                             <Dropdown.Header>
                                                 <small className="text-muted">
-                                                    Welcome, {checkUsername()}
+                                                    Welcome, {checkUsername()} <span className="text-muted">({checkUserRole() || authState.role})</span>
                                                 </small>
                                             </Dropdown.Header>
                                             <Dropdown.Divider />
@@ -184,7 +238,7 @@ const Tolpbar = () => {
                                             <i className="fas fa-user"></i>
                                         </div>
                                         <div>
-                                            <div className="fw-bold">{checkUsername()}</div>
+                                            <div className="fw-bold">{checkUsername()} <span className="text-muted">({checkUserRole() || authState.role})</span></div>
                                             <small className="text-muted">Tournament Creator</small>
                                         </div>
                                     </div>
