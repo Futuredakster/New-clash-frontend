@@ -3,12 +3,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../Divisions.css';
 import { link } from '../constant';
+import { useLocation } from "react-router-dom";
 
 const DivisionsView = () => {
   const [divisions, setDivisions] = useState([]);
   const [time, setTime] = useState(0);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+   const location = useLocation();
+  const { tournamentId } = location.state || {};
 
   useEffect(() => {
     const fetchDivisions = async () => {
@@ -22,6 +25,9 @@ const DivisionsView = () => {
         const response = await axios.get(`${link}/Divisions/partview`, {
           headers: {
             participantAccessToken: token,
+          },
+          params: {
+            tournamentId,
           },
         });
         setDivisions(response.data.divisions);
