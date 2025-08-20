@@ -153,14 +153,18 @@ const Tolpbar = () => {
                             ) : (
                                 <>
                                     {authState.role?.toLowerCase() === 'host' && setUp === false && (
-                                <button onClick={()=>  fetchPayUrl()} className="text-dark">
-                                Set Up Payment
-                                </button>
-                            )}
+                                        <Nav.Link as="button" onClick={fetchPayUrl} className="btn btn-modern btn-sm me-2 text-white bg-dark border-dark d-flex align-items-center justify-content-center payment-pop-btn">
+                                            <i className="fas fa-credit-card me-1"></i>
+                                            Set Up Payment
+                                        </Nav.Link>
+                                    )}
 
-                            {authState.role?.toLowerCase() === 'host' && setUp === true && (
-                                <h1>Congrats {checkUsername()}! Your payment is set up.</h1>
-                            )}
+                                    {authState.role?.toLowerCase() === 'host' && setUp === true && (
+                                        <span className="badge bg-success text-white px-3 py-2 me-2 d-flex align-items-center">
+                                            <i className="fas fa-check-circle me-2"></i>
+                                            Congrats {checkUsername()}! Payment is set up.
+                                        </span>
+                                    )}
                                     <Nav.Link as={Link} to="/Home" className="text-dark">
                                         <i className="fas fa-home me-1"></i>
                                         Dashboard
@@ -251,6 +255,20 @@ const Tolpbar = () => {
                                         <i className="fas fa-home me-3"></i>
                                         Dashboard
                                     </Link>
+
+                                       {authState.role?.toLowerCase() === 'host' && setUp === false && (
+                                            <button onClick={fetchPayUrl} className="btn btn-modern w-100 mb-3 d-flex align-items-center justify-content-center text-white bg-dark border-dark payment-pop-btn">
+                                                <i className="fas fa-credit-card me-2"></i>
+                                                Set Up Payment
+                                            </button>
+                                        )}
+
+                                        {authState.role?.toLowerCase() === 'host' && setUp === true && (
+                                            <div className="alert alert-success d-flex align-items-center mb-3" role="alert">
+                                                <i className="fas fa-check-circle me-2"></i>
+                                                <span>Congrats {checkUsername()}! Payment is set up.</span>
+                                            </div>
+                                        )}
 
                                     {/* Tournament Management Section */}
                                     <div className="mobile-nav-section">
