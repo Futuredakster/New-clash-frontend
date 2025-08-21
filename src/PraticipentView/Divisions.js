@@ -30,6 +30,36 @@ export const Divisions = ({ props, setProps, setDivision }) => {
     navigate(`/DisplayParticipents?${queryString}`);
   };
 
+const addToCart = (item) => {
+  const token = localStorage.getItem('participantAccessToken');
+
+  axios.post(`${link}/cart`, {
+    division_id: item.division_id,
+    age_group: item.age_group,
+    proficiency_level: item.proficiency_level
+  }, {
+    headers: {
+      participantAccessToken: token
+    }
+  })
+  .then(response => {
+    // Success popup
+    alert("✅ Division successfully added to cart!");
+    console.log("Cart response:", response.data);
+  })
+  .catch(error => {
+    // If backend sent an error message
+    if (error.response && error.response.data && error.response.data.error) {
+      alert(`❌ ${error.response.data.error}`);
+    } else {
+      // Fallback if error response is missing
+      alert("❌ Failed to add division to cart.");
+    }
+    console.error("Error adding to cart:", error);
+  });
+};
+
+
 
   const fetchTournamentDetails = async () => {
     try {
@@ -175,6 +205,23 @@ export const Divisions = ({ props, setProps, setDivision }) => {
                   >
                     <i className="fas fa-eye me-2"></i>
                     View Players
+                  </button>
+                  <button 
+                    className="btn btn-modern text-center" 
+                    onClick={() => addToCart(item)}
+                    style={{
+                      width: '100%', 
+                      minWidth: '0', 
+                      padding: '0.5rem 1rem',
+                      margin: '0',
+                      border: '1px solid',
+                      boxSizing: 'border-box',
+                      backgroundColor: 'transparent',
+                      color: 'var(--bs-primary)'
+                    }}
+                  >
+                    <i className="fas fa-shopping-cart me-2"></i>
+                    Add to Cart
                   </button>
                 </div>
               </div>

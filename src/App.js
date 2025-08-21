@@ -32,6 +32,9 @@ import ViewerTour from './Viewer/ViewerTour';
 import { ViewerDivisions } from './Viewer/ViewerDivisions';
 import ViewerBrackets from './Viewer/ViewerBrackets';
 import ViewRecordings from './Viewer/ViewRecordings';
+import { ParticipantLogin } from './PraticipentView/ParticipantLogin';
+import PartEmailVer from "./PraticipentView/PartEmailVer";
+import DisplayCart from "./Pages/DisplayCart";
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -40,11 +43,13 @@ import {BrowserRouter as Router,Route,Routes,Navigate} from 'react-router-dom';
 import { link } from './constant';
 
 const accessToken = localStorage.getItem("accessToken");
+const token = localStorage.getItem("participantAccessToken");
 
 function App() {
 const [authState, setAuthState] = useState({username:"", id:0, status:false,accoint_id:0});
 const [props, setProps] = useState([]);
 const [division,setDivision] = useState([]);
+const [partState, setPartState] = useState([{id: 0,name:"",status:false}]);
 
 console.log(props);
 
@@ -87,11 +92,33 @@ useEffect(() => {
   }
 },[]); 
 
+useEffect(() => {
+  if (!token) {
+    setPartState({...partState, status:false});
+   } else {
+    axios.get(`${link}/participants/auths`, {
+      headers:{
+        participantAccessToken: token
+      },
+    })
+     .then((response) => {
+      if (response.data.error) {
+        setPartState({...partState, status:false});
+      } else {
+        setPartState({id:response.data.id,name:response.data.name,status:true});
+      }
+     });
+    }
+  },[]);
+
+
+
+
 
   return (
    <div className="min-vh-100" style={{background: 'var(--light-grey)'}}>
     <Router>
-    <AuthContext.Provider value={{authState, setAuthState}}>
+    <AuthContext.Provider value={{authState, setAuthState, partState, setPartState}}>
       {/* Top Navigation */}
       <Tolpbar/>
       
@@ -139,7 +166,9 @@ useEffect(() => {
           <Route path ="/ViewerDivisions" element={<ViewerDivisions props={props} setProps={setProps} setDivision={setDivision}/>} />
           <Route path ="/ViewerBrackets" element={<ViewerBrackets />} />
           <Route path ="/ViewRecordings" element={<ViewRecordings />} />
-
+          <Route path ="/ParticipantLogin" element={<ParticipantLogin />} />
+          <Route path ="/PartEmailVer" element={<PartEmailVer />} />
+          <Route path ="/DisplayCart" element={<DisplayCart />} />
           </Routes>
         </div>
       </div>

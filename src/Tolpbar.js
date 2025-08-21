@@ -6,7 +6,7 @@ import { Navbar, Nav, Container, Dropdown, Offcanvas } from 'react-bootstrap';
 import { link } from './constant';
 
 const Tolpbar = () => {
-    const { authState, setAuthState } = useContext(AuthContext);
+    const { authState, setAuthState, setPartState, partState } = useContext(AuthContext);
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -82,6 +82,12 @@ const Tolpbar = () => {
         navigate("/LandingPage");
     };
 
+    const logoutPart = () => {
+        localStorage.removeItem("participantAccessToken");
+        setPartState({ id: 0, name: "", status: false });
+        navigate("/LandingPage");
+    };
+
     const handleMobileMenuClose = () => setShowMobileMenu(false);
     const handleMobileMenuShow = () => setShowMobileMenu(true);
 
@@ -131,9 +137,8 @@ const Tolpbar = () => {
                     {/* Desktop Navigation */}
                     <Navbar.Collapse id="basic-navbar-nav" className="d-none d-lg-flex">
                         <Nav className="ms-auto align-items-center">
-                            {!authState.status ? (
+                            {(!authState.status && !partState.status) ? (
                                 <>
-                              
                                     <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
                                         Browse Tournaments
                                     </Nav.Link>
@@ -150,15 +155,16 @@ const Tolpbar = () => {
                                         </button>
                                     </Nav.Link>
                                 </>
-                            ) : (
+                            ) : authState.role ? (
                                 <>
                                     {authState.role?.toLowerCase() === 'host' && setUp === false && (
-                                        <Nav.Link as="button" onClick={fetchPayUrl} className="btn btn-modern btn-sm me-2 text-white bg-dark border-dark d-flex align-items-center justify-content-center payment-pop-btn">
-                                            <i className="fas fa-credit-card me-1"></i>
-                                            Set Up Payment
+                                        <Nav.Link as="div" className="payment-pop-btn">
+                                            <button onClick={fetchPayUrl} className="btn btn-modern btn-sm me-2 text-white bg-dark border-dark d-flex align-items-center justify-content-center">
+                                                <i className="fas fa-credit-card me-1"></i>
+                                                Set Up Payment
+                                            </button>
                                         </Nav.Link>
                                     )}
-
                                     {authState.role?.toLowerCase() === 'host' && setUp === true && (
                                         <span className="badge bg-success text-white px-3 py-2 me-2 d-flex align-items-center">
                                             <i className="fas fa-check-circle me-2"></i>
@@ -173,7 +179,6 @@ const Tolpbar = () => {
                                         <i className="fas fa-plus me-1"></i>
                                         Create
                                     </Nav.Link>
-                                    
                                     <Dropdown align="end">
                                         <Dropdown.Toggle 
                                             variant="link" 
@@ -187,7 +192,6 @@ const Tolpbar = () => {
                                             <span className="d-none d-md-inline">{checkUsername()} <span className="text-muted" style={{fontSize: '0.9em'}}>({checkUserRole() || authState.role})</span></span>
                                             <i className="fas fa-chevron-down ms-1"></i>
                                         </Dropdown.Toggle>
-
                                         <Dropdown.Menu className="dropdown-modern">
                                             <Dropdown.Header>
                                                 <small className="text-muted">
@@ -211,7 +215,24 @@ const Tolpbar = () => {
                                         </Dropdown.Menu>
                                     </Dropdown>
                                 </>
-                            )}
+                            ) : partState.status ? (
+                                <>
+                                    <Nav.Link as="div" className="d-flex align-items-center">
+                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{width: '32px', height: '32px'}}>
+                                            <i className="fas fa-user"></i>
+                                        </div>
+                                        <span className="d-none d-md-inline">{partState.name}</span>
+                                        <span className="ms-2">
+                                            <button onClick={() => navigate('/DisplayCart')} className="btn btn-outline-primary btn-sm">
+                                                <i className="fas fa-shopping-cart"></i>
+                                            </button>
+                                        </span>
+                                        <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutPart}>
+                                            <i className="fas fa-sign-out-alt me-1"></i> Logout
+                                        </button>
+                                    </Nav.Link>
+                                </>
+                            ) : null}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
@@ -356,6 +377,7 @@ const Tolpbar = () => {
 }
 
 export default Tolpbar;
+
 
 
 
