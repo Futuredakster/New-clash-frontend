@@ -36,7 +36,8 @@ const addToCart = (item) => {
   axios.post(`${link}/cart`, {
     division_id: item.division_id,
     age_group: item.age_group,
-    proficiency_level: item.proficiency_level
+    proficiency_level: item.proficiency_level,
+    tournament_id: tournament_id
   }, {
     headers: {
       participantAccessToken: token

@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate,useLocation } from 'react-router-dom';
 import React, { useState, useContext, useEffect } from "react";
 import axios from 'axios';
 import { AuthContext } from './helpers/AuthContext';
@@ -13,6 +13,8 @@ const Tolpbar = () => {
     const [error, setError] = useState(null);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [setUp, setSetUp] = useState(false);
+      const queryParams = new URLSearchParams(location.search);
+  const tournament_id = queryParams.get('tournament_id');
 
 
     useEffect(() => {
@@ -222,12 +224,14 @@ const Tolpbar = () => {
                                             <i className="fas fa-user"></i>
                                         </div>
                                         <span className="d-none d-md-inline">{partState.name}</span>
+                                      {tournament_id && (
                                         <span className="ms-2">
-                                            <button onClick={() => navigate('/DisplayCart')} className="btn btn-outline-primary btn-sm">
+                                            <button onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} className="btn btn-outline-primary btn-sm">
                                                 <i className="fas fa-shopping-cart"></i>
                                             </button>
                                         </span>
-                                        <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutPart}>
+                                    )}
+                                                                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutPart}>
                                             <i className="fas fa-sign-out-alt me-1"></i> Logout
                                         </button>
                                     </Nav.Link>

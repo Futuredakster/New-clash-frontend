@@ -3,9 +3,14 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import styles from './DisplayCart.module.css';
 import { link } from '../constant';
+import {useLocation} from 'react-router-dom';
 
 const DisplayCart = () => {
   const [cartItems, setCartItems] = useState([]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const tournament_id = queryParams.get('tournament_id');
+  console.log("Tournament ID:", tournament_id);
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -14,7 +19,8 @@ const DisplayCart = () => {
         const response = await axios.get(`${link}/cart`, {
           headers: {
             participantAccessToken: token
-          }
+          },
+           params: { tournament_id }
         });
         console.log('Fetched cart items:', response.data);
        setCartItems(response.data.divisions);
@@ -31,7 +37,7 @@ const DisplayCart = () => {
   try {
     const response = await axios.post(
       `${link}/cart/create-checkout-session`,
-      { cartItems }, // body
+      { tournament_id }, // body
       {
         headers: {
           participantAccessToken: token, // config (headers)
