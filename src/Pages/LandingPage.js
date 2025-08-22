@@ -21,7 +21,7 @@ function LandingPage() {
       </Button>
       <Button
         className="btn btn-modern-outline"
-        onClick={() => navigate('/CompetitorView')}
+        onClick={() => navigate('/PartEmailVer')}
       >
         <i className="fas fa-users me-2"></i>
         <span>JOIN TOURNAMENT</span>

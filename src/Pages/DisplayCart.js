@@ -26,6 +26,19 @@ const DisplayCart = () => {
     fetchCartItems();
   }, []);
 
+    const handlePayment = async () => {
+    try {
+      const response = await axios.post(`${link}/cart/create-checkout-session`, {
+        cartItems,
+      });
+      // Stripe Checkout session URL
+      window.location.href = response.data.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      alert('Failed to start payment. Please try again.');
+    }
+  };
+
   function capitalize(str) {
     if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -48,7 +61,7 @@ const DisplayCart = () => {
               </li>
             ))}
           </ul>
-          <button className={styles['pay-btn']}>Pay</button>
+           <button className={styles['pay-btn']} onClick={handlePayment}>Pay</button>
         </>
       )}
     </div>
