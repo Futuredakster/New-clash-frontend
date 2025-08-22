@@ -26,18 +26,26 @@ const DisplayCart = () => {
     fetchCartItems();
   }, []);
 
-    const handlePayment = async () => {
-    try {
-      const response = await axios.post(`${link}/cart/create-checkout-session`, {
-        cartItems,
-      });
-      // Stripe Checkout session URL
-      window.location.href = response.data.url;
-    } catch (error) {
-      console.error('Error creating checkout session:', error);
-      alert('Failed to start payment. Please try again.');
-    }
-  };
+  const handlePayment = async () => {
+     const token = localStorage.getItem('participantAccessToken');
+  try {
+    const response = await axios.post(
+      `${link}/cart/create-checkout-session`,
+      { cartItems }, // body
+      {
+        headers: {
+          participantAccessToken: token, // config (headers)
+        },
+      }
+    );
+    // Stripe Checkout session URL
+    window.location.href = response.data.url;
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    alert("Failed to start payment. Please try again.");
+  }
+};
+
 
   function capitalize(str) {
     if (!str) return '';

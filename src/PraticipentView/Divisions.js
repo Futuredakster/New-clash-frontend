@@ -174,21 +174,7 @@ const addToCart = (item) => {
               </div>
               <div className="card-modern-footer">
                 <div className="d-grid gap-2">
-                  <button 
-                    className="btn btn-modern text-center" 
-                    onClick={() => handleViewDetails(item)}
-                    style={{
-                      width: '100%', 
-                      minWidth: '0', 
-                      padding: '0.5rem 1rem',
-                      margin: '0',
-                      border: '1px solid',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <i className="fas fa-user-plus me-2"></i>
-                    Register Now
-                  </button>
+                  
                   <button 
                     className="btn btn-modern text-center" 
                     onClick={() => handleView(item)}

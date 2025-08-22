@@ -5,10 +5,12 @@ import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
+import {AuthContext} from '../helpers/AuthContext';
 import { link } from "../constant";
 
 export const ParticipantLogin = () => {
   const navigate = useNavigate();
+    const {setPartState,partState} = useContext(AuthContext);
 
   const initialValues = {
     name: "",
@@ -31,12 +33,21 @@ export const ParticipantLogin = () => {
   const onSubmit = async (values, { setSubmitting }) => {
     console.log("Submitting values:", values);
     try {
-      const response = await axios.post(`${link}/login`, values);
+      const response = await axios.post(`${link}/participants/login`, values);
       console.log("Request successful:", response.data);
 
       if (response.data.error) {
         alert(response.data.error);
       } else {
+         const { token } = response.data;
+
+      // Save token to local storage
+      localStorage.setItem('participantAccessToken', token);
+       setPartState({
+        id:response.data.id,
+        name:response.data.name,
+        status:true
+       })
         navigate("/CompetitorView");
       }
     } catch (error) {
