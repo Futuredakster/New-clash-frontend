@@ -17,8 +17,6 @@ export const ParticipantLogin = () => {
     name: "",
     date_of_birth: "",
     belt_color: "",
-    age_group: "",
-    proficiency_level: "",
     email: "",
   };
 
@@ -26,8 +24,6 @@ export const ParticipantLogin = () => {
     name: Yup.string().required("Name is required"),
     date_of_birth: Yup.date().required("Date of Birth is required"),
     belt_color: Yup.string().required("Belt Color is required"),
-    age_group: Yup.string().required("Age Group is required"),
-    proficiency_level: Yup.string().required("Proficiency Level is required"),
     email: Yup.string().email("Invalid email format").required("Email is required"),
   });
 
@@ -158,53 +154,7 @@ export const ParticipantLogin = () => {
                       </Col>
                     </Row>
 
-                    {/* Age Group */}
-                    <div className="form-group-modern">
-                      <label className="form-label-modern" htmlFor="age_group">
-                        <i className="fas fa-users me-2"></i>
-                        Age Group
-                      </label>
-                      <ErrorMessage
-                        name="age_group"
-                        component="div"
-                        className="text-danger mb-2"
-                      />
-                      <Field
-                        as="select"
-                        id="age_group"
-                        name="age_group"
-                        className="form-control-modern"
-                      >
-                        <option value="">Select age group</option>
-                        <option value="Kids">Kids</option>
-                        <option value="Teens">Teens</option>
-                        <option value="Adults">Adults</option>
-                      </Field>
-                    </div>
 
-                    {/* Proficiency Level */}
-                    <div className="form-group-modern">
-                      <label className="form-label-modern" htmlFor="proficiency_level">
-                        <i className="fas fa-signal me-2"></i>
-                        Proficiency Level
-                      </label>
-                      <ErrorMessage
-                        name="proficiency_level"
-                        component="div"
-                        className="text-danger mb-2"
-                      />
-                      <Field
-                        as="select"
-                        id="proficiency_level"
-                        name="proficiency_level"
-                        className="form-control-modern"
-                      >
-                        <option value="">Select proficiency</option>
-                        <option value="Beginner">Beginner</option>
-                        <option value="Intermediate">Intermediate</option>
-                        <option value="Advanced">Advanced</option>
-                      </Field>
-                    </div>
 
                     {/* Email */}
                     <div className="form-group-modern">
