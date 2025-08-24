@@ -35,6 +35,7 @@ import ViewRecordings from './Viewer/ViewRecordings';
 import { ParticipantLogin } from './PraticipentView/ParticipantLogin';
 import PartEmailVer from "./PraticipentView/PartEmailVer";
 import DisplayCart from "./Pages/DisplayCart";
+import DivisionsInOrder from './Viewer/DivisionsInOrder';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -169,6 +170,7 @@ useEffect(() => {
           <Route path ="/ParticipantLogin" element={<ParticipantLogin />} />
           <Route path ="/PartEmailVer" element={<PartEmailVer />} />
           <Route path ="/DisplayCart" element={<DisplayCart />} />
+          <Route path ="/DivisionsInOrder" element={<DivisionsInOrder />} />
           </Routes>
         </div>
       </div>

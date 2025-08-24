@@ -210,13 +210,20 @@ const ViewerTour = ({ setProps }) => {
                                             </Card.Body>
 
                                             <div className="card-modern-footer">
-                                                <div className="d-grid">
+                                                <div className="d-grid gap-2">
                                                     <button 
                                                         className="btn btn-modern d-flex align-items-center justify-content-center"
                                                         onClick={() => handleViewDetails(item)}
                                                     >
                                                         <i className="fas fa-eye me-2"></i>
                                                         View Details
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-modern d-flex align-items-center justify-content-center"
+                                                        onClick={() => navigate(`/DivisionsInOrder?tournament_id=${item.tournament_id}`)}
+                                                    >
+                                                        <i className="fas fa-list me-2"></i>
+                                                        View Divisions
                                                     </button>
                                                 </div>
                                             </div>
