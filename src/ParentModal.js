@@ -1,4 +1,4 @@
-import React, { useState,useContext  } from 'react';
+import React, { useState,useContext } from 'react';
 import axios from 'axios';
 import { Button, Modal } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,10 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { link } from './constant';
 import {AuthContext} from './helpers/AuthContext';
 
-const CodeVerificationModal = ({ showModal, handleClose, participantId }) => {
+const ParentModal = ({ showModal, handleClose, parentId }) => {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
-    const {setPartState,partState} = useContext(AuthContext);
+  const {setParentState,parentState} = useContext(AuthContext);
    const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -25,24 +25,25 @@ const CodeVerificationModal = ({ showModal, handleClose, participantId }) => {
     }
 
     try {
-        console.log(participantId);
-      const response = await axios.post(`${link}/participants/code`, {
+        console.log(parentId);
+      const response = await axios.post(`${link}/parents/code`, {
         code,
-        participant_id: participantId,
+        parent_id: parentId,
       });
-      const { token } = response.data;
+      const { parentToken } = response.data;
 
       // Save token to local storage
-      localStorage.setItem('participantAccessToken', token);
-       setPartState({
-        id:response.data.id,
-        name:response.data.name,
-        status:true
-       })
+      localStorage.setItem('parentToken', parentToken);
+      setParentState({
+        id: response.data.id,
+        name: response.data.name,
+        status: true
+      });
+
       // Clear error and close modal
       setError('');
       handleClose();
-      navigate('/TournamentView');
+      navigate('/CompetitorView');
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);
@@ -85,4 +86,4 @@ const CodeVerificationModal = ({ showModal, handleClose, participantId }) => {
   );
 };
 
-export default CodeVerificationModal;
+export default ParentModal;

@@ -6,16 +6,16 @@ import { Navbar, Nav, Container, Dropdown, Offcanvas } from 'react-bootstrap';
 import { link } from './constant';
 
 const Tolpbar = () => {
-    const { authState, setAuthState, setPartState, partState } = useContext(AuthContext);
+    const { authState, setAuthState, setPartState, partState,parentState,setParentState } = useContext(AuthContext);
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [setUp, setSetUp] = useState(false);
-      const queryParams = new URLSearchParams(location.search);
-  const tournament_id = queryParams.get('tournament_id');
-
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const tournament_id = queryParams.get('tournament_id');
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -90,6 +90,12 @@ const Tolpbar = () => {
         navigate("/LandingPage");
     };
 
+    const logoutParent = () => {
+        localStorage.removeItem("parentToken");
+        setParentState({ id: 0, name: "", status: false });
+        navigate("/LandingPage");
+    };
+
     const handleMobileMenuClose = () => setShowMobileMenu(false);
     const handleMobileMenuShow = () => setShowMobileMenu(true);
 
@@ -139,7 +145,7 @@ const Tolpbar = () => {
                     {/* Desktop Navigation */}
                     <Navbar.Collapse id="basic-navbar-nav" className="d-none d-lg-flex">
                         <Nav className="ms-auto align-items-center">
-                            {(!authState.status && !partState.status) ? (
+                            {(!authState.status && !partState.status && !parentState.status) ? (
                                 <>
                                     <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
                                         Browse Tournaments
@@ -232,6 +238,25 @@ const Tolpbar = () => {
                                         </span>
                                     )}
                                                                             <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutPart}>
+                                            <i className="fas fa-sign-out-alt me-1"></i> Logout
+                                        </button>
+                                    </Nav.Link>
+                                </>
+                            ) : parentState.status ? (
+                                <>
+                                    <Nav.Link as="div" className="d-flex align-items-center">
+                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{width: '32px', height: '32px'}}>
+                                            <i className="fas fa-user"></i>
+                                        </div>
+                                        <span className="d-none d-md-inline">{parentState.name}</span>
+                                      {tournament_id && (
+                                        <span className="ms-2">
+                                            <button onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} className="btn btn-outline-primary btn-sm">
+                                                <i className="fas fa-shopping-cart"></i>
+                                            </button>
+                                        </span>
+                                    )}
+                                                                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutParent}>
                                             <i className="fas fa-sign-out-alt me-1"></i> Logout
                                         </button>
                                     </Nav.Link>
@@ -336,6 +361,104 @@ const Tolpbar = () => {
                                     </button>
                                 </div>
                             </>
+                        ) : partState.status ? (
+                            <>
+                                {/* Participant Profile Section */}
+                                <div className="mobile-user-section p-3 border-bottom bg-light">
+                                    <div className="d-flex align-items-center">
+                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style={{width: '40px', height: '40px'}}>
+                                            <i className="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div className="fw-bold">{partState.name}</div>
+                                            <small className="text-muted">Tournament Participant</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Participant Navigation Menu */}
+                                <nav className="mobile-nav p-3">
+                                    {tournament_id && (
+                                        <Link 
+                                            to={`DisplayCart?tournament_id=${tournament_id}`} 
+                                            className="mobile-nav-link" 
+                                            onClick={handleMobileMenuClose}
+                                        >
+                                            <i className="fas fa-shopping-cart me-3"></i>
+                                            My Cart
+                                        </Link>
+                                    )}
+
+                                    <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                        <i className="fas fa-search me-3"></i>
+                                        Browse Tournaments
+                                    </Link>
+                                </nav>
+
+                                {/* Participant Logout Button */}
+                                <div className="p-3 border-top mt-auto">
+                                    <button 
+                                        className="btn btn-outline-danger w-100" 
+                                        onClick={() => {
+                                            logoutPart();
+                                            handleMobileMenuClose();
+                                        }}
+                                    >
+                                        <i className="fas fa-sign-out-alt me-2"></i>
+                                        Logout
+                                    </button>
+                                </div>
+                            </>
+                        ) : parentState.status ? (
+                            <>
+                                {/* Parent Profile Section */}
+                                <div className="mobile-user-section p-3 border-bottom bg-light">
+                                    <div className="d-flex align-items-center">
+                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                             style={{width: '40px', height: '40px'}}>
+                                            <i className="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div className="fw-bold">{parentState.name}</div>
+                                            <small className="text-muted">Tournament Parent</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Parent Navigation Menu */}
+                                <nav className="mobile-nav p-3">
+                                    {tournament_id && (
+                                        <Link 
+                                            to={`DisplayCart?tournament_id=${tournament_id}`} 
+                                            className="mobile-nav-link" 
+                                            onClick={handleMobileMenuClose}
+                                        >
+                                            <i className="fas fa-shopping-cart me-3"></i>
+                                            My Cart
+                                        </Link>
+                                    )}
+
+                                    <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                        <i className="fas fa-search me-3"></i>
+                                        Browse Tournaments
+                                    </Link>
+                                </nav>
+
+                                {/* Parent Logout Button */}
+                                <div className="p-3 border-top mt-auto">
+                                    <button 
+                                        className="btn btn-outline-danger w-100" 
+                                        onClick={() => {
+                                            logoutParent();
+                                            handleMobileMenuClose();
+                                        }}
+                                    >
+                                        <i className="fas fa-sign-out-alt me-2"></i>
+                                        Logout
+                                    </button>
+                                </div>
+                            </>
                         ) : (
                             <>
                                 {/* Guest User Section */}
@@ -381,21 +504,6 @@ const Tolpbar = () => {
 }
 
 export default Tolpbar;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

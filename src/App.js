@@ -36,6 +36,10 @@ import { ParticipantLogin } from './PraticipentView/ParticipantLogin';
 import PartEmailVer from "./PraticipentView/PartEmailVer";
 import DisplayCart from "./Pages/DisplayCart";
 import DivisionsInOrder from './Viewer/DivisionsInOrder';
+import RegistrationTypeSelector from './Pages/RegistrationTypeSelector';
+import ParentRegistrationForm from './Pages/ParentRegistrationForm';
+import ParentChilds from './Pages/ParentChilds';
+import ParentEmailVer from './Pages/ParentEmailVer';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -45,28 +49,18 @@ import { link } from './constant';
 
 const accessToken = localStorage.getItem("accessToken");
 const token = localStorage.getItem("participantAccessToken");
+const parentToken = localStorage.getItem("parentToken");
 
 function App() {
 const [authState, setAuthState] = useState({username:"", id:0, status:false,accoint_id:0});
 const [props, setProps] = useState([]);
 const [division,setDivision] = useState([]);
 const [partState, setPartState] = useState([{id: 0,name:"",status:false}]);
+const [parentState, setParentState] = useState({id: 0,name:"",status:false});
 
 console.log(props);
 
-axios.interceptors.response.use(
-  response => response,
-  error => {
-    if (
-      error.response &&
-      (error.response.status === 401 || error.response.status === 403)
-    ) {
-      localStorage.removeItem('participantAccessToken');
-      window.location.href = '/PraticipentVer'; // or use navigate() if you want SPA behavior
-    }
-    return Promise.reject(error);
-  }
-);
+
 
 
 useEffect(() => {
@@ -112,6 +106,25 @@ useEffect(() => {
     }
   },[]);
 
+  useEffect(() => {
+    if (!parentToken) {
+      setParentState({...parentState, status:false});
+    } else {
+      axios.get(`${link}/parents/auth`, {
+        headers: {
+          parentAccessToken: parentToken
+        }
+      })
+      .then((response) => {
+        if (response.data.error) {
+          setParentState({...parentState, status:false});
+        } else {
+          setParentState({id:response.data.id,name:response.data.name,status:true});
+        }
+      });
+    }
+  },[]);
+
 
 
 
@@ -119,7 +132,7 @@ useEffect(() => {
   return (
    <div className="min-vh-100" style={{background: 'var(--light-grey)'}}>
     <Router>
-    <AuthContext.Provider value={{authState, setAuthState, partState, setPartState}}>
+    <AuthContext.Provider value={{authState, setAuthState, partState, setPartState, parentState, setParentState}}>
       {/* Top Navigation */}
       <Tolpbar/>
       
@@ -171,6 +184,10 @@ useEffect(() => {
           <Route path ="/PartEmailVer" element={<PartEmailVer />} />
           <Route path ="/DisplayCart" element={<DisplayCart />} />
           <Route path ="/DivisionsInOrder" element={<DivisionsInOrder />} />
+          <Route path ="/RegistrationTypeSelector" element={<RegistrationTypeSelector />} />
+          <Route path ="/ParentRegistration" element={<ParentRegistrationForm />} />
+          <Route path ="/ParentChilds" element={<ParentChilds />} />
+          <Route path ="/ParentEmailVer" element={<ParentEmailVer />} />
           </Routes>
         </div>
       </div>

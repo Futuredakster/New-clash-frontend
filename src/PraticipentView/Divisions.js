@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../Divisions.css'; // Import the CSS file
 import { link } from '../constant';
+import {AuthContext} from '../helpers/AuthContext';
 
 export const Divisions = ({ props, setProps, setDivision }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const tournament_id = queryParams.get('tournament_id');
+  const { parentState, setParentState } = useContext(AuthContext);
   const [data, setData] = useState([]);
   const [tournamentDetails, setTournamentDetails] = useState({});
   const navigate = useNavigate();
@@ -193,6 +195,24 @@ const addToCart = (item) => {
                     <i className="fas fa-eye me-2"></i>
                     View Players
                   </button>
+                  {parentState.status ? (
+                    <button 
+                      className="btn btn-modern text-center" 
+                      onClick={() => navigate(`/ParentChilds?tournament_id=${tournament_id}&division_id=${item.division_id}`)}
+                      style={{
+                        width: '100%', 
+                        minWidth: '0', 
+                      padding: '0.5rem 1rem',
+                      margin: '0',
+                      border: '1px solid',
+                      boxSizing: 'border-box',
+                      backgroundColor: 'transparent',
+                      color: 'var(--bs-primary)'
+                    }}
+                  >
+                    Register
+                    </button>
+                  ):(
                   <button 
                     className="btn btn-modern text-center" 
                     onClick={() => addToCart(item)}
@@ -210,6 +230,7 @@ const addToCart = (item) => {
                     <i className="fas fa-shopping-cart me-2"></i>
                     Add to Cart
                   </button>
+                  )}
                 </div>
               </div>
             </div>
