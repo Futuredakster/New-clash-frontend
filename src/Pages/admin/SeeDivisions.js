@@ -699,38 +699,17 @@ const SeeDivisions = () => {
             </Modal.Header>
             <Modal.Body className="d-flex flex-column justify-content-center align-items-center p-3" style={{ minHeight: '400px' }}>
               {matAssignments.length > 0 ? (
-                <div className="w-100 d-flex flex-column align-items-center">
+                <div className="w-100">
                   <h6 className="mb-3 text-center">Current Mat Assignments:</h6>
-                  <div className="table-responsive w-100 d-flex justify-content-center" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-                    <table className="table table-sm table-bordered table-hover mb-0" style={{ maxWidth: '800px', width: 'auto' }}>
-                      <thead className="table-light sticky-top">
-                        <tr>
-                          <th style={{ width: '12%' }}>Mat</th>
-                          <th style={{ width: '20%' }}>Division</th>
-                          <th style={{ width: '12%' }}>Age</th>
-                          <th style={{ width: '12%' }}>Level</th>
-                          <th style={{ width: '12%', textAlign: 'center' }}>Status</th>
-                          <th style={{ width: '12%', textAlign: 'center' }}>Order</th>
-                          <th style={{ width: '20%', textAlign: 'center' }}>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {matAssignments.map((assignment, index) => {
-                          const rowClass = assignment.is_complete ? 'table-success' : 
-                                         assignment.is_active ? 'table-info' : '';
-                          return (
-                          <tr key={index} className={rowClass}>
-                            <td>
-                              <strong className="text-primary">{assignment.mat_name}</strong>
-                            </td>
-                            <td>
-                              {assignment.gender} {assignment.category}
-                            </td>
-                            <td>{assignment.age_group}</td>
-                            <td>
-                              <span className="badge bg-light text-dark">{assignment.proficiency_level}</span>
-                            </td>
-                            <td className="text-center">
+                  
+                  {/* Mobile Card View */}
+                  <div className="d-block d-md-none">
+                    <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                      {matAssignments.map((assignment, index) => (
+                        <div key={index} className={`card mb-2 ${assignment.is_complete ? 'border-success' : assignment.is_active ? 'border-info' : 'border-secondary'}`}>
+                          <div className="card-body p-3">
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                              <h6 className="card-title mb-0 text-primary">{assignment.mat_name}</h6>
                               {assignment.is_complete ? (
                                 <span className="badge bg-success">
                                   <i className="fas fa-check me-1"></i>Complete
@@ -744,11 +723,25 @@ const SeeDivisions = () => {
                                   <i className="fas fa-clock me-1"></i>Pending
                                 </span>
                               )}
-                            </td>
-                            <td className="text-center">
-                              <span className="badge bg-secondary">#{assignment.assignment_order}</span>
-                            </td>
-                            <td className="text-center">
+                            </div>
+                            <div className="mb-2">
+                              <small className="text-muted">Division:</small><br/>
+                              <strong>{assignment.gender} {assignment.category}</strong>
+                            </div>
+                            <div className="row mb-2">
+                              <div className="col-6">
+                                <small className="text-muted">Age:</small><br/>
+                                <span>{assignment.age_group}</span>
+                              </div>
+                              <div className="col-6">
+                                <small className="text-muted">Level:</small><br/>
+                                <span className="badge bg-light text-dark">{assignment.proficiency_level}</span>
+                              </div>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center">
+                              <small className="text-muted">
+                                Order: <span className="badge bg-secondary">#{assignment.assignment_order}</span>
+                              </small>
                               <button
                                 className="btn btn-outline-danger btn-sm"
                                 onClick={() => handleDeleteMat(assignment.mat_id, assignment.mat_name)}
@@ -756,23 +749,93 @@ const SeeDivisions = () => {
                                 title={`Delete ${assignment.mat_name}`}
                               >
                                 {deletingMatId === assignment.mat_id ? (
-                                  <>
-                                    <Spinner as="span" animation="border" size="sm" role="status" className="me-1" />
-                                    <span className="d-none d-md-inline">Deleting...</span>
-                                  </>
+                                  <Spinner as="span" animation="border" size="sm" role="status" />
                                 ) : (
-                                  <>
-                                    <i className="fas fa-trash me-1"></i>
-                                    <span className="d-none d-md-inline">Delete</span>
-                                  </>
+                                  <i className="fas fa-trash"></i>
                                 )}
                               </button>
-                            </td>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="d-none d-md-block">
+                    <div className="table-responsive" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+                      <table className="table table-sm table-bordered table-hover mb-0">
+                        <thead className="table-light sticky-top">
+                          <tr>
+                            <th style={{ minWidth: '80px' }}>Mat</th>
+                            <th style={{ minWidth: '140px' }}>Division</th>
+                            <th style={{ minWidth: '80px' }}>Age</th>
+                            <th style={{ minWidth: '100px' }}>Level</th>
+                            <th style={{ minWidth: '90px', textAlign: 'center' }}>Status</th>
+                            <th style={{ minWidth: '70px', textAlign: 'center' }}>Order</th>
+                            <th style={{ minWidth: '100px', textAlign: 'center' }}>Actions</th>
                           </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {matAssignments.map((assignment, index) => {
+                            const rowClass = assignment.is_complete ? 'table-success' : 
+                                           assignment.is_active ? 'table-info' : '';
+                            return (
+                            <tr key={index} className={rowClass}>
+                              <td>
+                                <strong className="text-primary">{assignment.mat_name}</strong>
+                              </td>
+                              <td>
+                                {assignment.gender} {assignment.category}
+                              </td>
+                              <td>{assignment.age_group}</td>
+                              <td>
+                                <span className="badge bg-light text-dark">{assignment.proficiency_level}</span>
+                              </td>
+                              <td className="text-center">
+                                {assignment.is_complete ? (
+                                  <span className="badge bg-success">
+                                    <i className="fas fa-check me-1"></i>Complete
+                                  </span>
+                                ) : assignment.is_active ? (
+                                  <span className="badge bg-primary">
+                                    <i className="fas fa-play me-1"></i>Active
+                                  </span>
+                                ) : (
+                                  <span className="badge bg-secondary">
+                                    <i className="fas fa-clock me-1"></i>Pending
+                                  </span>
+                                )}
+                              </td>
+                              <td className="text-center">
+                                <span className="badge bg-secondary">#{assignment.assignment_order}</span>
+                              </td>
+                              <td className="text-center">
+                                <button
+                                  className="btn btn-outline-danger btn-sm"
+                                  onClick={() => handleDeleteMat(assignment.mat_id, assignment.mat_name)}
+                                  disabled={deletingMatId === assignment.mat_id}
+                                  title={`Delete ${assignment.mat_name}`}
+                                >
+                                  {deletingMatId === assignment.mat_id ? (
+                                    <>
+                                      <Spinner as="span" animation="border" size="sm" role="status" className="me-1" />
+                                      <span className="d-none d-lg-inline">Deleting...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <i className="fas fa-trash me-1"></i>
+                                      <span className="d-none d-lg-inline">Delete</span>
+                                    </>
+                                  )}
+                                </button>
+                              </td>
+                            </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               ) : (

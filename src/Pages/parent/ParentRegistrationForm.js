@@ -418,35 +418,90 @@ const ParentRegistrationForm = () => {
         {/* Step 2: Add Children */}
         {currentStep === 2 && (
           <div className="mb-4">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h2 className="fw-bold mb-0" style={{ color: 'var(--dark-grey)' }}>Add Your Children</h2>
-              <div className="d-flex gap-2">
-                <div className="btn-group" role="group">
-                  <button
-                    type="button"
-                    onClick={() => setUploadMode(false)}
-                    className={`btn btn-sm ${!uploadMode ? 'btn-primary' : 'btn-outline-primary'}`}
-                  >
-                    Manual Entry
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setUploadMode(true)}
-                    className={`btn btn-sm ${uploadMode ? 'btn-primary' : 'btn-outline-primary'}`}
-                  >
-                    Excel Upload
-                  </button>
+            <div className="mb-3">
+              <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-3">
+                <h2 className="fw-bold mb-0" style={{ color: 'var(--dark-grey)' }}>Add Your Children</h2>
+                <div className="d-flex flex-column flex-sm-row gap-2 w-100 w-sm-auto">
+                  <div className="d-flex w-100 w-sm-auto" role="group" style={{borderRadius: '6px', overflow: 'hidden'}}>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode(false)}
+                      style={{ 
+                        height: '38px',
+                        minHeight: '38px',
+                        maxHeight: '38px',
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        border: '1px solid #0d6efd',
+                        borderRight: uploadMode ? '1px solid #0d6efd' : 'none',
+                        borderTopLeftRadius: '6px',
+                        borderBottomLeftRadius: '6px',
+                        borderTopRightRadius: uploadMode ? '0' : '0',
+                        borderBottomRightRadius: uploadMode ? '0' : '0',
+                        padding: '6px 12px',
+                        fontSize: '14px',
+                        lineHeight: '1.5',
+                        boxSizing: 'border-box',
+                        backgroundColor: !uploadMode ? '#0d6efd' : 'white',
+                        color: !uploadMode ? 'white' : '#0d6efd',
+                        cursor: 'pointer',
+                        flex: '1',
+                        fontWeight: '400',
+                        textAlign: 'center',
+                        userSelect: 'none',
+                        transition: 'none'
+                      }}
+                    >
+                      <span className="d-none d-sm-inline">Manual Entry</span>
+                      <span className="d-sm-none">Manual</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setUploadMode(true)}
+                      style={{ 
+                        height: '38px',
+                        minHeight: '38px',
+                        maxHeight: '38px',
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'center',
+                        border: '1px solid #0d6efd',
+                        borderLeft: !uploadMode ? '1px solid #0d6efd' : 'none',
+                        borderTopLeftRadius: !uploadMode ? '0' : '0',
+                        borderBottomLeftRadius: !uploadMode ? '0' : '0',
+                        borderTopRightRadius: '6px',
+                        borderBottomRightRadius: '6px',
+                        padding: '6px 12px',
+                        fontSize: '14px',
+                        lineHeight: '1.5',
+                        boxSizing: 'border-box',
+                        backgroundColor: uploadMode ? '#0d6efd' : 'white',
+                        color: uploadMode ? 'white' : '#0d6efd',
+                        cursor: 'pointer',
+                        flex: '1',
+                        fontWeight: '400',
+                        textAlign: 'center',
+                        userSelect: 'none',
+                        transition: 'none'
+                      }}
+                    >
+                      <span className="d-none d-sm-inline">Excel Upload</span>
+                      <span className="d-sm-none">Excel</span>
+                    </button>
+                  </div>
+                  {!uploadMode && (
+                    <button
+                      onClick={addChild}
+                      className="btn btn-success d-flex align-items-center justify-content-center w-100 w-sm-auto"
+                      type="button"
+                    >
+                      <Plus size={16} className="me-2" />
+                      <span className="d-none d-sm-inline">Add Child</span>
+                      <span className="d-sm-none">Add</span>
+                    </button>
+                  )}
                 </div>
-                {!uploadMode && (
-                  <button
-                    onClick={addChild}
-                    className="btn btn-success d-flex align-items-center"
-                    type="button"
-                  >
-                    <Plus size={16} className="me-2" />
-                    Add Child
-                  </button>
-                )}
               </div>
             </div>
 
@@ -462,27 +517,33 @@ const ParentRegistrationForm = () => {
                   <br />
                   <strong>name</strong> (or "Child Name"), <strong>date_of_birth</strong> (or "Date of Birth", "dob"), and <strong>belt_color</strong> (or "Belt Color", "belt")
                 </p>
-                <div className="d-flex align-items-center gap-3 mb-3">
-                  <label htmlFor="excel-upload" className="btn btn-primary d-flex align-items-center">
-                    <Upload size={16} className="me-2" />
-                    Choose Excel File
-                  </label>
-                  <input
-                    id="excel-upload"
-                    type="file"
-                    accept=".xlsx,.xls"
-                    onChange={handleExcelUpload}
-                    style={{ display: 'none' }}
-                  />
-                  <button
-                    onClick={downloadExcelTemplate}
-                    className="btn btn-outline-secondary d-flex align-items-center"
-                    type="button"
-                  >
-                    <Download size={16} className="me-2" />
-                    Download Template
-                  </button>
-                  <span className="text-muted">Accepted formats: .xlsx, .xls</span>
+                <div className="mb-3">
+                  <div className="d-flex flex-column flex-sm-row gap-2 mb-2">
+                    <label htmlFor="excel-upload" className="btn btn-primary d-flex align-items-center justify-content-center">
+                      <Upload size={16} className="me-2" />
+                      <span className="d-none d-sm-inline">Choose Excel File</span>
+                      <span className="d-sm-none">Choose File</span>
+                    </label>
+                    <input
+                      id="excel-upload"
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleExcelUpload}
+                      style={{ display: 'none' }}
+                    />
+                    <button
+                      onClick={downloadExcelTemplate}
+                      className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                      type="button"
+                    >
+                      <Download size={16} className="me-2" />
+                      <span className="d-none d-sm-inline">Download Template</span>
+                      <span className="d-sm-none">Template</span>
+                    </button>
+                  </div>
+                  <div className="text-center text-sm-start">
+                    <small className="text-muted">Accepted formats: .xlsx, .xls</small>
+                  </div>
                 </div>
                 <div className="alert alert-info">
                   <small>
