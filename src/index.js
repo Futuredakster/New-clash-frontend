@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import './styles/modern-theme.css';
-import './styles/modern-overrides.css';
+import './assets/styles/index.css';
+import './assets/styles/modern-theme.css';
+import './assets/styles/modern-overrides.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
