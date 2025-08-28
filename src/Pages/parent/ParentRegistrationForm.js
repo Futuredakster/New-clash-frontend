@@ -1,8 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { User, Users, Calendar, Award, ArrowRight, ArrowLeft, Check, Plus, Trash2 } from 'lucide-react';
+import { User, Users, Calendar, Award, ArrowRight, ArrowLeft, Check, Plus, Trash2, Upload, FileSpreadsheet, Download } from 'lucide-react';
 import { link } from '../../constant';
 import {AuthContext} from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 const ParentRegistrationForm = () => {
     const { parentState, setParentState } = useContext(AuthContext);
@@ -27,6 +28,7 @@ const ParentRegistrationForm = () => {
   ]);
 
   const [errors, setErrors] = useState({});
+  const [uploadMode, setUploadMode] = useState(false); // Toggle between manual and upload mode
 
   const beltColors = [
     'White', 'Yellow', 'Orange', 'Green', 'Purple', 'Brown', 'Black'
@@ -86,6 +88,127 @@ const ParentRegistrationForm = () => {
     if (children.length > 1) {
       setChildren(prev => prev.filter(child => child.id !== childId));
     }
+  };
+
+  // Handle Excel file upload
+  const handleExcelUpload = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+        const parsedChildren = jsonData.map((row, index) => {
+          // Try different possible column names for flexibility
+          const name = row.name || row.Name || row['Child Name'] || row['child_name'] || '';
+          const dateOfBirth = row.date_of_birth || row['Date of Birth'] || row.dob || row.DOB || row.birthday || '';
+          const beltColor = row.belt_color || row['Belt Color'] || row.belt || row.Belt || 'White';
+
+          // Validate belt color with case-insensitive matching
+          const normalizedBeltColor = String(beltColor).trim();
+          const validBeltColor = beltColors.find(color => 
+            color.toLowerCase() === normalizedBeltColor.toLowerCase()
+          ) || 'White';
+
+          return {
+            id: Date.now() + index,
+            name: String(name).trim(),
+            date_of_birth: formatDate(dateOfBirth),
+            belt_color: validBeltColor
+          };
+        }).filter(child => child.name); // Only include rows with names
+
+        if (parsedChildren.length === 0) {
+          setErrors({ upload: 'No valid children data found in the Excel file. Please check the format.' });
+          return;
+        }
+
+        setChildren(parsedChildren);
+        setErrors({}); // Clear any previous errors
+        alert(`Successfully imported ${parsedChildren.length} children from Excel file!`);
+        
+      } catch (error) {
+        console.error('Excel parsing error:', error);
+        setErrors({ upload: 'Error reading Excel file. Please check the file format and try again.' });
+      }
+    };
+    reader.readAsArrayBuffer(file);
+    
+    // Clear the file input
+    event.target.value = '';
+  };
+
+  // Helper function to format date from Excel
+  const formatDate = (dateValue) => {
+    if (!dateValue) return '';
+    
+    try {
+      let date;
+      
+      // If it's already a string in YYYY-MM-DD format, return as is
+      if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+        return dateValue;
+      }
+      
+      // Handle Excel date serial number
+      if (typeof dateValue === 'number') {
+        // Excel serial date to JS date
+        date = new Date((dateValue - 25569) * 86400 * 1000);
+      } else {
+        // Try to parse as date string
+        date = new Date(dateValue);
+      }
+      
+      if (isNaN(date.getTime())) {
+        return '';
+      }
+      
+      // Format as YYYY-MM-DD
+      return date.toISOString().split('T')[0];
+    } catch (error) {
+      console.error('Date formatting error:', error);
+      return '';
+    }
+  };
+
+  // Download Excel template
+  const downloadExcelTemplate = () => {
+    const templateData = [
+      {
+        name: 'John Doe',
+        date_of_birth: '2010-05-15',
+        belt_color: 'Yellow'
+      },
+      {
+        name: 'Jane Smith',
+        date_of_birth: '2012-08-22',
+        belt_color: 'Green'
+      },
+      {
+        name: 'Mike Johnson',
+        date_of_birth: '2011-12-03',
+        belt_color: 'White'
+      }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Children');
+    
+    // Set column widths
+    worksheet['!cols'] = [
+      { width: 20 }, // name
+      { width: 15 }, // date_of_birth
+      { width: 15 }  // belt_color
+    ];
+    
+    XLSX.writeFile(workbook, 'children_registration_template.xlsx');
   };
 
   // Validate step 1
@@ -297,16 +420,89 @@ const ParentRegistrationForm = () => {
           <div className="mb-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h2 className="fw-bold mb-0" style={{ color: 'var(--dark-grey)' }}>Add Your Children</h2>
-              <button
-                onClick={addChild}
-                className="btn btn-success d-flex align-items-center"
-                type="button"
-              >
-                <Plus size={16} className="me-2" />
-                Add Child
-              </button>
+              <div className="d-flex gap-2">
+                <div className="btn-group" role="group">
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode(false)}
+                    className={`btn btn-sm ${!uploadMode ? 'btn-primary' : 'btn-outline-primary'}`}
+                  >
+                    Manual Entry
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUploadMode(true)}
+                    className={`btn btn-sm ${uploadMode ? 'btn-primary' : 'btn-outline-primary'}`}
+                  >
+                    Excel Upload
+                  </button>
+                </div>
+                {!uploadMode && (
+                  <button
+                    onClick={addChild}
+                    className="btn btn-success d-flex align-items-center"
+                    type="button"
+                  >
+                    <Plus size={16} className="me-2" />
+                    Add Child
+                  </button>
+                )}
+              </div>
             </div>
-            {children.map((child, index) => (
+
+            {/* Excel Upload Mode */}
+            {uploadMode && (
+              <div className="card mb-3 p-3 bg-light">
+                <div className="d-flex align-items-center mb-3">
+                  <FileSpreadsheet size={24} className="me-2 text-primary" />
+                  <h4 className="fw-bold mb-0" style={{ color: 'var(--dark-grey)' }}>Upload Excel File</h4>
+                </div>
+                <p className="text-muted mb-3">
+                  Upload an Excel file (.xlsx, .xls) with your children's information. The file should have columns for:
+                  <br />
+                  <strong>name</strong> (or "Child Name"), <strong>date_of_birth</strong> (or "Date of Birth", "dob"), and <strong>belt_color</strong> (or "Belt Color", "belt")
+                </p>
+                <div className="d-flex align-items-center gap-3 mb-3">
+                  <label htmlFor="excel-upload" className="btn btn-primary d-flex align-items-center">
+                    <Upload size={16} className="me-2" />
+                    Choose Excel File
+                  </label>
+                  <input
+                    id="excel-upload"
+                    type="file"
+                    accept=".xlsx,.xls"
+                    onChange={handleExcelUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <button
+                    onClick={downloadExcelTemplate}
+                    className="btn btn-outline-secondary d-flex align-items-center"
+                    type="button"
+                  >
+                    <Download size={16} className="me-2" />
+                    Download Template
+                  </button>
+                  <span className="text-muted">Accepted formats: .xlsx, .xls</span>
+                </div>
+                <div className="alert alert-info">
+                  <small>
+                    <strong>Need help?</strong> Download the template above to see the expected format. 
+                    The template includes sample data showing exactly how to structure your Excel file.
+                  </small>
+                </div>
+                {errors.upload && (
+                  <div className="alert alert-danger mt-3">{errors.upload}</div>
+                )}
+                {children.length > 0 && (
+                  <div className="alert alert-info mt-3">
+                    <strong>Note:</strong> Uploading a new file will replace all current children data.
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Children List - only show in manual mode or if data exists */}
+            {(!uploadMode || children.length > 0) && children.map((child, index) => (
               <div key={child.id} className="card mb-3 p-3">
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <h3 className="fw-bold mb-0" style={{ color: 'var(--dark-grey)' }}>Child {index + 1}</h3>
