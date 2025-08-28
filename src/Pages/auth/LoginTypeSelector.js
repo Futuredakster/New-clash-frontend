@@ -44,11 +44,11 @@ const navigate = useNavigate();
       </div>
 
       {/* Registration Type Cards */}
-      <div className="row justify-content-center g-4">
+      <div className="row justify-content-center g-4" style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {registrationTypes.map((type) => {
           const IconComponent = type.icon;
           return (
-            <div className="col-12 col-md-6" key={type.id}>
+            <div className="col-12 col-md-6 col-xl-5" key={type.id}>
               <div
                 className={`card-modern h-100 shadow-sm ${selectedType === type.id ? 'border border-dark' : ''} cursor-pointer`}
                 style={{ transition: 'box-shadow 0.3s', boxShadow: selectedType === type.id ? 'var(--shadow-medium)' : 'var(--shadow-light)' }}

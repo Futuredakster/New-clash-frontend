@@ -26,6 +26,11 @@ const ParentChilds = () => {
         .then(response => {
             alert("✅ Child successfully added to cart!");
             console.log("Cart response:", response.data);
+            
+            // Refresh cart count in navigation
+            if (window.refreshCartCount) {
+                window.refreshCartCount();
+            }
         })
         .catch(error => {
             if (error.response && error.response.data && error.response.data.error) {

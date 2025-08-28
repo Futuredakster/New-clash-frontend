@@ -13,9 +13,48 @@ const Tolpbar = () => {
     const [error, setError] = useState(null);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [setUp, setSetUp] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tournament_id = queryParams.get('tournament_id');
+
+    const fetchCartCount = async () => {
+        // Only fetch if we have tournament_id and either participant or parent is logged in
+        if (!tournament_id || (!partState.status && !parentState.status)) {
+            setCartCount(0);
+            return;
+        }
+
+        try {
+            // Check if participant is logged in
+            const participantToken = localStorage.getItem('participantAccessToken');
+            if (participantToken && partState.status) {
+                const response = await axios.get(`${link}/cart/counts`, {
+                    headers: { participantAccessToken: participantToken },
+                    params: { tournament_id: tournament_id }
+                });
+                setCartCount(response.data || 0);
+                return;
+            }
+
+            // Check if parent is logged in
+            const parentToken = localStorage.getItem('parentToken');
+            if (parentToken && parentState.status) {
+                const response = await axios.get(`${link}/cart/count`, {
+                    headers: { parentAccessToken: parentToken },
+                    params: { tournament_id: tournament_id }
+                });
+                setCartCount(response.data || 0);
+                return;
+            }
+
+            setCartCount(0);
+        } catch (error) {
+            console.error('Error fetching cart count:', error);
+            // Don't let cart count errors break the navigation
+            setCartCount(0);
+        }
+    };
 
     useEffect(() => {
         const accessToken = localStorage.getItem('accessToken');
@@ -45,6 +84,18 @@ const Tolpbar = () => {
         isSetUp();
 
     }, [authState.status]);
+
+    useEffect(() => {
+        fetchCartCount();
+    }, [tournament_id, partState.status, parentState.status]);
+
+    // Expose cart refresh function globally
+    useEffect(() => {
+        window.refreshCartCount = fetchCartCount;
+        return () => {
+            delete window.refreshCartCount;
+        };
+    }, [tournament_id, partState.status, parentState.status]);
 
      const isSetUp = async () => {
          const accessToken = localStorage.getItem('accessToken');
@@ -231,9 +282,41 @@ const Tolpbar = () => {
                                         </div>
                                         <span className="d-none d-md-inline">{partState.name}</span>
                                       {tournament_id && (
-                                        <span className="ms-2">
-                                            <button onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} className="btn btn-outline-primary btn-sm">
-                                                <i className="fas fa-shopping-cart"></i>
+                                        <span className="ms-3">
+                                            <button 
+                                                onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} 
+                                                className="position-relative d-flex align-items-center justify-content-center"
+                                                style={{
+                                                    backgroundColor: `${cartCount > 0 ? '#e8f5e9' : '#f8f9fa'} !important`,
+                                                    color: `${cartCount > 0 ? '#28a745' : '#6c757d'} !important`,
+                                                    border: `2px solid ${cartCount > 0 ? '#28a745' : '#dee2e6'} !important`,
+                                                    borderRadius: '50px !important',
+                                                    padding: '8px 16px !important',
+                                                    fontSize: '14px !important',
+                                                    fontWeight: '600 !important',
+                                                    transition: 'all 0.3s ease',
+                                                    boxShadow: cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.3)' : '0 1px 4px rgba(0,0,0,0.1)',
+                                                    minWidth: '80px',
+                                                    height: '36px'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.transform = 'translateY(-2px)';
+                                                    e.target.style.boxShadow = cartCount > 0 ? '0 4px 12px rgba(40, 167, 69, 0.4)' : '0 2px 8px rgba(0,0,0,0.15)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.transform = 'translateY(0)';
+                                                    e.target.style.boxShadow = cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.3)' : '0 1px 4px rgba(0,0,0,0.1)';
+                                                }}
+                                            >
+                                                <div className="d-flex align-items-center justify-content-center">
+                                                    <i className="fas fa-shopping-bag me-2"></i>
+                                                    <span className="d-none d-sm-inline">Cart</span>
+                                                    {cartCount > 0 && (
+                                                        <span className="badge bg-white text-success rounded-pill ms-2 fw-bold" style={{fontSize: '11px', border: '1px solid #28a745'}}>
+                                                            {cartCount}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </button>
                                         </span>
                                     )}
@@ -250,9 +333,41 @@ const Tolpbar = () => {
                                         </div>
                                         <span className="d-none d-md-inline">{parentState.name}</span>
                                       {tournament_id && (
-                                        <span className="ms-2">
-                                            <button onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} className="btn btn-outline-primary btn-sm">
-                                                <i className="fas fa-shopping-cart"></i>
+                                        <span className="ms-3">
+                                            <button 
+                                                onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} 
+                                                className="position-relative d-flex align-items-center justify-content-center"
+                                                style={{
+                                                    backgroundColor: `${cartCount > 0 ? '#e8f5e9' : '#f8f9fa'} !important`,
+                                                    color: `${cartCount > 0 ? '#28a745' : '#6c757d'} !important`,
+                                                    border: `2px solid ${cartCount > 0 ? '#28a745' : '#dee2e6'} !important`,
+                                                    borderRadius: '50px !important',
+                                                    padding: '8px 16px !important',
+                                                    fontSize: '14px !important',
+                                                    fontWeight: '600 !important',
+                                                    transition: 'all 0.3s ease',
+                                                    boxShadow: cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.3)' : '0 1px 4px rgba(0,0,0,0.1)',
+                                                    minWidth: '80px',
+                                                    height: '36px'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    e.target.style.transform = 'translateY(-2px)';
+                                                    e.target.style.boxShadow = cartCount > 0 ? '0 4px 12px rgba(40, 167, 69, 0.4)' : '0 2px 8px rgba(0,0,0,0.15)';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.target.style.transform = 'translateY(0)';
+                                                    e.target.style.boxShadow = cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.3)' : '0 1px 4px rgba(0,0,0,0.1)';
+                                                }}
+                                            >
+                                                <div className="d-flex align-items-center justify-content-center">
+                                                    <i className="fas fa-shopping-bag me-2"></i>
+                                                    <span className="d-none d-sm-inline">Cart</span>
+                                                    {cartCount > 0 && (
+                                                        <span className="badge bg-white text-success rounded-pill ms-2 fw-bold" style={{fontSize: '11px', border: '1px solid #28a745'}}>
+                                                            {cartCount}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </button>
                                         </span>
                                     )}
@@ -382,11 +497,36 @@ const Tolpbar = () => {
                                     {tournament_id && (
                                         <Link 
                                             to={`DisplayCart?tournament_id=${tournament_id}`} 
-                                            className="mobile-nav-link" 
+                                            className="mobile-nav-link d-flex align-items-center justify-content-between" 
                                             onClick={handleMobileMenuClose}
+                                            style={{
+                                                backgroundColor: cartCount > 0 ? '#e8f5e9' : '#f8f9fa',
+                                                border: `2px solid ${cartCount > 0 ? '#28a745' : '#dee2e6'}`,
+                                                borderRadius: '50px',
+                                                margin: '8px -12px',
+                                                padding: '12px 20px',
+                                                transition: 'all 0.3s ease',
+                                                boxShadow: cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.2)' : '0 1px 4px rgba(0,0,0,0.1)'
+                                            }}
                                         >
-                                            <i className="fas fa-shopping-cart me-3"></i>
-                                            My Cart
+                                            <span className="d-flex align-items-center">
+                                                <i className="fas fa-shopping-bag me-3" style={{color: cartCount > 0 ? '#28a745' : '#6c757d'}}></i>
+                                                <span style={{
+                                                    color: cartCount > 0 ? '#28a745' : '#6c757d', 
+                                                    fontWeight: '600'
+                                                }}>
+                                                    My Cart
+                                                </span>
+                                            </span>
+                                            {cartCount > 0 && (
+                                                <span className="badge bg-white text-success rounded-pill px-2 py-1" style={{
+                                                    fontSize: '11px', 
+                                                    fontWeight: '600',
+                                                    border: '1px solid #28a745'
+                                                }}>
+                                                    {cartCount}
+                                                </span>
+                                            )}
                                         </Link>
                                     )}
 
@@ -431,11 +571,36 @@ const Tolpbar = () => {
                                     {tournament_id && (
                                         <Link 
                                             to={`DisplayCart?tournament_id=${tournament_id}`} 
-                                            className="mobile-nav-link" 
+                                            className="mobile-nav-link d-flex align-items-center justify-content-between" 
                                             onClick={handleMobileMenuClose}
+                                            style={{
+                                                backgroundColor: cartCount > 0 ? '#e8f5e9' : '#f8f9fa',
+                                                border: `2px solid ${cartCount > 0 ? '#28a745' : '#dee2e6'}`,
+                                                borderRadius: '50px',
+                                                margin: '8px -12px',
+                                                padding: '12px 20px',
+                                                transition: 'all 0.3s ease',
+                                                boxShadow: cartCount > 0 ? '0 2px 8px rgba(40, 167, 69, 0.2)' : '0 1px 4px rgba(0,0,0,0.1)'
+                                            }}
                                         >
-                                            <i className="fas fa-shopping-cart me-3"></i>
-                                            My Cart
+                                            <span className="d-flex align-items-center">
+                                                <i className="fas fa-shopping-bag me-3" style={{color: cartCount > 0 ? '#28a745' : '#6c757d'}}></i>
+                                                <span style={{
+                                                    color: cartCount > 0 ? '#28a745' : '#6c757d', 
+                                                    fontWeight: '600'
+                                                }}>
+                                                    My Cart
+                                                </span>
+                                            </span>
+                                            {cartCount > 0 && (
+                                                <span className="badge bg-white text-success rounded-pill px-2 py-1" style={{
+                                                    fontSize: '11px', 
+                                                    fontWeight: '600',
+                                                    border: '1px solid #28a745'
+                                                }}>
+                                                    {cartCount}
+                                                </span>
+                                            )}
                                         </Link>
                                     )}
 

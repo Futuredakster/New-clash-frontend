@@ -49,6 +49,11 @@ const addToCart = (item) => {
     // Success popup
     alert("✅ Division successfully added to cart!");
     console.log("Cart response:", response.data);
+    
+    // Refresh cart count in navigation
+    if (window.refreshCartCount) {
+      window.refreshCartCount();
+    }
   })
   .catch(error => {
     // If backend sent an error message

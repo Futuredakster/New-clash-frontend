@@ -44,44 +44,37 @@ const navigate = useNavigate();
       </div>
 
       {/* Registration Type Cards */}
-      <div className="row justify-content-center g-4">
+      <div className="row justify-content-center g-4" style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {registrationTypes.map((type) => {
           const IconComponent = type.icon;
           return (
-            <div className="col-12 col-md-6" key={type.id}>
+            <div className="col-12 col-md-6 col-xl-5" key={type.id}>
               <div
                 className={`card-modern h-100 shadow-sm ${selectedType === type.id ? 'border border-dark' : ''} cursor-pointer`}
                 style={{ transition: 'box-shadow 0.3s', boxShadow: selectedType === type.id ? 'var(--shadow-medium)' : 'var(--shadow-light)' }}
               >
-                <div className="card-modern-body text-center">
-                  <div className="d-flex justify-content-center align-items-center mb-3">
-                    <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 56, height: 56 }}>
-                      <IconComponent size={32} />
+                <div className="card-modern-body text-center d-flex flex-column h-100">
+                  {/* Top content that can grow */}
+                  <div className="flex-grow-1 d-flex flex-column justify-content-center">
+                    <div className="d-flex justify-content-center align-items-center mb-3">
+                      <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 56, height: 56 }}>
+                        <IconComponent size={32} />
+                      </div>
+                    </div>
+                    <h3 className="fw-bold mb-2" style={{ color: 'var(--dark-grey)' }}>{type.title}</h3>
+                    <p className="mb-4" style={{ color: 'var(--text-grey)', minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{type.description}</p>
+                  </div>
+                  
+                  {/* Bottom content that stays aligned */}
+                  <div className="mt-auto">
+                    <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Get Started</button>
+                    <div className="text-center mt-3">
+                      <small className="text-muted">
+                        Signed up already?{' '}
+                        <Link to={type.id === 'participant' ? "/PartEmailVer" : "/ParentEmailVer"} className="text-dark fw-bold">login here</Link>
+                      </small>
                     </div>
                   </div>
-                  <h3 className="fw-bold mb-2" style={{ color: 'var(--dark-grey)' }}>{type.title}</h3>
-                  <p className="mb-4" style={{ color: 'var(--text-grey)' }}>{type.description}</p>
-                  {type.id === 'participant' ? (
-                    <>
-                      <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Get Started</button>
-                      <div className="text-center mt-3">
-                        <small className="text-muted">
-                          Signed up already?{' '}
-                          <Link to="/PartEmailVer" className="text-dark fw-bold">login here</Link>
-                        </small>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Get Started</button>
-                      <div className="text-center mt-3">
-                        <small className="text-muted">
-                          Signed up already?{' '}
-                          <Link to="/ParentEmailVer" className="text-dark fw-bold">login here</Link>
-                        </small>
-                      </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
