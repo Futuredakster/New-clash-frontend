@@ -180,6 +180,25 @@ const DivisionsInOrder = () => {
               </div>
             </div>
 
+            {/* Mat Assignment */}
+            <div style={{
+              backgroundColor: division.mat_name ? '#e8f5e8' : '#fff3cd',
+              padding: '12px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              marginBottom: '10px'
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span><strong>Mat Assignment:</strong></span>
+                <span style={{ 
+                  fontWeight: 'bold',
+                  color: division.mat_name ? '#155724' : '#856404'
+                }}>
+                  {division.mat_name || "Hasn't been assigned one yet"}
+                </span>
+              </div>
+            </div>
+
             {/* Timing Information */}
             <div style={{
               backgroundColor: '#f8f9fa',
