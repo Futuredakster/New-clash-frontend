@@ -13,17 +13,9 @@ const ParticipantsView = () => {
   const division_id = queryParams.get('division_id');
 
   useEffect(() => {
-    const token = localStorage.getItem('participantAccessToken');
-    if (!token) {
-      setError({ message: 'No access token found.' });
-      setLoading(false);
-      return;
-    }
+
 
     axios.get(`${link}/participants/All`, {
-    headers: {
-      participantAccessToken: token,
-    },
     params: {
       division_id, // <-- pass division_id as query param
     },

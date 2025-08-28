@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../Divisions.css'; // Assuming this holds card styling
 import { link } from '../constant';
+import {AuthContext} from '../helpers/AuthContext';
 
 const TournamentView = () => {
   const [tournaments, setTournaments] = useState([]);
   const [error, setError] = useState('');
+   const {setParentState, parentState} = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTournaments = async () => {
+       const token = localStorage.getItem("participantAccessToken");
+      if(parentState.status === false && token){
       try {
-        const token = localStorage.getItem("participantAccessToken");
-        if (!token) {
-          console.log("No participant token found.");
-          navigate("/ParticipentVer");
-          return;
-        }
-
         const response = await axios.get(`${link}/tournaments/OneParticipant`, {
           headers: {
             participantAccessToken: token,
@@ -34,10 +31,31 @@ const TournamentView = () => {
         console.error("Error fetching tournament data:", err);
         setError('An error occurred while fetching tournaments.');
       }
+    } else if(parentState.status){
+      try {
+        const parentToken = localStorage.getItem("parentToken");
+        const response = await axios.get(`${link}/tournaments/parent`, {
+          headers: {
+            parentAccessToken: parentToken,
+          },
+        });
+
+        if (response.data.error) {
+          console.log("Error fetching tournaments for parent:", response.data.error);
+          setError(response.data.error);
+        } else {
+          setTournaments(response.data); // Expecting an array
+        }
+      } catch (err) {
+        console.error("Error fetching tournament data:", err);
+        setError('An error occurred while fetching tournaments.');
+      }
+    }
     };
 
+
     fetchTournaments();
-  }, [navigate]);
+  }, [ parentState.status]);
 
   return (
     <div className="container mt-5">

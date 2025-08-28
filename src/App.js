@@ -40,6 +40,8 @@ import RegistrationTypeSelector from './Pages/RegistrationTypeSelector';
 import ParentRegistrationForm from './Pages/ParentRegistrationForm';
 import ParentChilds from './Pages/ParentChilds';
 import ParentEmailVer from './Pages/ParentEmailVer';
+import LoginTypeSelector from './Pages/LoginTypeSelector';
+import ParentVer from './Pages/ParentVer';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -51,6 +53,7 @@ const accessToken = localStorage.getItem("accessToken");
 const token = localStorage.getItem("participantAccessToken");
 const parentToken = localStorage.getItem("parentToken");
 
+
 function App() {
 const [authState, setAuthState] = useState({username:"", id:0, status:false,accoint_id:0});
 const [props, setProps] = useState([]);
@@ -59,6 +62,20 @@ const [partState, setPartState] = useState([{id: 0,name:"",status:false}]);
 const [parentState, setParentState] = useState({id: 0,name:"",status:false});
 
 console.log(props);
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('parentAccessToken');
+      localStorage.removeItem('participantAccessToken');
+      localStorage.removeItem('accessToken');
+      window.location.href = '/landingpage';
+    }
+    return Promise.reject(error);
+  }
+);
 
 
 
@@ -188,6 +205,8 @@ useEffect(() => {
           <Route path ="/ParentRegistration" element={<ParentRegistrationForm />} />
           <Route path ="/ParentChilds" element={<ParentChilds />} />
           <Route path ="/ParentEmailVer" element={<ParentEmailVer />} />
+          <Route path ="/LoginTypeSelector" element={<LoginTypeSelector />} />
+          <Route path='/ParentVer' element={<ParentVer />} />
           </Routes>
         </div>
       </div>

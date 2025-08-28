@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../Divisions.css';
 import { link } from '../constant';
 import { useLocation } from "react-router-dom";
+import {AuthContext} from '../helpers/AuthContext';
 
 const DivisionsView = () => {
   const [divisions, setDivisions] = useState([]);
   const [time, setTime] = useState(0);
   const [error, setError] = useState('');
+  const {setParentState, parentState} = useContext(AuthContext);
   const navigate = useNavigate();
    const location = useLocation();
   const { tournamentId } = location.state || {};
@@ -16,11 +18,7 @@ const DivisionsView = () => {
   useEffect(() => {
     const fetchDivisions = async () => {
       const token = localStorage.getItem('participantAccessToken');
-      if (!token) {
-        setError('No access token found.');
-        return;
-      }
-
+     if(parentState.status === false && token){
       try {
         const response = await axios.get(`${link}/Divisions/partview`, {
           headers: {
@@ -36,6 +34,24 @@ const DivisionsView = () => {
         console.error('Error fetching division data:', err);
         setError('Failed to load divisions. Please try again.');
       }
+    }else if(parentState.status){
+       try {
+       const parentToken = localStorage.getItem("parentToken");
+        const response = await axios.get(`${link}/Divisions/parentview`, {
+          headers: {
+            parentAccessToken: parentToken,
+          },
+           params: {
+            tournamentId,
+          },
+        });
+        setDivisions(response.data.divisions);
+        setTime(response.data.total_time); // total_time is a number
+      } catch (err) {
+        console.error('Error fetching division data:', err);
+        setError('Failed to load divisions. Please try again.');
+      }
+    }
     };
 
     fetchDivisions();

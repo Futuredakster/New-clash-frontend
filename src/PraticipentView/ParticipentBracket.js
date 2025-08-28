@@ -15,23 +15,19 @@ const ParticipentBracket = () => {
       const division_id = queryParams.get('division_id');
 
   const generateBracket = async () => {
-    const token = localStorage.getItem('participantAccessToken');
-    if (!token) {
-      console.error('No token found in localStorage.');
-      return;
-    }
 
     try {
       const response = await axios.get(`${link}/brackets/participent`, {
-        headers: {
-            participantAccessToken: token,
-        },
         params: {
           division_id, // Pass the division_id as a query parameter
         },
       });
 
       let fetchedBrackets = response.data;
+      if(fetchedBrackets.length === 0) {
+       alert('No brackets created yet for the given division.');
+        return;
+      }
       console.log('Fetched brackets:', fetchedBrackets);
 
       // Sort and map the brackets

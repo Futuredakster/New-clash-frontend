@@ -28,7 +28,7 @@ function LandingPage() {
       </Button>
       <Button
         className="btn btn-modern-outline"
-        onClick={() => navigate('/ParticipetnVer')}
+        onClick={() => navigate('/LoginTypeSelector')}
       >
         <i className="fas fa-list-check me-2"></i>
         <span>SEE YOUR TOURNAMENTS</span>
