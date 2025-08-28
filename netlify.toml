@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "20.9.0"
   NPM_FLAGS = "--production=false"
+  CI = "false"
 
 [[redirects]]
   from = "/*"
