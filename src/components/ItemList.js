@@ -100,114 +100,191 @@ const seeDivision = (tournamentName, tournamentId) =>{
     <div className="w-100">
       {/* Desktop Table View */}
       <div className="d-none d-lg-block">
-        <div className="table-responsive">
-          <table className="table table-modern">
-            <thead>
-              <tr>
-                <th>Tournament</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Divisions</th>
-                <th>Image</th>
-                <th>Actions</th>
-                <th>Status</th>
-                <th>Controls</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item, index) => (
-                <tr key={index} className="slide-up">
-                  <td>
-                    <strong>{item.tournament_name}</strong>
-                  </td>
-                  <td>
-                    {new Date(item.start_date).toLocaleDateString()}
-                  </td>
-                  <td>
-                    {new Date(item.end_date).toLocaleDateString()}
-                  </td>
-                  <td>
-                    {accountId === item.account_id ? (
-                      <button 
-                        className="btn btn-modern btn-sm" 
-                        onClick={() =>seeDivision(item.tournament_name,item.tournament_id)}
-                      > 
-                        <i className="fas fa-eye me-2"></i>View Divisions
-                      </button>
-                    ):( 
-                      <span className="text-muted small">N/A</span>
-                    )}
-                  </td>
-                  <td>
-                    {item.imageUrl ? (
-                      <img 
-                        src={item.imageUrl} 
-                        alt={item.tournament_name} 
-                        className="img-thumbnail"
-                        style={{width: '50px', height: '50px', objectFit: 'cover'}}
-                      />
-                    ) : (
-                      <div className="bg-light d-flex align-items-center justify-content-center" 
-                           style={{width: '50px', height: '50px', borderRadius: '4px'}}>
-                        <i className="fas fa-image text-muted"></i>
-                      </div>
-                    )}
-                  </td>
-                  <td>
-                    {accountId === item.account_id ? (
-                      <div className="dropdown-modern">
-                        <Dropdown show={openStates[index]} onToggle={(isOpen) => {
-                          const newOpenStates = [...openStates];
-                          newOpenStates[index] = isOpen;
-                          setOpenStates(newOpenStates);
-                        }}>
-                          <Dropdown.Toggle variant="outline-dark" size="sm" id={`dropdown-basic-${index}`}>
-                            Actions
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
-                              <i className="fas fa-edit me-2"></i>Edit
-                            </Dropdown.Item>
-                            <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
-                              <i className="fas fa-trash me-2"></i>Delete
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </div>
-                    ) : (
-                      <span className="text-muted small">N/A</span>
-                    )}
-                  </td>
-                  <td>
-                    {item.is_published === false ? (
-                      <button 
-                        className="btn btn-modern-outline btn-sm" 
-                        onClick={() => onPublish(item.tournament_id)}
-                      >
-                        <i className="fas fa-paper-plane me-2"></i>Publish
-                      </button>
-                    ) : (
-                      <span className="status-badge status-published">
-                        <i className="fas fa-check me-1"></i>Published
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                     {accountId === item.account_id ?  (
-                       <button 
-                         className="btn btn-modern btn-sm" 
-                         onClick={()=> startTournament(item.tournament_id)}
-                       >
-                         <i className="fas fa-play me-1"></i>Start
-                       </button>
-                    ) : (
-                     <span className="text-muted">N/A</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="card border-0 shadow-sm">
+          <div className="card-header bg-white border-0 py-3">
+            <h5 className="mb-0 d-flex align-items-center">
+              <i className="fas fa-trophy me-2 text-primary"></i>
+              Tournaments Overview
+              <span className="badge bg-light text-dark ms-2">{items.length}</span>
+            </h5>
+          </div>
+          <div className="card-body p-0">
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead className="bg-light">
+                  <tr>
+                    <th className="border-0 py-3 ps-4">
+                      <i className="fas fa-calendar-alt me-2 text-muted"></i>Tournament
+                    </th>
+                    <th className="border-0 py-3">
+                      <i className="fas fa-play-circle me-2 text-muted"></i>Start Date
+                    </th>
+                    <th className="border-0 py-3">
+                      <i className="fas fa-stop-circle me-2 text-muted"></i>End Date
+                    </th>
+                    <th className="border-0 py-3 text-center">
+                      <i className="fas fa-layer-group me-2 text-muted"></i>Divisions
+                    </th>
+                    <th className="border-0 py-3 text-center">
+                      <i className="fas fa-cog me-2 text-muted"></i>Actions
+                    </th>
+                    <th className="border-0 py-3 text-center">
+                      <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
+                    </th>
+                    <th className="border-0 py-3 pe-4 text-center">
+                      <i className="fas fa-play me-2 text-muted"></i>Controls
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {items.map((item, index) => (
+                    <tr key={index} className="slide-up align-middle" style={{borderLeft: '4px solid transparent'}}>
+                      <td className="py-4 ps-4">
+                        <div className="d-flex align-items-center">
+                          <div className="me-3">
+                            {item.imageUrl ? (
+                              <img 
+                                src={item.imageUrl} 
+                                alt={item.tournament_name} 
+                                className="rounded-circle border"
+                                style={{width: '40px', height: '40px', objectFit: 'cover'}}
+                              />
+                            ) : (
+                              <div className="bg-light d-flex align-items-center justify-content-center rounded-circle border" 
+                                   style={{width: '40px', height: '40px'}}>
+                                <i className="fas fa-trophy text-muted"></i>
+                              </div>
+                            )}
+                          </div>
+                          <div>
+                            <div className="fw-bold text-dark mb-1">{item.tournament_name}</div>
+                            <small className="text-muted">
+                              <i className="fas fa-calendar me-1"></i>
+                              {item.signup_duedate ? new Date(item.signup_duedate).toLocaleDateString() : 'No deadline set'}
+                            </small>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-4">
+                        <div className="text-dark">
+                          {new Date(item.start_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                        <small className="text-muted">
+                          {new Date(item.start_date).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </small>
+                      </td>
+                      <td className="py-4">
+                        <div className="text-dark">
+                          {new Date(item.end_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                        <small className="text-muted">
+                          {new Date(item.end_date).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </small>
+                      </td>
+                      <td className="py-4 text-center">
+                        {accountId === item.account_id ? (
+                          <button 
+                            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
+                            onClick={() =>seeDivision(item.tournament_name,item.tournament_id)}
+                            style={{borderRadius: '20px'}}
+                          > 
+                            <i className="fas fa-eye me-2"></i>
+                            <span>View Divisions</span>
+                          </button>
+                        ):( 
+                          <span className="text-muted small d-inline-flex align-items-center">
+                            <i className="fas fa-lock me-1"></i>Restricted
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 text-center">
+                        {accountId === item.account_id ? (
+                          <div className="dropdown-modern d-inline-block">
+                            <Dropdown show={openStates[index]} onToggle={(isOpen) => {
+                              const newOpenStates = [...openStates];
+                              newOpenStates[index] = isOpen;
+                              setOpenStates(newOpenStates);
+                            }}>
+                              <Dropdown.Toggle 
+                                variant="outline-secondary" 
+                                size="sm" 
+                                id={`dropdown-basic-${index}`}
+                                style={{borderRadius: '20px'}}
+                                className="d-flex align-items-center"
+                              >
+                                <i className="fas fa-ellipsis-h"></i>
+                              </Dropdown.Toggle>
+                              <Dropdown.Menu>
+                                <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
+                                  <i className="fas fa-edit me-2 text-primary"></i>Edit Tournament
+                                </Dropdown.Item>
+                                <Dropdown.Divider />
+                                <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
+                                  <i className="fas fa-trash me-2"></i>Delete Tournament
+                                </Dropdown.Item>
+                              </Dropdown.Menu>
+                            </Dropdown>
+                          </div>
+                        ) : (
+                          <span className="text-muted small d-inline-flex align-items-center">
+                            <i className="fas fa-ban me-1"></i>N/A
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 text-center">
+                        {item.is_published === false ? (
+                          <button 
+                            className="btn btn-outline-warning btn-sm d-inline-flex align-items-center" 
+                            onClick={() => onPublish(item.tournament_id)}
+                            style={{borderRadius: '20px'}}
+                          >
+                            <i className="fas fa-paper-plane me-2"></i>
+                            <span>Publish</span>
+                          </button>
+                        ) : (
+                          <span className="badge bg-success d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
+                            <i className="fas fa-check-circle me-2"></i>Published
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 pe-4 text-center">
+                         {accountId === item.account_id ?  (
+                           <button 
+                             className="btn btn-success btn-sm d-inline-flex align-items-center" 
+                             onClick={()=> startTournament(item.tournament_id)}
+                             style={{borderRadius: '20px'}}
+                           >
+                             <i className="fas fa-play me-2"></i>
+                             <span>Start</span>
+                           </button>
+                        ) : (
+                         <span className="text-muted small d-inline-flex align-items-center">
+                           <i className="fas fa-ban me-1"></i>N/A
+                         </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
 
