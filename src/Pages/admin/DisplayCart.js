@@ -10,32 +10,46 @@ import { Container, Row, Col, Card, Button, Badge, Spinner, Alert } from 'react-
 const DisplayCart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
   const [paymentLoading, setPaymentLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const {parentState,setParentState} = useContext(AuthContext);
+  const {parentState, partState} = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
   const queryParams = new URLSearchParams(location.search);
   const tournament_id = queryParams.get('tournament_id');
   console.log("Tournament ID:", tournament_id);
 
+  // Wait for auth state to be determined
+  useEffect(() => {
+    const checkAuthState = () => {
+      const parentToken = localStorage.getItem('parentToken');
+      const participantToken = localStorage.getItem('participantAccessToken');
+      
+      // If we have tokens but states aren't loaded yet, wait
+      if ((parentToken && !parentState.status && !partState.status) || 
+          (participantToken && !partState.status && !parentState.status)) {
+        // Still loading auth, wait a bit
+        setTimeout(checkAuthState, 100);
+        return;
+      }
+      
+      setAuthLoading(false);
+    };
+    
+    checkAuthState();
+  }, [parentState.status, partState.status]);
  
   useEffect(() => {
+    if (authLoading) return; // Wait for auth to complete
+    
     const fetchCartItems = async () => {
       setLoading(true);
       setError('');
       
       try {
-        if (!parentState.status) {
-          const token = localStorage.getItem('participantAccessToken');
-          const response = await axios.get(`${link}/cart`, {
-            headers: { participantAccessToken: token },
-            params: { tournament_id }
-          });
-          console.log('Fetched cart items:', response.data);
-          setCartItems(response.data.divisions || []);
-        } else {
+        if (parentState.status) {
           const parentToken = localStorage.getItem('parentToken');
           const response = await axios.get(`${link}/cart/parent`, {
             headers: { parentAccessToken: parentToken },
@@ -43,6 +57,14 @@ const DisplayCart = () => {
           });
           console.log('Fetched cart items for parent:', response.data);
           setCartItems(response.data.cartItems || []);
+        } else {
+          const token = localStorage.getItem('participantAccessToken');
+          const response = await axios.get(`${link}/cart`, {
+            headers: { participantAccessToken: token },
+            params: { tournament_id }
+          });
+          console.log('Fetched cart items:', response.data);
+          setCartItems(response.data.divisions || []);
         }
       } catch (error) {
         console.error('Error fetching cart items:', error);
@@ -54,7 +76,7 @@ const DisplayCart = () => {
     };
 
     fetchCartItems();
-  }, [parentState.status, tournament_id]);
+  }, [parentState.status, tournament_id, authLoading]);
 
   const handlePayment = async () => {
     if (cartItems.length === 0) return;
@@ -90,6 +112,30 @@ const DisplayCart = () => {
       const division = parentState.status ? item.Division : item;
       return total + (division.cost || 0);
     }, 0);
+  };
+
+  const handleDeleteItem = async (cartId) => {
+    try {
+      const endpoint = parentState.status ? `/cart/parent/${cartId}` : `/cart/item/${cartId}`;
+      const token = parentState.status 
+        ? localStorage.getItem('parentToken')
+        : localStorage.getItem('participantAccessToken');
+      const headerKey = parentState.status ? 'parentAccessToken' : 'participantAccessToken';
+
+      await axios.delete(`${link}${endpoint}`, {
+        headers: { [headerKey]: token }
+      });
+
+      // Remove item from local state
+      setCartItems(prevItems => prevItems.filter(item => item.cart_id !== cartId));
+      setSuccess('Item removed from cart successfully');
+      setTimeout(() => setSuccess(''), 3000);
+      
+    } catch (error) {
+      console.error('Error deleting cart item:', error);
+      setError('Failed to remove item from cart. Please try again.');
+      setTimeout(() => setError(''), 5000);
+    }
   };
 
   function capitalize(str) {
@@ -143,11 +189,19 @@ const DisplayCart = () => {
             </Col>
             
             <Col xs={12} md={3} className="text-md-end">
-              <div className="d-flex align-items-center justify-content-md-end">
+              <div className="d-flex align-items-center justify-content-md-end gap-3">
                 <span className="h4 mb-0 text-success fw-bold">
                   <i className="fas fa-dollar-sign me-1"></i>
                   {(division.cost / 100).toFixed(2)}
                 </span>
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  onClick={() => handleDeleteItem(item.cart_id)}
+                  title="Remove from cart"
+                >
+                  <i className="fas fa-trash"></i>
+                </Button>
               </div>
             </Col>
           </Row>
@@ -189,10 +243,12 @@ const DisplayCart = () => {
 
             <Card.Body className="p-4">
               {/* Loading State */}
-              {loading && (
+              {(loading || authLoading) && (
                 <div className="text-center py-5">
                   <Spinner animation="border" variant="primary" className="mb-3" />
-                  <p className="text-muted">Loading your cart...</p>
+                  <p className="text-muted">
+                    {authLoading ? 'Checking authentication...' : 'Loading your cart...'}
+                  </p>
                 </div>
               )}
 
@@ -201,6 +257,14 @@ const DisplayCart = () => {
                 <Alert variant="danger" dismissible onClose={() => setError('')}>
                   <i className="fas fa-exclamation-triangle me-2"></i>
                   {error}
+                </Alert>
+              )}
+
+              {/* Success State */}
+              {success && (
+                <Alert variant="success" dismissible onClose={() => setSuccess('')}>
+                  <i className="fas fa-check-circle me-2"></i>
+                  {success}
                 </Alert>
               )}
 
