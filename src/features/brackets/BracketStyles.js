@@ -83,6 +83,7 @@ export const getBracketPrintStyles = () => {
         flex-direction: column;
         justify-content: center;
         transition: all 0.3s ease;
+        z-index: 10; /* Ensure brackets appear above canvas lines */
       }
       
       .match-bracket:hover {
