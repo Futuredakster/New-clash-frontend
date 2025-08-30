@@ -36,8 +36,10 @@ export const createCanvasConnectionScript = () => {
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#2c3e50'; // Modern dark blue-gray color
+        ctx.lineWidth = 3; // Slightly thicker for better visibility
+        ctx.lineCap = 'round'; // Rounded line ends for smoother appearance
+        ctx.lineJoin = 'round'; // Rounded corners for cleaner connections
         
         console.log('Canvas size: ' + canvas.width + 'x' + canvas.height);
         
@@ -91,12 +93,25 @@ export const createCanvasConnectionScript = () => {
           
           console.log('Drawing connection from ' + sourceMatch.dataset.bracketId + ' to ' + targetBracketId + ': (' + startX.toFixed(1) + ',' + startY.toFixed(1) + ') -> (' + endX.toFixed(1) + ',' + endY.toFixed(1) + ')' + (isPrintContext ? ' [print adjusted]' : ''));
           
-          // Draw curved line
-          const cpX = (startX + endX) / 2;
+          // Draw modern bracket line with right angles
+          const midX = startX + (endX - startX) * 0.7; // Connection point closer to target
+          
           ctx.beginPath();
           ctx.moveTo(startX, startY);
-          ctx.bezierCurveTo(cpX, startY, cpX, endY, endX, endY);
+          ctx.lineTo(midX, startY); // Horizontal line from source
+          ctx.lineTo(midX, endY);   // Vertical line to target level
+          ctx.lineTo(endX, endY);   // Horizontal line to target
           ctx.stroke();
+          
+          // Add small connection dots at endpoints for clarity
+          ctx.fillStyle = '#2c3e50'; // Match line color
+          ctx.beginPath();
+          ctx.arc(startX, startY, 4, 0, 2 * Math.PI);
+          ctx.fill();
+          
+          ctx.beginPath();
+          ctx.arc(endX, endY, 4, 0, 2 * Math.PI);
+          ctx.fill();
           
           connectionsDrawn++;
         });

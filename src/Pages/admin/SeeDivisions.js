@@ -490,7 +490,9 @@ const SeeDivisions = () => {
                           <i className="fas fa-cog me-2 text-muted"></i>Actions
                         </th>
                         <th className="border-0 py-3 text-center" style={{width: '14%'}}>
-                          <i className="fas fa-users me-2 text-muted"></i>Participants
+                          <div className="d-flex align-items-center justify-content-center">
+                            <i className="fas fa-users me-2 text-muted"></i>Participants
+                          </div>
                         </th>
                         <th className="border-0 py-3 pe-4 text-center" style={{width: '15%'}}>
                           <i className="fas fa-sitemap me-2 text-muted"></i>Brackets

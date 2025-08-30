@@ -70,18 +70,24 @@ export const getBracketPrintStyles = () => {
       }
 
       .match-bracket {
-        border: 2px solid #333;
-        border-radius: 8px;
-        padding: 12px;
+        border: 2px solid #2c3e50;
+        border-radius: 6px;
+        padding: 14px;
         background-color: #fff;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 15px;
+        box-shadow: 0 4px 8px rgba(44,62,80,0.15);
+        margin-bottom: 20px;
         position: relative;
         width: 100%;
-        min-height: 80px;
+        min-height: 85px;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        transition: all 0.3s ease;
+      }
+      
+      .match-bracket:hover {
+        box-shadow: 0 6px 12px rgba(44,62,80,0.25);
+        transform: translateY(-1px);
       }
 
       .match-participant {
