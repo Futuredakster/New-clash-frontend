@@ -180,7 +180,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
           </div>
           <div className="card-body p-0">
             <div className="table-responsive">
-              <table className="table table-hover mb-0">
+              <table className="table table-hover mb-0 w-100">
                 <thead className="bg-light">
                   <tr>
                     <th className="border-0 py-3 ps-4">

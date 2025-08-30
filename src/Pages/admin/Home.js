@@ -58,7 +58,7 @@ function Home() {
             <p className="page-subtitle-modern">Manage and view all your tournaments</p>
           </div>
           
-          <div className="w-100" style={{ overflowX: 'hidden' }}>
+          <div className="w-100">
             <div className="mb-4">
               <Searchbar
                 search={search}
