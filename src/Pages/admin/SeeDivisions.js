@@ -390,7 +390,7 @@ const SeeDivisions = () => {
             </Alert>
           )}
 
-          <div className="mb-4 d-flex gap-2 flex-wrap align-items-center">
+          <div className="mb-4 d-flex flex-wrap align-items-center" style={{gap: '1.75rem'}}>
             <Button 
               className="btn btn-modern" 
               onClick={() => navigate(`/CreateDivision?${queryString}`)}
@@ -399,7 +399,6 @@ const SeeDivisions = () => {
               Add Division
             </Button>
             
-            {/* Mat Management Buttons */}
             <Button 
               className="btn btn-outline-success text-nowrap" 
               onClick={() => setShowCreateMats(true)}
