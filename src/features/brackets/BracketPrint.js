@@ -73,10 +73,10 @@ const generateTraditionalBracket = (rounds) => {
   const sortedRounds = Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b));
   const finalRound = Math.max(...sortedRounds.map(r => parseInt(r)));
 
-  // Split Round 1 matches between left and right sides
+  // Put all Round 1 matches on the left side to avoid pairing issues
   const round1Matches = rounds['1'] || [];
-  const leftMatches = round1Matches.slice(0, Math.ceil(round1Matches.length / 2));
-  const rightMatches = round1Matches.slice(Math.ceil(round1Matches.length / 2));
+  const leftMatches = [...round1Matches];
+  const rightMatches = [];
 
   // Middle rounds (2, 3, 4, etc.) go in the center
   const middleRounds = sortedRounds.filter(round => parseInt(round) > 1);
@@ -85,35 +85,39 @@ const generateTraditionalBracket = (rounds) => {
   const leftRounds = leftMatches.length > 0 ? [{ round: 1, matches: leftMatches }] : [];
   const rightRounds = rightMatches.length > 0 ? [{ round: 1, matches: rightMatches }] : [];
 
-  // Build connection mapping based on participant IDs between consecutive rounds
+  // Build connection mapping based on participant IDs - check ALL future rounds, not just consecutive ones
   const connections = {};
   
-  for (let i = 0; i < sortedRounds.length - 1; i++) {
-    const currentRound = sortedRounds[i];
-    const nextRound = sortedRounds[i + 1];
-    
+  sortedRounds.forEach((currentRound, currentIndex) => {
     const currentRoundMatches = rounds[currentRound] || [];
-    const nextRoundMatches = rounds[nextRound] || [];
     
-    // For each match in current round, find which next round match it connects to
+    // For each match in current round, find which future round match it connects to
     currentRoundMatches.forEach(currentMatch => {
       // Only create connection if current match has a winner
       if (!currentMatch.winner) return;
       
-      // Find next round match that contains the winner's participant_id
+      // Find the winner's participant_id
       const winnerParticipantId = currentMatch.winner === 'user1' ? 
         currentMatch.participant_id1 : currentMatch.participant_id2;
       
-      const targetMatch = nextRoundMatches.find(nextMatch => 
-        nextMatch.participant_id1 === winnerParticipantId || 
-        nextMatch.participant_id2 === winnerParticipantId
-      );
-      
-      if (targetMatch) {
-        connections[currentMatch.bracket_id] = targetMatch.bracket_id;
+      // Check ALL future rounds (not just the immediate next one) to handle cases where brackets skip rounds
+      for (let futureIndex = currentIndex + 1; futureIndex < sortedRounds.length; futureIndex++) {
+        const futureRound = sortedRounds[futureIndex];
+        const futureRoundMatches = rounds[futureRound] || [];
+        
+        const targetMatch = futureRoundMatches.find(futureMatch => 
+          futureMatch.participant_id1 === winnerParticipantId || 
+          futureMatch.participant_id2 === winnerParticipantId
+        );
+        
+        if (targetMatch) {
+          connections[currentMatch.bracket_id] = targetMatch.bracket_id;
+          console.log(`Connection found: Bracket ${currentMatch.bracket_id} (Round ${currentRound}) -> Bracket ${targetMatch.bracket_id} (Round ${futureRound})`);
+          break; // Stop searching once we find the target
+        }
       }
     });
-  }
+  });
 
   // Determine champion
   const champion = rounds[finalRound]?.[0]?.winner ? 

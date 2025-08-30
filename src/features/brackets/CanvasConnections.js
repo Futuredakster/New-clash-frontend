@@ -53,6 +53,8 @@ export const createCanvasConnectionScript = () => {
         
         let connectionsDrawn = 0;
         
+        // Collect all connection data first to avoid intersections
+        const connections = [];
         connectionElements.forEach(line => {
           const sourceMatch = line.closest('.match-bracket');
           const targetBracketId = line.dataset.targetBracket;
@@ -91,11 +93,64 @@ export const createCanvasConnectionScript = () => {
             endX -= 10;
           }
           
-          console.log('Drawing connection from ' + sourceMatch.dataset.bracketId + ' to ' + targetBracketId + ': (' + startX.toFixed(1) + ',' + startY.toFixed(1) + ') -> (' + endX.toFixed(1) + ',' + endY.toFixed(1) + ')' + (isPrintContext ? ' [print adjusted]' : ''));
+          connections.push({
+            startX, startY, endX, endY, isLeftSide,
+            sourceBracketId: sourceMatch.dataset.bracketId,
+            targetBracketId: targetBracketId
+          });
+        });
+        
+        // Simple lane-based approach: assign each bracket pair to its own "lane"
+        // Group connections by their target bracket (bracket pairs going to same Round 2 match)
+        const targetGroups = {};
+        connections.forEach(conn => {
+          // Skip connections that don't have a valid target (like byes)
+          if (conn.targetBracketId) {
+            if (!targetGroups[conn.targetBracketId]) {
+              targetGroups[conn.targetBracketId] = [];
+            }
+            targetGroups[conn.targetBracketId].push(conn);
+          }
+        });
+        
+        // Sort connections by their source bracket position to minimize crossings
+        // Lower bracket IDs get lower lanes to keep things more orderly
+        const sortedTargetIds = Object.keys(targetGroups).sort((a, b) => {
+          // Get the minimum source bracket ID for each target group
+          const minSourceA = Math.min(...targetGroups[a].map(conn => parseInt(conn.sourceBracketId)));
+          const minSourceB = Math.min(...targetGroups[b].map(conn => parseInt(conn.sourceBracketId)));
+          return minSourceA - minSourceB;
+        });
+        
+        // Assign each target group a lane number based on source bracket order
+        const targetToLane = {};
+        let laneCounter = 0;
+        sortedTargetIds.forEach(targetId => {
+          targetToLane[targetId] = laneCounter;
+          laneCounter++;
+        });
+        
+        console.log('Assigned lanes:', targetToLane);
+        
+        connections.forEach((conn) => {
+          const { startX, startY, endX, endY, isLeftSide, sourceBracketId, targetBracketId } = conn;
           
-          // Draw modern bracket line with right angles
-          const midX = startX + (endX - startX) * 0.7; // Connection point closer to target
+          // Skip drawing connections that don't have a valid target (bye brackets)
+          if (!targetBracketId || !targetToLane.hasOwnProperty(targetBracketId)) {
+            console.log('Skipping connection from bracket ' + sourceBracketId + ' - no valid target or bye bracket');
+            return;
+          }
           
+          console.log('Drawing connection from ' + sourceBracketId + ' to ' + targetBracketId);
+          
+          // Calculate midX based on the assigned lane
+          const baseMidX = startX + (endX - startX) * 0.7;
+          const laneOffset = targetToLane[targetBracketId] * 50; // 50px spacing between lanes
+          const midX = baseMidX + laneOffset;
+          
+          console.log('Bracket ' + sourceBracketId + ' -> Target ' + targetBracketId + ' using lane ' + targetToLane[targetBracketId] + ' (offset: ' + laneOffset + 'px)');
+          
+          // Draw the connection line
           ctx.beginPath();
           ctx.moveTo(startX, startY);
           ctx.lineTo(midX, startY); // Horizontal line from source
