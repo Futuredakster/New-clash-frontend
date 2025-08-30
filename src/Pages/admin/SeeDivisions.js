@@ -376,8 +376,8 @@ const SeeDivisions = () => {
 
   return (
     <Container fluid className="fade-in px-2 px-md-3">
-      <Row>
-        <Col xs={12} className="px-1 px-md-3">
+      <Row className="justify-content-center">
+        <Col xs={12} xl={11} className="px-1 px-md-3">
           <div className="page-header-modern">
             <h1 className="page-title-modern">{tournament_name}</h1>
             <p className="page-subtitle-modern">Manage divisions for this tournament</p>
@@ -462,64 +462,145 @@ const SeeDivisions = () => {
 
           {/* Desktop Table View */}
           <div className="d-none d-lg-block">
-            <div className="table-responsive">
-              <table className="table table-modern">
-                <thead>
-                  <tr>
-                    <th>Gender</th>
-                    <th>Age Group</th>
-                    <th>Proficiency Level</th>
-                    <th>Category</th>
-                    <th>Actions</th>
-                    <th>Participants</th>
-                    <th>Brackets</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.map((item, index) => (
-                    <tr key={index} className="slide-up">
-                      <td><strong>{item.gender}</strong></td>
-                      <td>{item.age_group}</td>
-                      <td>{item.proficiency_level}</td>
-                      <td>{item.category}</td>
-                      <td>
-                        <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
-                          <Dropdown.Toggle variant="outline-dark" size="sm" id={`dropdown-basic-${index}`}>
-                            <i className="fas fa-edit me-1"></i>Edit
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item onClick={handleShowModal}>
-                              <i className="fas fa-edit me-2"></i>Edit Division
-                            </Dropdown.Item>
-                            <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
-                              <i className="fas fa-trash me-2"></i>Delete
-                            </Dropdown.Item>
-                            <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
-                          </Dropdown.Menu>
-                        </Dropdown>
-                      </td>
-                      <td>
-                        <Button 
-                          variant="outline-primary" 
-                          size="sm"
-                          onClick={() => forPart(item.division_id)}
-                        >
-                          <i className="fas fa-users me-1"></i>Participants
-                        </Button>
-                      </td>
-                      <td>
-                        <Button 
-                          variant="outline-success" 
-                          size="sm"
-                          onClick={() => forBrack(item.division_id)}
-                        >
-                          <i className="fas fa-sitemap me-1"></i>Create Brackets
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="card border-0 shadow-sm">
+              <div className="card-header bg-white border-0 py-3">
+                <h5 className="mb-0 d-flex align-items-center">
+                  <i className="fas fa-layer-group me-2 text-primary"></i>
+                  Tournament Divisions
+                  <span className="badge bg-light text-dark ms-2">{data.length}</span>
+                </h5>
+              </div>
+              <div className="card-body p-0">
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0" style={{minWidth: '100%'}}>
+                    <thead className="bg-light">
+                      <tr>
+                        <th className="border-0 py-3 ps-4" style={{width: '22%'}}>
+                          <i className="fas fa-venus-mars me-2 text-muted"></i>Division Details
+                        </th>
+                        <th className="border-0 py-3" style={{width: '12%'}}>
+                          <i className="fas fa-birthday-cake me-2 text-muted"></i>Age Group
+                        </th>
+                        <th className="border-0 py-3" style={{width: '15%'}}>
+                          <i className="fas fa-medal me-2 text-muted"></i>Proficiency
+                        </th>
+                        <th className="border-0 py-3" style={{width: '12%'}}>
+                          <i className="fas fa-fist-raised me-2 text-muted"></i>Category
+                        </th>
+                        <th className="border-0 py-3 text-center" style={{width: '10%'}}>
+                          <i className="fas fa-cog me-2 text-muted"></i>Actions
+                        </th>
+                        <th className="border-0 py-3 text-center" style={{width: '14%'}}>
+                          <i className="fas fa-users me-2 text-muted"></i>Participants
+                        </th>
+                        <th className="border-0 py-3 pe-4 text-center" style={{width: '15%'}}>
+                          <i className="fas fa-sitemap me-2 text-muted"></i>Brackets
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {data.map((item, index) => (
+                        <tr key={index} className="slide-up align-middle" style={{borderLeft: '4px solid transparent'}}>
+                          <td className="py-4 ps-4">
+                            <div className="d-flex align-items-center">
+                              <div className="me-3">
+                                <div className="bg-light d-flex align-items-center justify-content-center rounded-circle border" 
+                                     style={{width: '40px', height: '40px'}}>
+                                  <i className="fas fa-venus-mars text-primary"></i>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="fw-bold text-dark mb-1">{item.gender}</div>
+                                <small className="text-muted">
+                                  <i className="fas fa-layer-group me-1"></i>
+                                  Division #{item.division_id}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4">
+                            <div className="d-flex align-items-center">
+                              <span className="badge bg-warning text-dark" style={{borderRadius: '20px', padding: '8px 16px', fontSize: '0.9rem'}}>
+                                <i className="fas fa-birthday-cake me-2"></i>
+                                {item.age_group}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4">
+                            <div className="d-flex align-items-center">
+                              <span className={`badge ${
+                                item.proficiency_level === 'Beginner' ? 'bg-success' :
+                                item.proficiency_level === 'Intermediate' ? 'bg-warning text-dark' :
+                                'bg-danger'
+                              }`} style={{borderRadius: '20px', padding: '8px 16px', fontSize: '0.9rem'}}>
+                                <i className="fas fa-medal me-2"></i>
+                                {item.proficiency_level}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4">
+                            <div className="d-flex align-items-center">
+                              <span className="badge bg-secondary" style={{borderRadius: '20px', padding: '8px 16px', fontSize: '0.9rem'}}>
+                                <i className="fas fa-fist-raised me-2"></i>
+                                {item.category}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-4 text-center">
+                            <div className="dropdown-modern d-inline-block">
+                              <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                                <Dropdown.Toggle 
+                                  variant="outline-secondary" 
+                                  size="sm" 
+                                  id={`dropdown-basic-${index}`}
+                                  style={{borderRadius: '20px'}}
+                                  className="d-flex align-items-center"
+                                >
+                                  <i className="fas fa-ellipsis-h"></i>
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                  <Dropdown.Item onClick={handleShowModal}>
+                                    <i className="fas fa-edit me-2 text-primary"></i>Edit Division
+                                  </Dropdown.Item>
+                                  <Dropdown.Divider />
+                                  <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
+                                    <i className="fas fa-trash me-2"></i>Delete Division
+                                  </Dropdown.Item>
+                                  <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
+                                </Dropdown.Menu>
+                              </Dropdown>
+                            </div>
+                          </td>
+                          <td className="py-4 text-center">
+                            <Button 
+                              variant="outline-primary" 
+                              size="sm"
+                              onClick={() => forPart(item.division_id)}
+                              className="d-flex align-items-center justify-content-center"
+                              style={{borderRadius: '20px'}}
+                            >
+                              <i className="fas fa-users me-1 d-flex align-items-center"></i>
+                              <span className="d-flex align-items-center">Participants</span>
+                            </Button>
+                          </td>
+                          <td className="py-4 pe-4 text-center">
+                            <Button 
+                              variant="outline-success" 
+                              size="sm"
+                              onClick={() => forBrack(item.division_id)}
+                              className="d-flex align-items-center justify-content-center"
+                              style={{borderRadius: '20px'}}
+                            >
+                              <i className="fas fa-sitemap me-1 d-flex align-items-center"></i>
+                              <span className="d-flex align-items-center">Create Brackets</span>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
 
