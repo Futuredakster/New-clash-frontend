@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Dropdown from 'react-bootstrap/Dropdown';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CustomModal from './modals/CustomModal';
 import { useNavigate } from "react-router-dom";
 import { link } from './constant';
@@ -10,7 +10,41 @@ const ItemList = ({ items, accountId }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedTournamentId, setSelectedTournamentId] = useState(null);
   const [openStates, setOpenStates] = useState(Array(items.length).fill(false));
+  const [startingTournament, setStartingTournament] = useState(null);
+  const [startedTournaments, setStartedTournaments] = useState(new Set());
   const navigate = useNavigate();
+
+  // Check bracket status for all tournaments when component loads
+  useEffect(() => {
+    const checkBracketStatus = async () => {
+      if (!items || items.length === 0) return;
+      
+      const statusPromises = items.map(item => 
+        axios.get(`${link}/brackets/tournament-status/${item.tournament_id}`)
+          .catch(error => {
+            console.error(`Error checking status for tournament ${item.tournament_id}:`, error);
+            return { data: { hasbrackets: false } };
+          })
+      );
+
+      try {
+        const results = await Promise.all(statusPromises);
+        const tournamentIds = new Set();
+        
+        results.forEach((result, index) => {
+          if (result.data.hasbrackets) {
+            tournamentIds.add(items[index].tournament_id);
+          }
+        });
+        
+        setStartedTournaments(tournamentIds);
+      } catch (error) {
+        console.error('Error checking tournament bracket statuses:', error);
+      }
+    };
+
+    checkBracketStatus();
+  }, [items]);
 
   const handleShowModal = (tournamentId) => {
     setSelectedTournamentId(tournamentId);
@@ -85,14 +119,50 @@ const seeDivision = (tournamentName, tournamentId) =>{
       });
   };
 
-    const startTournament = (tournament_id) => {
-      axios.post(
-        `${link}/brackets/initial`,  
-        {
-          tournament_id: tournament_id,
-        }
-        )
+    const startTournament = async (tournament_id) => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        alert('Access token not found. Please log in again.');
+        return;
+      }
+
+      // Prevent multiple clicks
+      if (startingTournament === tournament_id) {
+        return;
+      }
+
+      setStartingTournament(tournament_id);
+
+      try {
+        await axios.post(
+          `${link}/brackets/initial`,  
+          {
+            tournament_id: tournament_id,
+          },
+          {
+            headers: {
+              accessToken: accessToken,
+            },
+          }
+        );
         alert('Tournament started successfully');
+        setStartedTournaments(prev => new Set(prev).add(tournament_id));
+        setStartingTournament(null);
+      } catch (error) {
+        console.error('Error starting tournament:', error);
+        if (error.response?.data?.error) {
+          // Check if it's the duplicate brackets error
+          if (error.response.data.error.includes('already been created')) {
+            setStartedTournaments(prev => new Set(prev).add(tournament_id));
+            alert('Tournament brackets have already been created.');
+          } else {
+            alert(`Error: ${error.response.data.error}`);
+          }
+        } else {
+          alert('Failed to start tournament. Please try again.');
+        }
+        setStartingTournament(null); // Reset on error
+      }
     }
   
   
@@ -265,14 +335,30 @@ const seeDivision = (tournamentName, tournamentId) =>{
                       </td>
                       <td className="py-4 pe-4 text-center">
                          {accountId === item.account_id ?  (
-                           <button 
-                             className="btn btn-success btn-sm d-inline-flex align-items-center" 
-                             onClick={()=> startTournament(item.tournament_id)}
-                             style={{borderRadius: '20px'}}
-                           >
-                             <i className="fas fa-play me-2"></i>
-                             <span>Start</span>
-                           </button>
+                           startedTournaments.has(item.tournament_id) ? (
+                             <span className="badge bg-secondary d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
+                               <i className="fas fa-check-circle me-2"></i>Already Started
+                             </span>
+                           ) : (
+                             <button 
+                               className="btn btn-success btn-sm d-inline-flex align-items-center" 
+                               onClick={()=> startTournament(item.tournament_id)}
+                               disabled={startingTournament === item.tournament_id}
+                               style={{borderRadius: '20px'}}
+                             >
+                               {startingTournament === item.tournament_id ? (
+                                 <>
+                                   <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                   <span>Starting...</span>
+                                 </>
+                               ) : (
+                                 <>
+                                   <i className="fas fa-play me-2"></i>
+                                   <span>Start</span>
+                                 </>
+                               )}
+                             </button>
+                           )
                         ) : (
                          <span className="text-muted small d-inline-flex align-items-center">
                            <i className="fas fa-ban me-1"></i>N/A
@@ -362,14 +448,30 @@ const seeDivision = (tournamentName, tournamentId) =>{
                 </div>
                 <div className="col-6">
                   {accountId === item.account_id ?  (
-                     <button 
-                       className="btn btn-success btn-sm w-100" 
-                       onClick={()=> startTournament(item.tournament_id)}
-                     >
-                       <i className="fas fa-play me-1"></i>
-                       <span className="d-none d-sm-inline">Start</span>
-                       <span className="d-sm-none">Start</span>
-                     </button>
+                    startedTournaments.has(item.tournament_id) ? (
+                      <button className="btn btn-outline-secondary btn-sm w-100" disabled>
+                        <i className="fas fa-check-circle me-1"></i>Started
+                      </button>
+                    ) : (
+                       <button 
+                         className="btn btn-success btn-sm w-100" 
+                         onClick={()=> startTournament(item.tournament_id)}
+                         disabled={startingTournament === item.tournament_id}
+                       >
+                         {startingTournament === item.tournament_id ? (
+                           <>
+                             <span className="spinner-border spinner-border-sm me-1" role="status"></span>
+                             <span>Starting...</span>
+                           </>
+                         ) : (
+                           <>
+                             <i className="fas fa-play me-1"></i>
+                             <span className="d-none d-sm-inline">Start</span>
+                             <span className="d-sm-none">Start</span>
+                           </>
+                         )}
+                       </button>
+                    )
                   ) : (
                    <button className="btn btn-outline-secondary btn-sm w-100" disabled>
                      <i className="fas fa-ban me-1"></i>N/A
