@@ -18,15 +18,19 @@ function Password({info,setInfo}){
                         onChange={(e) => {
                             setInfo({ ...info, password_hash: e.target.value });
                         }}
+                        style={{paddingRight: '50px'}}
                     />
-                    <button
-                        type="button"
-                        className="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3"
+                    <i 
+                        className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-muted position-absolute`}
                         onClick={() => setShowPassword(!showPassword)}
-                        style={{border: 'none', background: 'none', zIndex: 10}}
-                    >
-                        <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} text-muted`}></i>
-                    </button>
+                        style={{
+                            right: '15px',
+                            top: '50%',
+                            transform: 'translateY(-50%)',
+                            cursor: 'pointer',
+                            zIndex: 10
+                        }}
+                    ></i>
                 </div>
                 <small className="text-muted mt-2 d-block">
                     Use at least 8 characters with a mix of letters, numbers and symbols

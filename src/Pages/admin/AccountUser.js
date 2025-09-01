@@ -9,11 +9,12 @@ import AccountType from "../../components/forms/AccountType";
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { link } from '../../constant';
-import { Container, Row, Col, Card, ProgressBar, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, ProgressBar, Button, Alert } from 'react-bootstrap';
 
 const AccountUser = () =>{
     const navigate = useNavigate();
     const [pages, setPages] = useState(0);
+    const [error, setError] = useState("");
     const [info, setInfo] = useState({
         account_type: "",
         account_name: "",
@@ -115,6 +116,17 @@ const AccountUser = () =>{
                             </Card.Header>
 
                             <Card.Body className="card-modern-body py-4">
+                                {error && (
+                                    <Alert variant="danger" className="mb-4">
+                                        <i className="fas fa-exclamation-triangle me-2"></i>
+                                        {error}
+                                        {(error.includes("email already cooresponds") || error.includes("Email already exsists")) && (
+                                            <div className="mt-2">
+                                                <small>Redirecting to login page in 3 seconds...</small>
+                                            </div>
+                                        )}
+                                    </Alert>
+                                )}
                                 {PageDisplay()}
                             </Card.Body>
 
@@ -151,13 +163,30 @@ const AccountUser = () =>{
                                                         } 
                                                     }
                                                     console.log(postData);
+                                                    setError(""); // Clear any previous errors
                                                     axios.post(`${link}/accounts/user`, postData)
                                                     .then((response) => {
-                                                        navigate('/Login');
-                                                        console.log("Request successful:", response);
+                                                        console.log("Response:", response.data);
+                                                        
+                                                        // Check if response contains an error (backend returns {error: "message"})
+                                                        if (response.data.error) {
+                                                            const errorMessage = response.data.error;
+                                                            setError(errorMessage);
+                                                            
+                                                            // If it's a duplicate email error, redirect to login after showing error
+                                                            if (errorMessage.includes("email already cooresponds") || errorMessage.includes("Email already exsists")) {
+                                                                setTimeout(() => {
+                                                                    navigate('/Login');
+                                                                }, 3000); // Wait 3 seconds then redirect
+                                                            }
+                                                        } else {
+                                                            // Success - redirect to login
+                                                            navigate('/Login');
+                                                        }
                                                     })
                                                     .catch((error) => {
-                                                        console.error("Error:", error);
+                                                        console.error("Network/Server Error:", error);
+                                                        setError("Network error occurred. Please try again.");
                                                     });
                                                 }
                                             } else {
