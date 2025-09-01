@@ -336,7 +336,7 @@ const ParentRegistrationForm = () => {
       const result = await response.json();
       
       alert(`Registration complete! ${children.length} children registered successfully.`);
-      navigate("/CompetitorView");
+      navigate("/CompetitorView", { replace: true });
 
 
       

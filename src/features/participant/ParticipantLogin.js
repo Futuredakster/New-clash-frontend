@@ -45,7 +45,7 @@ export const ParticipantLogin = () => {
         name:response.data.name,
         status:true
        })
-        navigate("/CompetitorView");
+        navigate("/CompetitorView", { replace: true });
       }
     } catch (error) {
       console.error("Error:", error.response ? error.response.data : error.message);

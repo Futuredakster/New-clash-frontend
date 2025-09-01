@@ -42,7 +42,7 @@ const CodeVerificationModal = ({ showModal, handleClose, participantId }) => {
       // Clear error and close modal
       setError('');
       handleClose();
-      navigate('/TournamentView');
+      navigate('/TournamentView', { replace: true });
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);

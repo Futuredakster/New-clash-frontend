@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { User, Users } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 
 const LoginTypeSelector = () => {
   const [selectedType, setSelectedType] = useState(null);
-const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { partState, parentState } = useContext(AuthContext);
+
+  // Redirect logged-in users back to TournamentView
+  useEffect(() => {
+    if (partState.status || parentState.status) {
+      navigate('/TournamentView', { replace: true });
+    }
+  }, [partState.status, parentState.status, navigate]);
 
   const registrationTypes = [
     {

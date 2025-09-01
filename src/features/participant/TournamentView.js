@@ -11,6 +11,7 @@ const TournamentView = () => {
    const {setParentState, parentState} = useContext(AuthContext);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     const fetchTournaments = async () => {
        const token = localStorage.getItem("participantAccessToken");

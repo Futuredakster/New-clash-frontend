@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Alert } from "react-bootstrap";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from 'react-router-dom';
@@ -13,6 +13,7 @@ const CreateDivision = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const tournament_id = queryParams.get('tournament_id');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const initialValues = {
     age_group: "",
@@ -32,10 +33,13 @@ const CreateDivision = () => {
 
   const onSubmit = async (values, { setSubmitting }) => {
     console.log("Submitting values:", values);
+    setErrorMessage(""); // Clear any previous errors
+    
     try {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
-        console.error("Access token not found. API request not made.");
+        setErrorMessage("Access token not found. Please log in again.");
+        setSubmitting(false);
         return;
       }
 
@@ -50,6 +54,23 @@ const CreateDivision = () => {
       navigate("/Home");
     } catch (error) {
       console.error("Error:", error);
+      
+      if (error.response?.data?.error) {
+        const errorMsg = error.response.data.error;
+        
+        // Check for duplicate key/constraint violation errors
+        if (errorMsg.includes("duplicate") || 
+            errorMsg.includes("already exists") || 
+            errorMsg.includes("Duplicate entry") ||
+            errorMsg.includes("UNIQUE constraint") ||
+            errorMsg.includes("unique constraint")) {
+          setErrorMessage("A division with these exact details already exists for this tournament. Please modify the age group, proficiency level, gender, or category.");
+        } else {
+          setErrorMessage(errorMsg);
+        }
+      } else {
+        setErrorMessage("An unexpected error occurred while creating the division. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -78,6 +99,12 @@ const CreateDivision = () => {
               <small className="text-muted">Define the division parameters for competitor organization</small>
             </Card.Header>
             <Card.Body className="card-modern-body">
+              {errorMessage && (
+                <Alert variant="danger" className="mb-4">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+                  {errorMessage}
+                </Alert>
+              )}
               <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
                 {(formik) => (
                   <Form>
@@ -88,12 +115,23 @@ const CreateDivision = () => {
                       </label>
                       <ErrorMessage name="age_group" component="div" className="text-danger mb-2" />
                       <Field
-                        type="text"
+                        as="select"
                         id="age_group"
                         name="age_group"
-                        placeholder="Enter age group (e.g., 18-25, Under 16)"
                         className="form-control-modern"
-                      />
+                      >
+                        <option value="" label="Select age group" />
+                        <option value="6-7" label="6-7 years" />
+                        <option value="8-9" label="8-9 years" />
+                        <option value="10-11" label="10-11 years" />
+                        <option value="12-13" label="12-13 years" />
+                        <option value="14-15" label="14-15 years" />
+                        <option value="16-17" label="16-17 years" />
+                        <option value="18-21" label="18-21 years" />
+                        <option value="22-35" label="22-35 years" />
+                        <option value="36-49" label="36-49 years" />
+                        <option value="50+" label="50+ years" />
+                      </Field>
                     </div>
 
                     <div className="form-group-modern">
@@ -103,12 +141,16 @@ const CreateDivision = () => {
                       </label>
                       <ErrorMessage name="proficiency_level" component="div" className="text-danger mb-2" />
                       <Field
-                        type="text"
+                        as="select"
                         id="proficiency_level"
                         name="proficiency_level"
-                        placeholder="Enter proficiency level (e.g., Beginner, Intermediate, Advanced)"
                         className="form-control-modern"
-                      />
+                      >
+                        <option value="" label="Select proficiency level" />
+                        <option value="Beginner" label="Beginner" />
+                        <option value="Intermediate" label="Intermediate" />
+                        <option value="Advanced" label="Advanced" />
+                      </Field>
                     </div>
 
                     <Row>

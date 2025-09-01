@@ -43,7 +43,7 @@ const ParentModal = ({ showModal, handleClose, parentId }) => {
       // Clear error and close modal
       setError('');
       handleClose();
-      navigate('/CompetitorView');
+      navigate('/CompetitorView', { replace: true });
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         setError(err.response.data.error);

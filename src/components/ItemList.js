@@ -170,7 +170,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
     <div className="w-100">
       {/* Desktop Table View */}
       <div className="d-none d-lg-block">
-        <div className="card border-0 shadow-sm w-100" style={{width: '100%'}}>
+        <div className="card border-0 shadow-sm">
           <div className="card-header bg-white border-0 py-3">
             <h5 className="mb-0 d-flex align-items-center">
               <i className="fas fa-trophy me-2 text-primary"></i>
@@ -179,29 +179,29 @@ const seeDivision = (tournamentName, tournamentId) =>{
             </h5>
           </div>
           <div className="card-body p-0">
-            <div className="table-responsive w-100" style={{width: '100%'}}>
-              <table className="table table-hover mb-0 w-100" style={{width: '100%', tableLayout: 'fixed'}}>
+            <div className="table-responsive">
+              <table className="table table-hover mb-0" style={{minWidth: '100%'}}>
                 <thead className="bg-light">
                   <tr>
-                    <th className="border-0 py-3 ps-4" style={{width: '25%'}}>
+                    <th className="border-0 py-3 ps-4" style={{minWidth: '250px'}}>
                       <i className="fas fa-calendar-alt me-2 text-muted"></i>Tournament
                     </th>
-                    <th className="border-0 py-3" style={{width: '15%'}}>
+                    <th className="border-0 py-3" style={{minWidth: '140px'}}>
                       <i className="fas fa-play-circle me-2 text-muted"></i>Start Date
                     </th>
-                    <th className="border-0 py-3" style={{width: '15%'}}>
+                    <th className="border-0 py-3" style={{minWidth: '140px'}}>
                       <i className="fas fa-stop-circle me-2 text-muted"></i>End Date
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '15%'}}>
+                    <th className="border-0 py-3 text-center" style={{minWidth: '150px'}}>
                       <i className="fas fa-layer-group me-2 text-muted"></i>Divisions
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '10%'}}>
+                    <th className="border-0 py-3 text-center" style={{minWidth: '100px'}}>
                       <i className="fas fa-cog me-2 text-muted"></i>Actions
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '10%'}}>
+                    <th className="border-0 py-3 text-center" style={{minWidth: '120px'}}>
                       <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
                     </th>
-                    <th className="border-0 py-3 pe-4 text-center" style={{width: '10%'}}>
+                    <th className="border-0 py-3 pe-4 text-center" style={{minWidth: '120px'}}>
                       <i className="fas fa-play me-2 text-muted"></i>Controls
                     </th>
                   </tr>

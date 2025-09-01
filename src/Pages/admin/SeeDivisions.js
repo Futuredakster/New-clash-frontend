@@ -16,6 +16,7 @@ const SeeDivisions = () => {
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
   const [openStates, setOpenStates] = useState(Array(data.length).fill(false));
+  const [selectedDivisionId, setSelectedDivisionId] = useState(null);
   const navigate = useNavigate();
 
   // Mat management state
@@ -28,7 +29,12 @@ const SeeDivisions = () => {
   const [matNames, setMatNames] = useState(['Mat A', 'Mat B', 'Mat C']);
   const [deletingMatId, setDeletingMatId] = useState(null);
 
-  const handleShowModal = () => setShowModal(true);
+  const handleShowModal = () => {
+    // Close all dropdowns when modal opens
+    setOpenStates(Array(data.length).fill(false));
+    setShowModal(true);
+  };
+  
   const handleCloseModal = () => setShowModal(false);
 
   const toggleDropdown = (index) => {
@@ -36,6 +42,22 @@ const SeeDivisions = () => {
     newOpenStates[index] = !newOpenStates[index];
     setOpenStates(newOpenStates);
   };
+
+  // Close all dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Check if click is outside any dropdown
+      const isDropdownClick = event.target.closest('.dropdown-modern');
+      if (!isDropdownClick) {
+        setOpenStates(Array(data.length).fill(false));
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [data.length]);
   
   const forPart = (division_id) =>{
     const quereString = new URLSearchParams({division_id:division_id}).toString();
@@ -375,9 +397,7 @@ const SeeDivisions = () => {
   }, [tournament_id]);
 
   return (
-    <Container fluid className="fade-in px-2 px-md-3">
-      <Row className="justify-content-center">
-        <Col xs={12} xl={11} className="px-1 px-md-3">
+    <div className="fade-in px-2 px-md-4 w-100">
           <div className="page-header-modern">
             <h1 className="page-title-modern">{tournament_name}</h1>
             <p className="page-subtitle-modern">Manage divisions for this tournament</p>
@@ -471,30 +491,30 @@ const SeeDivisions = () => {
               </div>
               <div className="card-body p-0">
                 <div className="table-responsive">
-                  <table className="table table-hover mb-0" style={{minWidth: '100%'}}>
+                  <table className="table table-hover mb-0 w-100">
                     <thead className="bg-light">
                       <tr>
-                        <th className="border-0 py-3 ps-4" style={{width: '22%'}}>
+                        <th className="border-0 py-3 ps-4" style={{width: '25%'}}>
                           <i className="fas fa-venus-mars me-2 text-muted"></i>Division Details
                         </th>
-                        <th className="border-0 py-3" style={{width: '12%'}}>
+                        <th className="border-0 py-3" style={{width: '15%'}}>
                           <i className="fas fa-birthday-cake me-2 text-muted"></i>Age Group
                         </th>
                         <th className="border-0 py-3" style={{width: '15%'}}>
                           <i className="fas fa-medal me-2 text-muted"></i>Proficiency
                         </th>
-                        <th className="border-0 py-3" style={{width: '12%'}}>
+                        <th className="border-0 py-3" style={{width: '15%'}}>
                           <i className="fas fa-fist-raised me-2 text-muted"></i>Category
                         </th>
                         <th className="border-0 py-3 text-center" style={{width: '10%'}}>
                           <i className="fas fa-cog me-2 text-muted"></i>Actions
                         </th>
-                        <th className="border-0 py-3 text-center" style={{width: '14%'}}>
+                        <th className="border-0 py-3 text-center" style={{width: '10%'}}>
                           <div className="d-flex align-items-center justify-content-center">
                             <i className="fas fa-users me-2 text-muted"></i>Participants
                           </div>
                         </th>
-                        <th className="border-0 py-3 pe-4 text-center" style={{width: '15%'}}>
+                        <th className="border-0 py-3 pe-4 text-center" style={{width: '10%'}}>
                           <i className="fas fa-sitemap me-2 text-muted"></i>Brackets
                         </th>
                       </tr>
@@ -549,7 +569,14 @@ const SeeDivisions = () => {
                           </td>
                           <td className="py-4 text-center">
                             <div className="dropdown-modern d-inline-block">
-                              <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                              <Dropdown 
+                                show={openStates[index]} 
+                                onToggle={(isOpen) => {
+                                  const newOpenStates = [...openStates];
+                                  newOpenStates[index] = isOpen;
+                                  setOpenStates(newOpenStates);
+                                }}
+                              >
                                 <Dropdown.Toggle 
                                   variant="outline-secondary" 
                                   size="sm" 
@@ -560,14 +587,17 @@ const SeeDivisions = () => {
                                   <i className="fas fa-ellipsis-h"></i>
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                  <Dropdown.Item onClick={handleShowModal}>
+                                  <Dropdown.Item onClick={() => {
+                                    handleShowModal();
+                                    // Store which division to edit
+                                    setSelectedDivisionId(item.division_id);
+                                  }}>
                                     <i className="fas fa-edit me-2 text-primary"></i>Edit Division
                                   </Dropdown.Item>
                                   <Dropdown.Divider />
                                   <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
                                     <i className="fas fa-trash me-2"></i>Delete Division
                                   </Dropdown.Item>
-                                  <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
                                 </Dropdown.Menu>
                               </Dropdown>
                             </div>
@@ -672,7 +702,14 @@ const SeeDivisions = () => {
                         </Button>
                       </div>
                       <div className="col-12 col-sm-4 px-1">
-                        <Dropdown show={openStates[index]} onClick={() => toggleDropdown(index)}>
+                        <Dropdown 
+                          show={openStates[index]} 
+                          onToggle={(isOpen) => {
+                            const newOpenStates = [...openStates];
+                            newOpenStates[index] = isOpen;
+                            setOpenStates(newOpenStates);
+                          }}
+                        >
                           <Dropdown.Toggle 
                             variant="outline-dark" 
                             size="sm" 
@@ -682,13 +719,15 @@ const SeeDivisions = () => {
                             <i className="fas fa-ellipsis-v me-1"></i>Actions
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
-                            <Dropdown.Item onClick={handleShowModal}>
+                            <Dropdown.Item onClick={() => {
+                              handleShowModal();
+                              setSelectedDivisionId(item.division_id);
+                            }}>
                               <i className="fas fa-edit me-2"></i>Edit Division
                             </Dropdown.Item>
                             <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
                               <i className="fas fa-trash me-2"></i>Delete
                             </Dropdown.Item>
-                            <DivisionModal showModal={showModal} handleClose={handleCloseModal} division_id={item.division_id} />
                           </Dropdown.Menu>
                         </Dropdown>
                       </div>
@@ -956,9 +995,14 @@ const SeeDivisions = () => {
               </div>
             </Modal.Footer>
           </Modal>
-        </Col>
-      </Row>
-    </Container>
+
+          {/* Division Edit Modal */}
+          <DivisionModal 
+            showModal={showModal} 
+            handleClose={handleCloseModal} 
+            division_id={selectedDivisionId} 
+          />
+    </div>
   );
 };
 

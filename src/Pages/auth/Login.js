@@ -26,7 +26,7 @@ function Login() {
         account_id: response.data.account_id,
         role: response.data.role
       });
-      navigate('/Home');
+      navigate('/Home', { replace: true });
       }
     });
   };

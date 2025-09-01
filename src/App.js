@@ -167,7 +167,7 @@ useEffect(() => {
           <Routes>
         <Route path='/Login' exact element ={<Login/>} />
           <Route path='/CreateUsers' exact element ={<CreateUsers/>} />
-          <Route path='/' element={!accessToken ? <Navigate to="/LandingPage" /> : <Navigate to="/Home" />} />
+          <Route path='/' element={!accessToken ? <Navigate to="/LandingPage" replace /> : <Navigate to="/Home" replace />} />
           <Route path='/AccountUser' exact element ={<AccountUser/>} />
           <Route path='/CompetitorView' exact element = {<CompetitorView setProps={setProps} />} />
           <Route path='/LandingPage' exact element ={<LandingPage/>} />

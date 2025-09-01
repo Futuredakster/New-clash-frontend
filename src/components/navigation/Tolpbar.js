@@ -169,13 +169,38 @@ const Tolpbar = () => {
         <>
             <Navbar expand="lg" className="navbar-modern shadow-sm" fixed="top">
                 <Container fluid>
-                    {!authState.status ? (
+                    {!authState.status && !partState.status && !parentState.status ? (
                         <Navbar.Brand as={Link} to="/LandingPage" className="fw-bold text-dark">
                             <i className="fas fa-trophy me-2"></i>
                             Clash
                         </Navbar.Brand>
-                    ) : (
+                    ) : authState.status ? (
                         <Navbar.Brand as={Link} to="/Home" className="fw-bold text-dark">
+                            <i className="fas fa-trophy me-2"></i>
+                            Clash
+                        </Navbar.Brand>
+                    ) : partState.status ? (
+                        <Navbar.Brand 
+                            onClick={logoutPart} 
+                            className="fw-bold text-dark" 
+                            style={{cursor: 'pointer'}}
+                            title="Click to logout"
+                        >
+                            <i className="fas fa-trophy me-2"></i>
+                            Clash
+                        </Navbar.Brand>
+                    ) : parentState.status ? (
+                        <Navbar.Brand 
+                            onClick={logoutParent} 
+                            className="fw-bold text-dark" 
+                            style={{cursor: 'pointer'}}
+                            title="Click to logout"
+                        >
+                            <i className="fas fa-trophy me-2"></i>
+                            Clash
+                        </Navbar.Brand>
+                    ) : (
+                        <Navbar.Brand as={Link} to="/LandingPage" className="fw-bold text-dark">
                             <i className="fas fa-trophy me-2"></i>
                             Clash
                         </Navbar.Brand>
@@ -201,8 +226,11 @@ const Tolpbar = () => {
                                     <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
                                         Browse Tournaments
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to="/Login">
-                                        <button className="btn btn-modern-outline btn-sm">
+                                    <Nav.Link as="div">
+                                        <button 
+                                            className="btn btn-modern-outline btn-sm"
+                                            onClick={() => navigate('/Login', { replace: true })}
+                                        >
                                             <i className="fas fa-sign-in-alt me-1"></i>
                                             Login
                                         </button>
@@ -649,10 +677,16 @@ const Tolpbar = () => {
 
                                     <div className="mobile-nav-section">
                                         <div className="mobile-nav-section-title">Account</div>
-                                        <Link to="/Login" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                        <button 
+                                            className="mobile-nav-link w-100 text-start border-0 bg-transparent"
+                                            onClick={() => {
+                                                navigate('/Login', { replace: true });
+                                                handleMobileMenuClose();
+                                            }}
+                                        >
                                             <i className="fas fa-sign-in-alt me-3"></i>
                                             Login
-                                        </Link>
+                                        </button>
                                         <Link to="/AccountUser" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-user-plus me-3"></i>
                                             Sign Up
