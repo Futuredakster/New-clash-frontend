@@ -304,12 +304,38 @@ const Tolpbar = () => {
                                 </>
                             ) : partState.status ? (
                                 <>
-                                    <Nav.Link as="div" className="d-flex align-items-center">
-                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{width: '32px', height: '32px'}}>
-                                            <i className="fas fa-user"></i>
-                                        </div>
-                                        <span className="d-none d-md-inline">{partState.name}</span>
-                                      {tournament_id && (
+                                    <Dropdown>
+                                        <Dropdown.Toggle 
+                                            variant="link" 
+                                            className="text-decoration-none text-dark d-flex align-items-center"
+                                            id="participant-dropdown"
+                                        >
+                                            <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style={{width: '32px', height: '32px'}}>
+                                                <i className="fas fa-user"></i>
+                                            </div>
+                                            <span className="d-none d-md-inline">{partState.name}</span>
+                                            <i className="fas fa-chevron-down ms-1"></i>
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="dropdown-modern">
+                                            <Dropdown.Header>
+                                                <small className="text-muted">
+                                                    Welcome, {partState.name}
+                                                </small>
+                                            </Dropdown.Header>
+                                            <Dropdown.Divider />
+                                            <Dropdown.Item as={Link} to="/ParticipantDetails">
+                                                <i className="fas fa-user-cog me-2"></i>
+                                                Personal Details
+                                            </Dropdown.Item>
+                                            <Dropdown.Divider />
+                                            <Dropdown.Item onClick={logoutPart} className="text-danger">
+                                                <i className="fas fa-sign-out-alt me-2"></i>
+                                                Logout
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    {tournament_id && (
                                         <span className="ms-3">
                                             <button 
                                                 onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} 
@@ -348,10 +374,6 @@ const Tolpbar = () => {
                                             </button>
                                         </span>
                                     )}
-                                                                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutPart}>
-                                            <i className="fas fa-sign-out-alt me-1"></i> Logout
-                                        </button>
-                                    </Nav.Link>
                                 </>
                             ) : parentState.status ? (
                                 <>
@@ -584,6 +606,11 @@ const Tolpbar = () => {
                                             )}
                                         </Link>
                                     )}
+
+                                    <Link to="/ParticipantDetails" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                        <i className="fas fa-user-cog me-3"></i>
+                                        Personal Details
+                                    </Link>
 
                                     <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
