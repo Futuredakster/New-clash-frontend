@@ -355,13 +355,8 @@ const Tolpbar = () => {
                                 </>
                             ) : parentState.status ? (
                                 <>
-                                    <Nav.Link as="div" className="d-flex align-items-center">
-                                        <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{width: '32px', height: '32px'}}>
-                                            <i className="fas fa-user"></i>
-                                        </div>
-                                        <span className="d-none d-md-inline">{parentState.name}</span>
-                                      {tournament_id && (
-                                        <span className="ms-3">
+                                    {tournament_id && (
+                                        <Nav.Link as="div" className="me-2">
                                             <button 
                                                 onClick={() => navigate(`DisplayCart?tournament_id=${tournament_id}`)} 
                                                 className="position-relative d-flex align-items-center justify-content-center"
@@ -397,12 +392,44 @@ const Tolpbar = () => {
                                                     )}
                                                 </div>
                                             </button>
-                                        </span>
+                                        </Nav.Link>
                                     )}
-                                                                            <button className="btn btn-outline-danger btn-sm ms-3" onClick={logoutParent}>
-                                            <i className="fas fa-sign-out-alt me-1"></i> Logout
-                                        </button>
-                                    </Nav.Link>
+                                    
+                                    <Dropdown align="end">
+                                        <Dropdown.Toggle 
+                                            variant="link" 
+                                            className="text-decoration-none text-dark d-flex align-items-center"
+                                            id="parent-dropdown"
+                                        >
+                                            <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style={{width: '32px', height: '32px'}}>
+                                                <i className="fas fa-user"></i>
+                                            </div>
+                                            <span className="d-none d-md-inline">{parentState.name} <span className="text-muted" style={{fontSize: '0.9em'}}>(Parent)</span></span>
+                                            <i className="fas fa-chevron-down ms-1"></i>
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu className="dropdown-modern">
+                                            <Dropdown.Header>
+                                                <small className="text-muted">
+                                                    Welcome, {parentState.name} <span className="text-muted">(Parent/Guardian)</span>
+                                                </small>
+                                            </Dropdown.Header>
+                                            <Dropdown.Divider />
+                                            <Dropdown.Item as={Link} to="/ParentDetails">
+                                                <i className="fas fa-user-cog me-2"></i>
+                                                Personal Details
+                                            </Dropdown.Item>
+                                            <Dropdown.Item as={Link} to="/ParentChilds">
+                                                <i className="fas fa-users me-2"></i>
+                                                My Children
+                                            </Dropdown.Item>
+                                            <Dropdown.Divider />
+                                            <Dropdown.Item onClick={logoutParent} className="text-danger">
+                                                <i className="fas fa-sign-out-alt me-2"></i>
+                                                Logout
+                                            </Dropdown.Item>
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </>
                             ) : null}
                         </Nav>
@@ -636,6 +663,19 @@ const Tolpbar = () => {
                                         <i className="fas fa-search me-3"></i>
                                         Browse Tournaments
                                     </Link>
+
+                                    {/* Parent Management Section */}
+                                    <div className="mobile-nav-section">
+                                        <div className="mobile-nav-section-title">Account Management</div>
+                                        <Link to="/ParentDetails" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-user-cog me-3"></i>
+                                            Personal Details
+                                        </Link>
+                                        <Link to="/ParentChilds" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-users me-3"></i>
+                                            My Children
+                                        </Link>
+                                    </div>
                                 </nav>
 
                                 {/* Parent Logout Button */}

@@ -2,10 +2,15 @@ import axios from "axios";
 import { useState,useEffect } from "react";
 import { link } from "../../constant";
 import { useLocation } from "react-router-dom";
+import EditChildModal from "../../components/modals/EditChildModal";
+import AddChildModal from "../../components/modals/AddChildModal";
 
 
 const ParentChilds = () => {
   const [childs, setChilds] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedChild, setSelectedChild] = useState(null);
+  const [showAddModal, setShowAddModal] = useState(false);
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const tournament_id = queryParams.get('tournament_id');
@@ -42,6 +47,40 @@ const ParentChilds = () => {
         });
     };
 
+    const handleEditChild = (child) => {
+        setSelectedChild(child);
+        setShowEditModal(true);
+    };
+
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+        setSelectedChild(null);
+    };
+
+    const handleChildUpdated = (updatedChild) => {
+        // Update the child in the list
+        setChilds(prevChilds => 
+            prevChilds.map(child => 
+                child.participant_id === updatedChild.participant_id 
+                    ? updatedChild 
+                    : child
+            )
+        );
+    };
+
+    const handleAddChild = () => {
+        setShowAddModal(true);
+    };
+
+    const handleCloseAddModal = () => {
+        setShowAddModal(false);
+    };
+
+    const handleChildAdded = (newChild) => {
+        // Add the new child to the list
+        setChilds(prevChilds => [...prevChilds, newChild]);
+    };
+
   useEffect(() => {
     const parentToken = localStorage.getItem("parentToken");
     const fetchChilds = async () => {
@@ -65,8 +104,16 @@ const ParentChilds = () => {
       <div className="page-header-modern mb-4">
         <h2 className="page-title-modern"><i className="fas fa-child me-2"></i>Children</h2>
         <p className="page-subtitle-modern">Linked children accounts</p>
+        {!tournament_id || !division_id ? (
+          <div className="text-center mt-3">
+            <button className="btn btn-modern" style={{fontWeight: 600}} onClick={handleAddChild}>
+              <i className="fas fa-user-plus me-2"></i>
+              Add Children
+            </button>
+          </div>
+        ) : null}
       </div>
-      <div className="row g-4 justify-content-center">
+      <div className="row g-4 justify-content-center" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         {childs.length === 0 ? (
           <div className="text-center py-5">
             <i className="fas fa-child fa-4x text-muted mb-4"></i>
@@ -75,7 +122,7 @@ const ParentChilds = () => {
           </div>
         ) : (
           childs.map((child, idx) => (
-            <div className="col-12 col-sm-6 col-md-4 d-flex" key={child.id}>
+            <div className="col-12 col-sm-6 col-lg-4 col-xl-3 d-flex justify-content-center" key={child.id}>
               <div className="card card-modern h-100 shadow-lg border-0" style={{background: "linear-gradient(135deg, #f8fafc 0%, #e0e7ef 100%)", borderRadius: "16px", boxShadow: "0 6px 24px rgba(0,0,0,0.08)"}}>
                 <div className="card-modern-body d-flex flex-column align-items-center justify-content-center p-4">
                   <div className="participant-avatar mb-3" style={{width: 72, height: 72, borderRadius: "50%", background: "#e3e7ee", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(0,0,0,0.07)"}}>
@@ -95,15 +142,40 @@ const ParentChilds = () => {
                     <i className="fas fa-child me-1"></i>
                     Child #{idx + 1}
                   </span>
-                  <button className="btn btn-modern mt-3 w-100" style={{fontWeight:600, fontSize:"1rem"}} onClick={() => addToCart(child)}>
-                    <i className="fas fa-cart-plus me-2"></i> Add to Cart
-                  </button>
+                  {tournament_id && division_id ? (
+                    <button className="btn btn-modern mt-3 w-100" style={{fontWeight:600, fontSize:"1rem"}} onClick={() => addToCart(child)}>
+                      <i className="fas fa-cart-plus me-2"></i> Add to Cart
+                    </button>
+                  ) : (
+                    <button 
+                      className="btn btn-outline-secondary mt-3 w-100" 
+                      style={{fontWeight:600, fontSize:"1rem"}}
+                      onClick={() => handleEditChild(child)}
+                    >
+                      <i className="fas fa-edit me-2"></i> Edit Child
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {/* Edit Child Modal */}
+      <EditChildModal
+        showModal={showEditModal}
+        handleClose={handleCloseEditModal}
+        child={selectedChild}
+        onChildUpdated={handleChildUpdated}
+      />
+
+      {/* Add Child Modal */}
+      <AddChildModal
+        showModal={showAddModal}
+        handleClose={handleCloseAddModal}
+        onChildAdded={handleChildAdded}
+      />
     </div>
   );
 }
