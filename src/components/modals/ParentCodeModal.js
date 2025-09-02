@@ -41,7 +41,7 @@ const ParentCodeModal = ({ showModal, handleClose, parentId }) => {
       });
 
       // Clear error and close modal
-      setError('');
+      setError('');on 
       handleClose();
       navigate('/TournamentView');
     } catch (err) {
