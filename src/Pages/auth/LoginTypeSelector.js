@@ -62,23 +62,24 @@ const LoginTypeSelector = () => {
                 className={`card-modern h-100 shadow-sm ${selectedType === type.id ? 'border border-dark' : ''} cursor-pointer`}
                 style={{ transition: 'box-shadow 0.3s', boxShadow: selectedType === type.id ? 'var(--shadow-medium)' : 'var(--shadow-light)' }}
               >
-                <div className="card-modern-body text-center">
-                  <div className="d-flex justify-content-center align-items-center mb-3">
-                    <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 56, height: 56 }}>
-                      <IconComponent size={32} />
+                <div className="card-modern-body text-center d-flex flex-column h-100">
+                  {/* Top content that can grow */}
+                  <div className="flex-grow-1 d-flex flex-column justify-content-center">
+                    <div className="d-flex justify-content-center align-items-center mb-3">
+                      <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 56, height: 56 }}>
+                        <IconComponent size={32} />
+                      </div>
+                    </div>
+                    <h3 className="fw-bold mb-2" style={{ color: 'var(--dark-grey)' }}>{type.title}</h3>
+                    <p className="mb-4" style={{ color: 'var(--text-grey)', minHeight: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{type.description}</p>
+                  </div>
+                  
+                  {/* Bottom content that stays aligned */}
+                  <div className="mt-auto d-flex flex-column align-items-center">
+                    <div className="w-100 d-flex justify-content-center">
+                      <button className="btn-modern" style={{ minWidth: '200px' }} onClick={() => handleTypeSelect(type.id)}>Sign In</button>
                     </div>
                   </div>
-                  <h3 className="fw-bold mb-2" style={{ color: 'var(--dark-grey)' }}>{type.title}</h3>
-                  <p className="mb-4" style={{ color: 'var(--text-grey)' }}>{type.description}</p>
-                  {type.id === 'participant' ? (
-                    <>
-                      <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Sign In</button>
-                    </>
-                  ) : (
-                    <>
-                      <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Sign In</button>
-                    </>
-                  )}
                 </div>
               </div>
             </div>

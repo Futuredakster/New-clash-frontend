@@ -66,8 +66,10 @@ const navigate = useNavigate();
                   </div>
                   
                   {/* Bottom content that stays aligned */}
-                  <div className="mt-auto">
-                    <button className="btn-modern w-100" style={{ minWidth: 0, paddingLeft: 0, paddingRight: 0 }} onClick={() => handleTypeSelect(type.id)}>Get Started</button>
+                  <div className="mt-auto d-flex flex-column align-items-center">
+                    <div className="w-100 d-flex justify-content-center">
+                      <button className="btn-modern" style={{ minWidth: '200px' }} onClick={() => handleTypeSelect(type.id)}>Get Started</button>
+                    </div>
                     <div className="text-center mt-3">
                       <small className="text-muted">
                         Signed up already?{' '}
