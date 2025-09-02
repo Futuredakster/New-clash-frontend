@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -17,6 +17,68 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch existing tournament data when modal opens
+  useEffect(() => {
+    if (showModal && tournament_id) {
+      setLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+      fetchTournamentData();
+    }
+  }, [showModal, tournament_id]);
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!showModal) {
+      setFormData({
+        tournament_name: "",
+        start_date: "",
+        end_date: "",
+        signup_duedate: "",
+        account_id: accountId,
+        tournament_id: tournament_id
+      });
+      setImageFile(null);
+      setLoading(true);
+      setErrorMessage("");
+      setSuccessMessage("");
+    }
+  }, [showModal, accountId, tournament_id]);
+
+  const fetchTournamentData = async () => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      const response = await axios.get(`${link}/tournaments/default`, {
+        headers: { accessToken: accessToken },
+        params: { tournament_id: tournament_id }
+      });
+      
+      if (response.data) {
+        // Format dates for input fields (backend likely returns YYYY-MM-DD format)
+        const formatDateForInput = (dateString) => {
+          if (!dateString) return "";
+          const date = new Date(dateString);
+          return date.toISOString().split('T')[0]; // Returns YYYY-MM-DD format
+        };
+
+        setFormData({
+          tournament_name: response.data.tournament_name || "",
+          start_date: formatDateForInput(response.data.start_date),
+          end_date: formatDateForInput(response.data.end_date),
+          signup_duedate: formatDateForInput(response.data.signup_duedate),
+          account_id: accountId,
+          tournament_id: tournament_id
+        });
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching tournament data:', error);
+      setErrorMessage('Error loading tournament data');
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +143,15 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
         {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
         {successMessage && <Alert variant="success">{successMessage}</Alert>}
         
-        <Form onSubmit={handleSubmit} encType="multipart/form-data" className="form-modern">
+        {loading ? (
+          <div className="text-center py-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-2 text-muted">Loading tournament data...</p>
+          </div>
+        ) : (
+          <Form onSubmit={handleSubmit} encType="multipart/form-data" className="form-modern">
           <Form.Group className="form-group-modern">
             <Form.Label htmlFor="tournament_name" className="form-label-modern">
               Tournament Name
@@ -171,6 +241,7 @@ const CustomModal = ({ showModal, handleClose, accountId, tournament_id }) => {
             </Button>
           </div>
         </Form>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button 
