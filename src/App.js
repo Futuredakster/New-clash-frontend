@@ -70,7 +70,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expired or invalid
-      localStorage.removeItem('parentAccessToken');
+      localStorage.removeItem('parentToken');
       localStorage.removeItem('participantAccessToken');
       localStorage.removeItem('accessToken');
       window.location.href = '/landingpage';

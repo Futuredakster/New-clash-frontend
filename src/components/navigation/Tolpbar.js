@@ -328,6 +328,14 @@ const Tolpbar = () => {
                                                 <i className="fas fa-user-cog me-2"></i>
                                                 Personal Details
                                             </Dropdown.Item>
+                                            <Dropdown.Item as={Link} to="/CompetitorView">
+                                                <i className="fas fa-user-plus me-2"></i>
+                                                Register yourself
+                                            </Dropdown.Item>
+                                             <Dropdown.Item as={Link} to="/TournamentView">
+                                                <i className="fas fa-trophy me-2"></i>
+                                                See Your Tournaments
+                                            </Dropdown.Item>
                                             <Dropdown.Divider />
                                             <Dropdown.Item onClick={logoutPart} className="text-danger">
                                                 <i className="fas fa-sign-out-alt me-2"></i>
@@ -444,6 +452,14 @@ const Tolpbar = () => {
                                             <Dropdown.Item as={Link} to="/ParentChilds">
                                                 <i className="fas fa-users me-2"></i>
                                                 My Children
+                                            </Dropdown.Item>
+                                             <Dropdown.Item as={Link} to="/CompetitorView">
+                                                <i className="fas fa-child me-2"></i>
+                                                Register your Children
+                                            </Dropdown.Item>
+                                             <Dropdown.Item as={Link} to="/TournamentView">
+                                                <i className="fas fa-trophy me-2"></i>
+                                                See Your Tournaments
                                             </Dropdown.Item>
                                             <Dropdown.Divider />
                                             <Dropdown.Item onClick={logoutParent} className="text-danger">
@@ -611,6 +627,14 @@ const Tolpbar = () => {
                                         <i className="fas fa-user-cog me-3"></i>
                                         Personal Details
                                     </Link>
+                                    <Link to="/CompetitorView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-user-plus me-3"></i>
+                                            Sign yourself up!
+                                        </Link>
+                                        <Link to="/TournamentView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-trophy me-3"></i>
+                                            My Tournaments
+                                        </Link>
 
                                     <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
@@ -701,6 +725,14 @@ const Tolpbar = () => {
                                         <Link to="/ParentChilds" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-users me-3"></i>
                                             My Children
+                                        </Link>
+                                        <Link to="/CompetitorView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-child me-3"></i>
+                                            Sign your Child Up!
+                                        </Link>
+                                        <Link to="/TournamentView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-trophy me-3"></i>
+                                            My Tournaments
                                         </Link>
                                     </div>
                                 </nav>

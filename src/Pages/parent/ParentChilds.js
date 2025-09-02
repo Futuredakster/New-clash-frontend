@@ -81,6 +81,40 @@ const ParentChilds = () => {
         setChilds(prevChilds => [...prevChilds, newChild]);
     };
 
+    const handleDeleteChild = async (child) => {
+        // Confirmation dialog
+        const isConfirmed = window.confirm(`Are you sure you want to delete ${child.name}? This action cannot be undone.`);
+        
+        if (!isConfirmed) {
+            return;
+        }
+
+        try {
+            const parentToken = localStorage.getItem("parentToken");
+            
+            const response = await axios.delete(`${link}/parents/participants/${child.participant_id}`, {
+                headers: {
+                    parentAccessToken: parentToken
+                }
+            });
+
+            if (response.status === 200) {
+                // Remove child from the list
+                setChilds(prevChilds => 
+                    prevChilds.filter(c => c.participant_id !== child.participant_id)
+                );
+                alert(`✅ ${child.name} has been deleted successfully.`);
+            }
+        } catch (error) {
+            console.error("Error deleting child:", error);
+            if (error.response && error.response.data && error.response.data.error) {
+                alert(`❌ ${error.response.data.error}`);
+            } else {
+                alert("❌ Failed to delete child. Please try again.");
+            }
+        }
+    };
+
   useEffect(() => {
     const parentToken = localStorage.getItem("parentToken");
     const fetchChilds = async () => {
@@ -147,13 +181,22 @@ const ParentChilds = () => {
                       <i className="fas fa-cart-plus me-2"></i> Add to Cart
                     </button>
                   ) : (
-                    <button 
-                      className="btn btn-outline-secondary mt-3 w-100" 
-                      style={{fontWeight:600, fontSize:"1rem"}}
-                      onClick={() => handleEditChild(child)}
-                    >
-                      <i className="fas fa-edit me-2"></i> Edit Child
-                    </button>
+                    <div className="d-flex flex-column gap-2 mt-3 align-items-center">
+                      <button 
+                        className="btn btn-outline-secondary" 
+                        style={{fontWeight:600, fontSize:"0.9rem", width:"120px"}}
+                        onClick={() => handleEditChild(child)}
+                      >
+                        <i className="fas fa-edit me-1"></i> Edit
+                      </button>
+                      <button 
+                        className="btn btn-outline-danger" 
+                        style={{fontWeight:600, fontSize:"0.9rem", width:"120px"}}
+                        onClick={() => handleDeleteChild(child)}
+                      >
+                        <i className="fas fa-trash me-1"></i> Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
