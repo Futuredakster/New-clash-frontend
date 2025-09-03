@@ -171,11 +171,11 @@ const seeDivision = (tournamentName, tournamentId) =>{
       {/* Desktop Table View */}
       <div className="d-none d-lg-block" style={{width: '100%'}}>
         <div className="card border-0 shadow-sm" style={{width: '100%', maxWidth: 'none'}}>
-          <div className="card-header bg-white border-0 py-3">
+          <div className="card-header bg-white border-0 py-3" style={{paddingTop: '1rem'}}>
             <h5 className="mb-0 d-flex align-items-center">
               <i className="fas fa-trophy me-2 text-primary"></i>
               Tournaments Overview
-              <span className="badge bg-light text-dark ms-2">{items.length}</span>
+              <span className="badge bg-light text-dark ms-2" style={{verticalAlign: 'baseline', lineHeight: '1'}}>{items.length}</span>
             </h5>
           </div>
           <div className="card-body p-0">

@@ -2474,7 +2474,6 @@ body {
 /* Empty state styling */
 .text-center .fa-users {
   color: var(--border-grey);
-  margin-bottom: 24px;
 }
 
 /* Responsive participant grid */
