@@ -28,7 +28,7 @@ export const RecoverPassword = () => {
       if (response.data.error) {
         alert(response.data.error);
       } else {
-       alert( response.data.message)
+        alert(response.data.message || "Password recovery email sent successfully!");
       }
     } catch (error) {
       console.error("Error:", error.response ? error.response.data : error.message);
