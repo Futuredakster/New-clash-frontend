@@ -18,14 +18,14 @@ const LoginTypeSelector = () => {
   const registrationTypes = [
     {
       id: 'participant',
-      title: 'Login as a Participant',
-      description: 'I want to login for myself',
+      title: 'Login as Competitor',
+      description: 'I want to access my karate competition account',
       icon: User,
     },
     {
       id: 'parent',
       title: 'Login as Parent/Guardian',
-      description: 'I want to login as a parent/guardian',
+      description: 'I want to manage my children\'s karate registrations',
       icon: Users,
     }
   ];
@@ -49,7 +49,7 @@ const LoginTypeSelector = () => {
       {/* Page Header */}
       <div className="page-header-modern mb-4">
         <h1 className="page-title-modern">Sign In</h1>
-        <p className="page-subtitle-modern">Choose how you'd like to sign in for the karate tournament</p>
+        <p className="page-subtitle-modern">Access your karate competition account</p>
       </div>
 
       {/* Registration Type Cards */}

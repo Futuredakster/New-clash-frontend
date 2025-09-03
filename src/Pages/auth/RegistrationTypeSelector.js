@@ -9,14 +9,14 @@ const navigate = useNavigate();
   const registrationTypes = [
     {
       id: 'participant',
-      title: 'Register Myself',
-      description: 'I want to compete in the tournament',
+      title: 'Competitor Registration',
+      description: 'I want to compete in karate tournaments',
       icon: User,
     },
     {
       id: 'parent',
       title: 'Register as Parent/Guardian',
-      description: 'I want to register my children for the tournament',
+      description: 'I want to register my children for karate competitions',
       icon: Users,
     }
   ];
@@ -39,8 +39,8 @@ const navigate = useNavigate();
     <div className="container-modern py-5" style={{ minHeight: 'calc(100vh - 76px)' }}>
       {/* Page Header */}
       <div className="page-header-modern mb-4">
-        <h1 className="page-title-modern">Join the Tournament</h1>
-        <p className="page-subtitle-modern">Choose how you'd like to register for the karate tournament</p>
+        <h1 className="page-title-modern">Register for Karate Competition</h1>
+        <p className="page-subtitle-modern">Choose how you'd like to register for karate competitions</p>
       </div>
 
       {/* Registration Type Cards */}

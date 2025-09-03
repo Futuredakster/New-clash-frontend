@@ -24,14 +24,14 @@ function LandingPage() {
         onClick={() => navigate('/RegistrationTypeSelector')}
       >
         <i className="fas fa-users me-2"></i>
-        <span>JOIN TOURNAMENT</span>
+        <span>REGISTER FOR COMPETITIONS</span>
       </Button>
       <Button
         className="btn btn-modern-outline"
         onClick={() => navigate('/LoginTypeSelector')}
       >
         <i className="fas fa-list-check me-2"></i>
-        <span>VIEW YOUR TOURNAMENTS</span>
+        <span>MY REGISTRATIONS & COMPETITIONS</span>
       </Button>
        <Button
         className="btn btn-modern-outline"
@@ -51,7 +51,7 @@ function LandingPage() {
             <img
               className="d-block w-100"
               src={imageone}
-              alt="Tournament Management"
+              alt="Karate Tournament Management"
               style={{ objectFit: 'cover', height: '100vh', filter: 'brightness(0.7)' }}
             />
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
@@ -62,8 +62,8 @@ function LandingPage() {
                       Unleash the Thrill with <span style={{color: '#ffffff'}}>Clash</span>
                     </h1>
                     <p className="lead mb-4" style={{fontSize: '1.25rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-                      Your ultimate platform for seamlessly organizing and managing tournaments. 
-                      Whether you're a sports enthusiast, passionate gamer, or organization looking to foster team spirit.
+                      Your ultimate platform for seamlessly organizing and managing karate tournaments. 
+                      Whether you're a martial artist, karate competitor, or dojo looking to host competitions.
                     </p>
                     {renderButtons()}
                   </Col>
@@ -86,11 +86,11 @@ function LandingPage() {
                 <Row className="justify-content-center">
                   <Col lg={8} className="text-center text-white slide-up">
                     <h2 className="display-4 fw-bold mb-4" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-                      Effortless Tournament Creation
+                      Effortless Karate Competition Management
                     </h2>
                     <p className="lead mb-4" style={{fontSize: '1.25rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
                       Create comprehensive brackets, manage participants, and experience real-time updates 
-                      with our intuitive tournament management system.
+                      with our intuitive karate tournament management system.
                     </p>
                     {renderButtons()}
                   </Col>
