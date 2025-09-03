@@ -232,13 +232,13 @@ const Tolpbar = () => {
                                             onClick={() => navigate('/Login', { replace: true })}
                                         >
                                             <i className="fas fa-sign-in-alt me-1"></i>
-                                            Login
+                                            Manage My Tournaments
                                         </button>
                                     </Nav.Link>
                                     <Nav.Link as={Link} to="/AccountUser">
                                         <button className="btn btn-modern btn-sm">
-                                            <i className="fas fa-user-plus me-1"></i>
-                                            Sign Up
+                                            <i className="fas fa-trophy me-1"></i>
+                                            Create Tournaments
                                         </button>
                                     </Nav.Link>
                                 </>
@@ -784,11 +784,11 @@ const Tolpbar = () => {
                                             }}
                                         >
                                             <i className="fas fa-sign-in-alt me-3"></i>
-                                            Login
+                                            Manage My Tournaments
                                         </button>
                                         <Link to="/AccountUser" className="mobile-nav-link" onClick={handleMobileMenuClose}>
-                                            <i className="fas fa-user-plus me-3"></i>
-                                            Sign Up
+                                            <i className="fas fa-trophy me-3"></i>
+                                            Create Tournaments
                                         </Link>
                                     </div>
                                 </nav>

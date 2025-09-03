@@ -31,14 +31,14 @@ function LandingPage() {
         onClick={() => navigate('/LoginTypeSelector')}
       >
         <i className="fas fa-list-check me-2"></i>
-        <span>SEE YOUR TOURNAMENTS</span>
+        <span>VIEW YOUR TOURNAMENTS</span>
       </Button>
        <Button
         className="btn btn-modern-outline"
         onClick={() => navigate('/ViewerTour')}
       >
         <i className="fas fa-tv me-2"></i>
-        <span>SEE MATCHES AND TOURNAMENTS</span>
+        <span>VIEW MATCHES AND TOURNAMENTS</span>
       </Button>
     </div>
   );
