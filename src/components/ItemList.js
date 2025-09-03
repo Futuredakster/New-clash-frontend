@@ -341,20 +341,29 @@ const seeDivision = (tournamentName, tournamentId) =>{
                              </span>
                            ) : (
                              <button 
-                               className="btn btn-success btn-sm d-inline-flex align-items-center" 
+                               className="btn btn-danger d-inline-flex align-items-center fw-bold text-white" 
                                onClick={()=> startTournament(item.tournament_id)}
                                disabled={startingTournament === item.tournament_id}
-                               style={{borderRadius: '20px'}}
+                               style={{
+                                 borderRadius: '25px',
+                                 fontSize: '0.95rem',
+                                 padding: '10px 20px',
+                                 boxShadow: '0 4px 15px rgba(220, 53, 69, 0.4)',
+                                 border: '2px solid #dc3545',
+                                 fontWeight: '700',
+                                 animation: startingTournament !== item.tournament_id ? 'pulse 2s infinite' : 'none',
+                                 background: 'linear-gradient(45deg, #dc3545, #ff6b7a)'
+                               }}
                              >
                                {startingTournament === item.tournament_id ? (
                                  <>
                                    <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                   <span>Starting...</span>
+                                   <span>STARTING TOURNAMENT...</span>
                                  </>
                                ) : (
                                  <>
-                                   <i className="fas fa-play me-2"></i>
-                                   <span>Start</span>
+                                   <i className="fas fa-rocket me-2" style={{fontSize: '1.1em'}}></i>
+                                   <span>🚀 START TOURNAMENT</span>
                                  </>
                                )}
                              </button>
@@ -454,20 +463,30 @@ const seeDivision = (tournamentName, tournamentId) =>{
                       </button>
                     ) : (
                        <button 
-                         className="btn btn-success btn-sm w-100" 
+                         className="btn btn-danger w-100 fw-bold text-white" 
                          onClick={()=> startTournament(item.tournament_id)}
                          disabled={startingTournament === item.tournament_id}
+                         style={{
+                           borderRadius: '20px',
+                           fontSize: '0.9rem',
+                           padding: '8px 12px',
+                           boxShadow: '0 3px 10px rgba(220, 53, 69, 0.4)',
+                           border: '2px solid #dc3545',
+                           fontWeight: '700',
+                           background: 'linear-gradient(45deg, #dc3545, #ff6b7a)',
+                           animation: startingTournament !== item.tournament_id ? 'pulse 2s infinite' : 'none'
+                         }}
                        >
                          {startingTournament === item.tournament_id ? (
                            <>
                              <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                             <span>Starting...</span>
+                             <span>STARTING...</span>
                            </>
                          ) : (
                            <>
-                             <i className="fas fa-play me-1"></i>
-                             <span className="d-none d-sm-inline">Start</span>
-                             <span className="d-sm-none">Start</span>
+                             <i className="fas fa-rocket me-1"></i>
+                             <span className="d-none d-sm-inline">🚀 START</span>
+                             <span className="d-sm-none">🚀 START</span>
                            </>
                          )}
                        </button>

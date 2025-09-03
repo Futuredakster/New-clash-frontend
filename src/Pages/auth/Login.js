@@ -1,6 +1,6 @@
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
-import React, { useState,useContext } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState,useContext, useEffect } from "react";
 import {AuthContext} from '../../context/AuthContext';
 import { Link } from "react-router-dom";
 import { link } from '../../constant';
@@ -9,8 +9,23 @@ import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isFromRegistration, setIsFromRegistration] = useState(false);
   const {setAuthState, authState} = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Check if user came from registration by looking at the referrer or state
+    const justRegisteredFlag = sessionStorage.getItem('justRegistered');
+    const referrerCheck = document.referrer.includes('/AccountUser');
+    const fromRegistration = location.state?.fromRegistration || 
+                           referrerCheck ||
+                           justRegisteredFlag === 'true';
+    
+    setIsFromRegistration(fromRegistration);
+    
+    // Don't clear the flag immediately - wait until after successful login
+  }, [location]);
   const login = () => {
     const data = { username: username, password: password };
     axios.post(`${link}/users/Login`, data).then((response) => {
@@ -26,6 +41,10 @@ function Login() {
         account_id: response.data.account_id,
         role: response.data.role
       });
+      
+      // Clear the registration flag after successful login
+      sessionStorage.removeItem('justRegistered');
+      
       navigate('/Home', { replace: true });
       }
     });
@@ -37,8 +56,17 @@ function Login() {
           <div className="fade-in">
             <Card className="card-modern shadow">
               <Card.Header className="text-center bg-white border-0 pt-4 pb-2">
-                <h3 className="mb-0 fw-bold" style={{color: 'var(--dark-grey)'}}>Welcome Back</h3>
-                <p className="text-muted mb-0">Sign in to your account</p>
+                {isFromRegistration ? (
+                  <>
+                    <h3 className="mb-0 fw-bold" style={{color: 'var(--dark-grey)'}}>Account Created Successfully!</h3>
+                    <p className="text-muted mb-0">Now sign in to start organizing karate tournaments</p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="mb-0 fw-bold" style={{color: 'var(--dark-grey)'}}>Welcome Back</h3>
+                    <p className="text-muted mb-0">Sign in to your account</p>
+                  </>
+                )}
               </Card.Header>
               <Card.Body className="px-4 pb-4">
                 <Form>

@@ -180,7 +180,8 @@ const AccountUser = () =>{
                                                                 }, 3000); // Wait 3 seconds then redirect
                                                             }
                                                         } else {
-                                                            // Success - redirect to login
+                                                            // Success - set flag and redirect to login
+                                                            sessionStorage.setItem('justRegistered', 'true');
                                                             navigate('/Login');
                                                         }
                                                     })

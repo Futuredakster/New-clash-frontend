@@ -95,7 +95,7 @@ const ParticipantDetails = () => {
           <i className="fas fa-user me-2"></i>
           Personal Details
         </h2>
-        <p className="page-subtitle-modern">View and manage your participant information</p>
+        <p className="page-subtitle-modern">View and manage your karate competitor information</p>
       </div>
 
       <div className="row justify-content-center">
@@ -123,7 +123,7 @@ const ParticipantDetails = () => {
                 <h4 className="mb-0 fw-bold" style={{ color: "#222" }}>
                   {participantData?.name}
                 </h4>
-                <span className="text-muted">Tournament Participant</span>
+                <span className="text-muted">Karate Competitor</span>
               </div>
 
               <div className="participant-details">

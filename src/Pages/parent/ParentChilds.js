@@ -136,8 +136,8 @@ const ParentChilds = () => {
   return (
     <div className="container-modern fade-in">
       <div className="page-header-modern mb-4">
-        <h2 className="page-title-modern"><i className="fas fa-child me-2"></i>Children</h2>
-        <p className="page-subtitle-modern">Linked children accounts</p>
+        <h2 className="page-title-modern"><i className="fas fa-child me-2"></i>My Karate Competitors</h2>
+        <p className="page-subtitle-modern">Your registered children for karate competitions</p>
         {!tournament_id || !division_id ? (
           <div className="text-center mt-3">
             <button className="btn btn-modern" style={{fontWeight: 600}} onClick={handleAddChild}>
@@ -151,8 +151,8 @@ const ParentChilds = () => {
         {childs.length === 0 ? (
           <div className="text-center py-5">
             <i className="fas fa-child fa-4x text-muted mb-4"></i>
-            <h5 className="text-muted mb-3">No children found</h5>
-            <p className="text-muted">You have not linked any children accounts yet.</p>
+            <h5 className="text-muted mb-3">No competitors registered</h5>
+            <p className="text-muted">You haven't registered any children for karate competitions yet.</p>
           </div>
         ) : (
           childs.map((child, idx) => (

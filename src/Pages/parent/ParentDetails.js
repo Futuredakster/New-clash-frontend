@@ -120,7 +120,7 @@ const ParentDetails = () => {
                 <h4 className="mb-0 fw-bold" style={{ color: "#222" }}>
                   {parentData?.name}
                 </h4>
-                <span className="text-muted">Parent Account</span>
+                <span className="text-muted">Karate Parent/Guardian</span>
               </div>
 
               <div className="parent-details">

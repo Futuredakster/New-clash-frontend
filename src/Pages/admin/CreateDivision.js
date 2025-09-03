@@ -247,13 +247,13 @@ const CreateDivision = () => {
       <Row className="justify-content-center">
         <Col xs={12} lg={8} xl={6}>
           <Helmet>
-            <title>Create Division - Clash</title>
-            <meta name="description" content="Create a new division for your tournament" />
+            <title>Create Karate Division - Clash</title>
+            <meta name="description" content="Create a new division for your karate tournament" />
           </Helmet>
           
           <div className="page-header-modern mb-4">
-            <h1 className="page-title-modern">Create Division</h1>
-            <p className="page-subtitle-modern">Set up tournament divisions to organize competitors</p>
+            <h1 className="page-title-modern">Create Karate Division</h1>
+            <p className="page-subtitle-modern">Set up karate tournament divisions to organize competitors</p>
             
             {/* Mode Toggle */}
             <div className="d-flex justify-content-center mt-3">
@@ -322,9 +322,9 @@ const CreateDivision = () => {
             <Card.Header className="card-modern-header">
               <h4 className="mb-0">
                 <i className="fas fa-users me-2"></i>
-                Division Details
+                Karate Division Details
               </h4>
-              <small className="text-muted">Define the division parameters for competitor organization</small>
+              <small className="text-muted">Define the karate division parameters for competitor organization</small>
             </Card.Header>
             <Card.Body className="card-modern-body">
               {errorMessage && (

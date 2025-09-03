@@ -224,7 +224,7 @@ const Tolpbar = () => {
                             {(!authState.status && !partState.status && !parentState.status) ? (
                                 <>
                                     <Nav.Link as={Link} to="/ViewerTour" className="text-dark">
-                                        Browse Tournaments
+                                        Browse Karate Tournaments
                                     </Nav.Link>
                                     <Nav.Link as="div">
                                         <button 
@@ -334,7 +334,7 @@ const Tolpbar = () => {
                                             </Dropdown.Item>
                                              <Dropdown.Item as={Link} to="/TournamentView">
                                                 <i className="fas fa-trophy me-2"></i>
-                                                See Your Tournaments
+                                                My Karate Competitions
                                             </Dropdown.Item>
                                             <Dropdown.Divider />
                                             <Dropdown.Item onClick={logoutPart} className="text-danger">
@@ -451,15 +451,15 @@ const Tolpbar = () => {
                                             </Dropdown.Item>
                                             <Dropdown.Item as={Link} to="/ParentChilds">
                                                 <i className="fas fa-users me-2"></i>
-                                                My Children
+                                                My Karate Competitors
                                             </Dropdown.Item>
                                              <Dropdown.Item as={Link} to="/CompetitorView">
                                                 <i className="fas fa-child me-2"></i>
-                                                Register your Children
+                                                Register for Competitions
                                             </Dropdown.Item>
                                              <Dropdown.Item as={Link} to="/TournamentView">
                                                 <i className="fas fa-trophy me-2"></i>
-                                                See Your Tournaments
+                                                My Karate Competitions
                                             </Dropdown.Item>
                                             <Dropdown.Divider />
                                             <Dropdown.Item onClick={logoutParent} className="text-danger">
@@ -501,7 +501,7 @@ const Tolpbar = () => {
                                         </div>
                                         <div>
                                             <div className="fw-bold">{checkUsername()} <span className="text-muted">({checkUserRole() || authState.role})</span></div>
-                                            <small className="text-muted">Tournament Creator</small>
+                                            <small className="text-muted">Karate Tournament Organizer</small>
                                         </div>
                                     </div>
                                 </div>
@@ -530,14 +530,14 @@ const Tolpbar = () => {
 
                                     {/* Tournament Management Section */}
                                     <div className="mobile-nav-section">
-                                        <div className="mobile-nav-section-title">Tournament Management</div>
+                                        <div className="mobile-nav-section-title">Karate Tournament Management</div>
                                         <Link to="/CreateTournaments" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-plus-circle me-3"></i>
-                                            Create Tournament
+                                            Create Karate Tournament
                                         </Link>
                                         <Link to="/MyTournaments" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-list me-3"></i>
-                                            My Tournaments
+                                            My Karate Tournaments
                                         </Link>
                                     </div>
 
@@ -580,7 +580,7 @@ const Tolpbar = () => {
                                         </div>
                                         <div>
                                             <div className="fw-bold">{partState.name}</div>
-                                            <small className="text-muted">Tournament Participant</small>
+                                            <small className="text-muted">Karate Competitor</small>
                                         </div>
                                     </div>
                                 </div>
@@ -633,12 +633,12 @@ const Tolpbar = () => {
                                         </Link>
                                         <Link to="/TournamentView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-trophy me-3"></i>
-                                            My Tournaments
+                                            My Karate Competitions
                                         </Link>
 
                                     <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
-                                        Browse Tournaments
+                                        Browse Karate Tournaments
                                     </Link>
                                 </nav>
 
@@ -667,7 +667,7 @@ const Tolpbar = () => {
                                         </div>
                                         <div>
                                             <div className="fw-bold">{parentState.name}</div>
-                                            <small className="text-muted">Tournament Parent</small>
+                                            <small className="text-muted">Karate Parent/Guardian</small>
                                         </div>
                                     </div>
                                 </div>
@@ -712,7 +712,7 @@ const Tolpbar = () => {
 
                                     <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
-                                        Browse Tournaments
+                                        Browse Karate Tournaments
                                     </Link>
 
                                     {/* Parent Management Section */}
@@ -724,7 +724,7 @@ const Tolpbar = () => {
                                         </Link>
                                         <Link to="/ParentChilds" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-users me-3"></i>
-                                            My Children
+                                            My Karate Competitors
                                         </Link>
                                         <Link to="/CompetitorView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-child me-3"></i>
@@ -732,7 +732,7 @@ const Tolpbar = () => {
                                         </Link>
                                         <Link to="/TournamentView" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-trophy me-3"></i>
-                                            My Tournaments
+                                            My Karate Competitions
                                         </Link>
                                     </div>
                                 </nav>
@@ -762,7 +762,7 @@ const Tolpbar = () => {
                                         </div>
                                         <div>
                                             <div className="fw-bold">Welcome to Clash</div>
-                                            <small className="text-muted">Tournament Platform</small>
+                                            <small className="text-muted">Karate Tournament Platform</small>
                                         </div>
                                     </div>
                                 </div>
@@ -771,7 +771,7 @@ const Tolpbar = () => {
                                 <nav className="mobile-nav p-3">
                                     <Link to="/ViewerTour" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                         <i className="fas fa-search me-3"></i>
-                                        Browse Tournaments
+                                        Browse Karate Tournaments
                                     </Link>
 
                                     <div className="mobile-nav-section">

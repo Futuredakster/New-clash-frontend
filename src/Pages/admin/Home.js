@@ -3,7 +3,8 @@ import axios from 'axios';
 import Searchbar from '../../components/navigation/Searchbar';
 import TableContent from '../../components/TableContent';
 import {AuthContext} from '../../context/AuthContext';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { link } from '../../constant';
 
 
@@ -54,8 +55,8 @@ function Home() {
       <Row>
         <Col>
           <div className="page-header-modern">
-            <h1 className="page-title-modern">Tournament Dashboard</h1>
-            <p className="page-subtitle-modern">Manage and view all your tournaments</p>
+            <h1 className="page-title-modern">Karate Tournament Dashboard</h1>
+            <p className="page-subtitle-modern">Manage and view all your karate tournaments</p>
           </div>
           
           <div className="w-100">

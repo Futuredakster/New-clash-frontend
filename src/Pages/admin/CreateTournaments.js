@@ -66,22 +66,22 @@ const CreateTournaments = () => {
       <Row className="justify-content-center">
         <Col xs={12} lg={8} xl={6}>
           <Helmet>
-            <title>Create Tournament - Clash</title>
-            <meta name="description" content="Create a new tournament with ease" />
+            <title>Create Karate Tournament - Clash</title>
+            <meta name="description" content="Create a new karate tournament with ease" />
           </Helmet>
           
           <div className="page-header-modern">
-            <h1 className="page-title-modern">Create Tournament</h1>
-            <p className="page-subtitle-modern">Set up your tournament in just a few steps</p>
+            <h1 className="page-title-modern">Create Karate Tournament</h1>
+            <p className="page-subtitle-modern">Set up your karate tournament in just a few steps</p>
           </div>
 
           <Card className="card-modern">
             <Card.Header className="card-modern-header">
               <h4 className="mb-0">
                 <i className="fas fa-trophy me-2"></i>
-                Tournament Details
+                Karate Tournament Details
               </h4>
-              <small className="text-muted">Fill in the information below to create your tournament</small>
+              <small className="text-muted">Fill in the information below to create your karate tournament</small>
             </Card.Header>
             <Card.Body className="card-modern-body">
               <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
@@ -97,7 +97,7 @@ const CreateTournaments = () => {
                         type="text"
                         id="tournament_name"
                         name="tournament_name"
-                        placeholder="Enter tournament name (e.g., USA Open Championship)"
+                        placeholder="Enter karate tournament name (e.g., USA Open Karate Championship)"
                         className="form-control-modern"
                       />
                     </div>
@@ -132,13 +132,13 @@ const CreateTournaments = () => {
                       </label>
                       <ErrorMessage name="signup_duedate" component="div" className="text-danger mb-2" />
                       <Field type="date" id="signup_duedate" name="signup_duedate" className="form-control-modern" />
-                      <small className="text-muted">Last date for participants to register</small>
+                      <small className="text-muted">Last date for karate competitors to register</small>
                     </div>
 
                     <div className="form-group-modern">
                       <label className="form-label-modern" htmlFor="image">
                         <i className="fas fa-image me-2"></i>
-                        Tournament Image
+                        Karate Tournament Image
                       </label>
                       <ErrorMessage name="image" component="div" className="text-danger mb-2" />
                       <input
@@ -149,7 +149,7 @@ const CreateTournaments = () => {
                         onChange={(event) => formik.setFieldValue("image", event.target.files[0])}
                         className="form-control-modern"
                       />
-                      <small className="text-muted">Upload a banner image for your tournament</small>
+                      <small className="text-muted">Upload a banner image for your karate tournament</small>
                     </div>
 
                     <div className="form-group-modern">
@@ -162,10 +162,10 @@ const CreateTournaments = () => {
                         />
                         <label htmlFor="is_published" className="form-check-label">
                           <i className="fas fa-globe me-2"></i>
-                          Publish tournament immediately
+                          Publish karate tournament immediately
                         </label>
                       </div>
-                      <small className="text-muted">Make this tournament visible to the public</small>
+                      <small className="text-muted">Make this karate tournament visible to the public</small>
                       <ErrorMessage name="is_published" component="div" className="text-danger" />
                     </div>
 
@@ -178,12 +178,12 @@ const CreateTournaments = () => {
                         {formik.isSubmitting ? (
                           <>
                             <span className="loading-spinner me-2"></span>
-                            Creating Tournament...
+                            Creating Karate Tournament...
                           </>
                         ) : (
                           <>
                             <i className="fas fa-plus me-2"></i>
-                            Create Tournament
+                            Create Karate Tournament
                           </>
                         )}
                       </Button>

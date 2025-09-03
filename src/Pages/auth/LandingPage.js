@@ -9,37 +9,69 @@ import Carousel from 'react-bootstrap/Carousel';
 function LandingPage() {
   const navigate = useNavigate();
 
-  // Reusable button group with modern styling
+  // Reusable button group with modern styling and clear sections
   const renderButtons = () => (
-    <div className="d-flex flex-wrap justify-content-center gap-3 mt-4">
-      <Button
-        className="btn btn-modern"
-        onClick={() => navigate('/AccountUser')}
-      >
-        <i className="fas fa-trophy me-2"></i>
-        <span>CREATE TOURNAMENTS</span>
-      </Button>
-      <Button
-        className="btn btn-modern-outline"
-        onClick={() => navigate('/RegistrationTypeSelector')}
-      >
-        <i className="fas fa-users me-2"></i>
-        <span>REGISTER FOR COMPETITIONS</span>
-      </Button>
-      <Button
-        className="btn btn-modern-outline"
-        onClick={() => navigate('/LoginTypeSelector')}
-      >
-        <i className="fas fa-list-check me-2"></i>
-        <span>MY REGISTRATIONS & COMPETITIONS</span>
-      </Button>
-       <Button
-        className="btn btn-modern-outline"
-        onClick={() => navigate('/ViewerTour')}
-      >
-        <i className="fas fa-tv me-2"></i>
-        <span>VIEW MATCHES AND TOURNAMENTS</span>
-      </Button>
+    <div className="mt-4">
+      {/* Primary CTA for Tournament Organizers */}
+      <div className="text-center mb-4">
+        <h4 className="text-white mb-2" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
+          Want to organize karate tournaments?
+        </h4>
+        <Button
+          className="btn btn-modern btn-lg px-4 py-2"
+          onClick={() => navigate('/AccountUser')}
+          style={{ fontSize: '1.1rem', fontWeight: '600' }}
+        >
+          <i className="fas fa-trophy me-2"></i>
+          <span>CREATE TOURNAMENTS</span>
+        </Button>
+        <div className="text-white mt-2" style={{fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
+          Set up your organizer account
+        </div>
+      </div>
+
+      {/* Secondary options */}
+      <div className="d-flex flex-wrap justify-content-center gap-2 mt-4">
+        <div className="d-flex flex-column align-items-center">
+          <Button
+            className="btn btn-modern-outline"
+            onClick={() => navigate('/RegistrationTypeSelector')}
+            style={{ minWidth: '200px' }}
+          >
+            <i className="fas fa-users me-2"></i>
+            <span>REGISTER FOR COMPETITIONS</span>
+          </Button>
+          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
+            Sign up as competitor or parent
+          </small>
+        </div>
+        <div className="d-flex flex-column align-items-center">
+          <Button
+            className="btn btn-modern-outline"
+            onClick={() => navigate('/LoginTypeSelector')}
+            style={{ minWidth: '200px' }}
+          >
+            <i className="fas fa-list-check me-2"></i>
+            <span>MY REGISTRATIONS</span>
+          </Button>
+          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
+            View your competitions
+          </small>
+        </div>
+        <div className="d-flex flex-column align-items-center">
+          <Button
+            className="btn btn-modern-outline"
+            onClick={() => navigate('/ViewerTour')}
+            style={{ minWidth: '200px' }}
+          >
+            <i className="fas fa-tv me-2"></i>
+            <span>VIEW LIVE TOURNAMENTS</span>
+          </Button>
+          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
+            Watch matches and brackets
+          </small>
+        </div>
+      </div>
     </div>
   );
 

@@ -28,6 +28,7 @@ const SeeDivisions = () => {
   const [matCount, setMatCount] = useState(3); // Default to 3 mats
   const [matNames, setMatNames] = useState(['Mat A', 'Mat B', 'Mat C']);
   const [deletingMatId, setDeletingMatId] = useState(null);
+  const [hasBrackets, setHasBrackets] = useState(false);
 
   const handleShowModal = () => {
     // Close all dropdowns when modal opens
@@ -357,6 +358,26 @@ const SeeDivisions = () => {
     };
   }, [showMatDashboard]);
 
+  // Check if brackets exist for any divisions in the tournament
+  const checkBrackets = async () => {
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken || !tournament_id) {
+      setHasBrackets(false);
+      return;
+    }
+
+    try {
+      const response = await axios.get(`${link}/brackets/tournament-status/${tournament_id}`, {
+        headers: { accessToken: accessToken }
+      });
+      
+      setHasBrackets(response.data.hasbrackets || false);
+    } catch (error) {
+      console.error('Error checking tournament bracket status:', error);
+      setHasBrackets(false);
+    }
+  };
+
   // Clear alert after 5 seconds
   useEffect(() => {
     if (alertMessage.message) {
@@ -396,6 +417,13 @@ const SeeDivisions = () => {
       });
   }, [tournament_id]);
 
+  // Check brackets when tournament_id is available
+  useEffect(() => {
+    if (tournament_id) {
+      checkBrackets();
+    }
+  }, [tournament_id]);
+
   return (
     <div className="fade-in px-2 px-md-4 w-100">
           <div className="page-header-modern">
@@ -407,6 +435,19 @@ const SeeDivisions = () => {
           {alertMessage.message && (
             <Alert variant={alertMessage.type} className="mb-4">
               {alertMessage.message}
+            </Alert>
+          )}
+
+          {/* Warning when no brackets exist */}
+          {data.length > 0 && !hasBrackets && (
+            <Alert variant="warning" className="mb-4">
+              <div className="d-flex align-items-center">
+                <i className="fas fa-rocket me-2" style={{fontSize: '1.2em'}}></i>
+                <div>
+                  <strong>🚀 Click "START TOURNAMENT" first!</strong><br />
+                  <small>Go back to the <strong>Tournament Dashboard</strong> and click the big red <strong>"🚀 START TOURNAMENT"</strong> button to create initial brackets for all divisions. Then return here to manage individual brackets and mats.</small>
+                </div>
+              </div>
             </Alert>
           )}
 
@@ -431,7 +472,8 @@ const SeeDivisions = () => {
             <Button 
               className="btn btn-outline-primary text-nowrap" 
               onClick={handleAssignMats}
-              disabled={loading || data.length === 0}
+              disabled={loading || data.length === 0 || !hasBrackets}
+              title={!hasBrackets && data.length > 0 ? "Create brackets first before assigning mats" : ""}
             >
               {loading ? (
                 <>
@@ -443,6 +485,9 @@ const SeeDivisions = () => {
                 <>
                   <i className="fas fa-map me-2"></i>
                   <span className="d-none d-sm-inline">Auto-Assign </span>Mats
+                  {!hasBrackets && data.length > 0 && (
+                    <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
+                  )}
                 </>
               )}
             </Button>
@@ -453,16 +498,21 @@ const SeeDivisions = () => {
                 fetchMatAssignments();
                 setShowMatDashboard(true);
               }}
-              disabled={data.length === 0}
+              disabled={data.length === 0 || !hasBrackets}
+              title={!hasBrackets && data.length > 0 ? "Create brackets first before viewing mat dashboard" : ""}
             >
               <i className="fas fa-eye me-2"></i>
               <span className="d-none d-sm-inline">Mat </span>Dashboard
+              {!hasBrackets && data.length > 0 && (
+                <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
+              )}
             </Button>
 
             <Button 
               className="btn btn-outline-danger text-nowrap" 
               onClick={handleDeleteAllMats}
               disabled={loading || data.length === 0}
+              title="This will delete all mats and their assignments"
             >
               {loading ? (
                 <>
@@ -515,7 +565,7 @@ const SeeDivisions = () => {
                           </div>
                         </th>
                         <th className="border-0 py-3 pe-4 text-center" style={{width: '10%'}}>
-                          <i className="fas fa-sitemap me-2 text-muted"></i>Brackets
+                          <i className="fas fa-sitemap me-2 text-muted"></i>Manage Brackets
                         </th>
                       </tr>
                     </thead>
@@ -616,14 +666,21 @@ const SeeDivisions = () => {
                           </td>
                           <td className="py-4 pe-4 text-center">
                             <Button 
-                              variant="outline-success" 
+                              variant={hasBrackets ? "outline-success" : "outline-secondary"}
                               size="sm"
                               onClick={() => forBrack(item.division_id)}
+                              disabled={!hasBrackets}
                               className="d-flex align-items-center justify-content-center"
                               style={{borderRadius: '20px'}}
+                              title={!hasBrackets ? "Click 'START TOURNAMENT' on the dashboard first to create initial brackets" : ""}
                             >
                               <i className="fas fa-sitemap me-1 d-flex align-items-center"></i>
-                              <span className="d-flex align-items-center">Create Brackets</span>
+                              <span className="d-flex align-items-center">
+                                Manage Brackets
+                              </span>
+                              {!hasBrackets && (
+                                <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
+                              )}
                             </Button>
                           </td>
                         </tr>
@@ -690,15 +747,24 @@ const SeeDivisions = () => {
                       </div>
                       <div className="col-12 col-sm-4 px-1">
                         <Button 
-                          variant="outline-success" 
+                          variant={hasBrackets ? "outline-success" : "outline-secondary"}
                           size="sm"
                           className="w-100"
                           style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
                           onClick={() => forBrack(item.division_id)}
+                          disabled={!hasBrackets}
+                          title={!hasBrackets ? "Click 'START TOURNAMENT' on the dashboard first to create initial brackets" : ""}
                         >
                           <i className="fas fa-sitemap me-1"></i>
-                          <span className="d-none d-sm-inline">Brackets</span>
-                          <span className="d-sm-none">Brackets</span>
+                          <span className="d-none d-sm-inline">
+                            Manage Brackets
+                          </span>
+                          <span className="d-sm-none">
+                            Manage Brackets
+                          </span>
+                          {!hasBrackets && (
+                            <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
+                          )}
                         </Button>
                       </div>
                       <div className="col-12 col-sm-4 px-1">
