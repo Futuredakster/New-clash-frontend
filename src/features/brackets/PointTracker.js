@@ -10,7 +10,9 @@ const PointTracker = () => {
 
   const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutes
   const [isRunning, setIsRunning] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const timerRef = useRef(null);
+  const containerRef = useRef(null);
 
   const [user1, setUser1] = useState('');
   const [user2, setUser2] = useState('');
@@ -37,6 +39,49 @@ const PointTracker = () => {
   const subtractTime = () => {
     setTimeLeft((prev) => Math.max(prev - 10, 0));
   };
+
+  const toggleFullscreen = () => {
+    if (!isFullscreen) {
+      // Enter fullscreen
+      if (containerRef.current.requestFullscreen) {
+        containerRef.current.requestFullscreen();
+      } else if (containerRef.current.webkitRequestFullscreen) {
+        containerRef.current.webkitRequestFullscreen();
+      } else if (containerRef.current.msRequestFullscreen) {
+        containerRef.current.msRequestFullscreen();
+      }
+    } else {
+      // Exit fullscreen
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(
+        document.fullscreenElement === containerRef.current ||
+        document.webkitFullscreenElement === containerRef.current ||
+        document.msFullscreenElement === containerRef.current
+      );
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('msfullscreenchange', handleFullscreenChange);
+    };
+  }, []);
 
   const updatePoints = async (user, newPoints) => {
     try {
@@ -126,7 +171,11 @@ const PointTracker = () => {
   };
 
   return (
-    <div className="d-flex vh-100 position-relative">
+    <div 
+      ref={containerRef}
+      className="d-flex vh-100 position-relative"
+      style={{ backgroundColor: isFullscreen ? '#000' : 'inherit' }}
+    >
 
       {/* Red Half */}
       <div className="w-50 bg-danger d-flex flex-column justify-content-center align-items-center">
@@ -168,6 +217,40 @@ const PointTracker = () => {
           </button>
         </div>
       </div>
+
+      {/* Subtle fullscreen button in corner */}
+      <button 
+        onClick={toggleFullscreen} 
+        style={{ 
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          width: '30px',
+          height: '30px',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(255, 255, 255, 0.6)',
+          border: '1px solid rgba(255, 255, 255, 0.2)',
+          borderRadius: '4px',
+          cursor: 'pointer',
+          fontSize: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s ease',
+          zIndex: 10
+        }}
+        title={isFullscreen ? "Exit Fullscreen (ESC)" : "Enter Fullscreen"}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+          e.target.style.color = 'rgba(255, 255, 255, 0.9)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+          e.target.style.color = 'rgba(255, 255, 255, 0.6)';
+        }}
+      >
+        {isFullscreen ? '⤌' : '⤢'}
+      </button>
     </div>
   );
 };
