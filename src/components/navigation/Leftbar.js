@@ -65,6 +65,12 @@ const Leftbar = () => {
                             <span>Edit Profile</span>
                         </Link>
                     </li>
+                    <li className="nav-item mb-1">
+                        <Link to="/Competitors" className="nav-link text-white d-flex align-items-center">
+                            <i className="fas fa-users me-3"></i>
+                            <span>Competitor Management</span>
+                        </Link>
+                    </li>
 
                     
                 </ul>

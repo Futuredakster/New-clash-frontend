@@ -44,6 +44,8 @@ import LoginTypeSelector from './Pages/auth/LoginTypeSelector';
 import ParentVer from './Pages/parent/ParentVer';
 import ParentDetails from './Pages/parent/ParentDetails';
 import ParticipantDetails from './Pages/participant/ParticipantDetails';
+import Competitors from './Pages/admin/Competitors';
+import ParticipantForms from './Pages/admin/ParticipantForms';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -211,6 +213,8 @@ useEffect(() => {
           <Route path='/ParentVer' element={<ParentVer />} />
           <Route path='/ParentDetails' element={<ParentDetails />} />
           <Route path='/ParticipantDetails' element={<ParticipantDetails />} />
+          <Route path='/Competitors' element={<Competitors />} />
+          <Route path='/ParticipantForms' element={<ParticipantForms />} />
           </Routes>
         </div>
       </div>

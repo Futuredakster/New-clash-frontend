@@ -294,6 +294,10 @@ const Tolpbar = () => {
                                                 <i className="fas fa-list me-2"></i>
                                                 My Tournaments
                                             </Dropdown.Item>
+                                            <Dropdown.Item as={Link} to="/Competitors">
+                                                <i className="fas fa-users me-2"></i>
+                                                Competitors
+                                            </Dropdown.Item>
                                             <Dropdown.Divider />
                                             <Dropdown.Item onClick={logout} className="text-danger">
                                                 <i className="fas fa-sign-out-alt me-2"></i>
@@ -551,6 +555,10 @@ const Tolpbar = () => {
                                         <Link to="/EditUser" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-user-edit me-3"></i>
                                             Edit Profile
+                                        </Link>
+                                        <Link to="/Competitors" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-users me-3"></i>
+                                            Competitors
                                         </Link>
                                     </div>
                                 </nav>
