@@ -92,15 +92,15 @@ function LandingPage() {
   );
 
   return (
-    <div className="position-relative">
-      <Carousel fade className="vh-100">
+    <div className="position-relative overflow-hidden">
+      <Carousel fade style={{ minHeight: '100vh', height: '100vh' }}>
         <Carousel.Item interval={4000}>
           <div className="position-relative">
             <img
               className="d-block w-100"
               src={imageone}
               alt="Karate Tournament Management"
-              style={{ objectFit: 'cover', height: '100vh', filter: 'brightness(0.7)' }}
+              style={{ objectFit: 'cover', height: '100vh', minHeight: '100vh', filter: 'brightness(0.7)' }}
             />
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
@@ -136,7 +136,7 @@ function LandingPage() {
               className="d-block w-100"
               src={karate}
               alt="Competition Excellence"
-              style={{ objectFit: 'cover', height: '100vh', filter: 'brightness(0.7)' }}
+              style={{ objectFit: 'cover', height: '100vh', minHeight: '100vh', filter: 'brightness(0.7)' }}
             />
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
@@ -172,7 +172,7 @@ function LandingPage() {
               className="d-block w-100"
               src={kick}
               alt="Dynamic Competition"
-              style={{ objectFit: 'cover', height: '100vh', filter: 'brightness(0.7)' }}
+              style={{ objectFit: 'cover', height: '100vh', minHeight: '100vh', filter: 'brightness(0.7)' }}
             />
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
