@@ -92,7 +92,7 @@ function LandingPage() {
   );
 
   return (
-    <div className="position-relative" style={{ minHeight: '100vh' }}>
+    <div className="position-relative" style={{ minHeight: '100vh', height: '100vh', overflow: 'hidden' }}>
       <Carousel fade style={{ minHeight: '100vh', height: '100vh', width: '100vw' }}>
         <Carousel.Item interval={4000}>
           <div className="position-relative">
@@ -222,7 +222,7 @@ function LandingPage() {
       </Carousel>
       
       {/* Navigation Dots */}
-      <div className="position-absolute bottom-0 start-50 translate-middle-x mb-4">
+      <div className="position-absolute start-50 translate-middle-x" style={{ bottom: '20px' }}>
         <div className="d-flex gap-2">
           <div className="bg-white rounded-circle" style={{width: '12px', height: '12px', opacity: '0.5'}}></div>
           <div className="bg-white rounded-circle" style={{width: '12px', height: '12px', opacity: '0.5'}}></div>
