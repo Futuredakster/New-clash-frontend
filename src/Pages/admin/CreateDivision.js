@@ -243,7 +243,10 @@ const CreateDivision = () => {
   };
 
   return (
-    <Container fluid className="fade-in">
+    <Container fluid className="fade-in" style={{ 
+      minHeight: '100vh',
+      overflow: 'visible'
+    }}>
       <Row className="justify-content-center">
         <Col xs={12} lg={8} xl={6}>
           <Helmet>
@@ -318,7 +321,11 @@ const CreateDivision = () => {
             </div>
           </div>
 
-          <Card className="card-modern">
+          <Card className="card-modern" style={{ 
+            overflow: 'visible',
+            height: 'auto',
+            minHeight: 'fit-content'
+          }}>
             <Card.Header className="card-modern-header">
               <h4 className="mb-0">
                 <i className="fas fa-users me-2"></i>
@@ -326,7 +333,11 @@ const CreateDivision = () => {
               </h4>
               <small className="text-muted">Define the karate division parameters for competitor organization</small>
             </Card.Header>
-            <Card.Body className="card-modern-body">
+            <Card.Body className="card-modern-body" style={{ 
+              overflow: 'visible',
+              height: 'auto',
+              minHeight: 'fit-content'
+            }}>
               {errorMessage && (
                 <Alert variant="danger" className="mb-4">
                   <i className="fas fa-exclamation-triangle me-2"></i>
@@ -343,20 +354,54 @@ const CreateDivision = () => {
               {/* Excel Upload Mode */}
               {uploadMode ? (
                 <div>
-                  <div className="card mb-3 p-3 bg-light">
+                  <div className="card mb-3 p-3 bg-light" style={{ 
+                    width: '100%', 
+                    boxSizing: 'border-box',
+                    border: '1px solid #dee2e6',
+                    borderRadius: '0.375rem',
+                    overflow: 'visible',
+                    height: 'auto',
+                    minHeight: 'fit-content'
+                  }}>
                     <div className="d-flex align-items-center mb-3">
                       <FileSpreadsheet size={24} className="me-2 text-primary" />
                       <h4 className="fw-bold mb-0">Upload Excel File</h4>
                     </div>
-                    <p className="text-muted mb-3">
+                    <p className="text-muted mb-3" style={{ 
+                      wordWrap: 'break-word', 
+                      overflowWrap: 'break-word',
+                      lineHeight: '1.5',
+                      fontSize: '0.9rem'
+                    }}>
                       Upload an Excel file (.xlsx, .xls) with division information. The file should have columns for:
                       <br />
                       <strong>age_group</strong>, <strong>proficiency_level</strong>, <strong>gender</strong>, and <strong>category</strong>
                     </p>
-                    <div className="mb-3">
-                      <div className="d-flex flex-column flex-sm-row gap-2 mb-2">
-                        <label htmlFor="excel-upload" className="btn btn-primary d-flex align-items-center justify-content-center">
-                          <Upload size={16} className="me-2" />
+                    <div className="mb-3" style={{ 
+                      overflow: 'visible',
+                      height: 'auto',
+                      minHeight: 'fit-content'
+                    }}>
+                      <div className="d-flex flex-column gap-2 mb-2" style={{ 
+                        overflow: 'visible',
+                        height: 'auto',
+                        alignItems: 'center'
+                      }}>
+                        <label 
+                          htmlFor="excel-upload" 
+                          className="btn btn-primary"
+                          style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            padding: '10px',
+                            marginBottom: '8px',
+                            border: 'none',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          <Upload size={16} style={{ marginRight: '6px' }} />
                           Choose Excel File
                         </label>
                         <input
@@ -368,10 +413,19 @@ const CreateDivision = () => {
                         />
                         <button
                           onClick={downloadExcelTemplate}
-                          className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
+                          className="btn btn-outline-secondary"
                           type="button"
+                          style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '100%',
+                            padding: '10px',
+                            border: '1px solid #6c757d',
+                            cursor: 'pointer'
+                          }}
                         >
-                          <Download size={16} className="me-2" />
+                          <Download size={16} style={{ marginRight: '6px' }} />
                           Download Template
                         </button>
                       </div>
