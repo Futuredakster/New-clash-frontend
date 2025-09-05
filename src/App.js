@@ -46,6 +46,7 @@ import ParentDetails from './Pages/parent/ParentDetails';
 import ParticipantDetails from './Pages/participant/ParticipantDetails';
 import Competitors from './Pages/admin/Competitors';
 import ParticipantForms from './Pages/admin/ParticipantForms';
+import AddCompetitors from './Pages/admin/AddCompetitors';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -215,6 +216,7 @@ useEffect(() => {
           <Route path='/ParticipantDetails' element={<ParticipantDetails />} />
           <Route path='/Competitors' element={<Competitors />} />
           <Route path='/ParticipantForms' element={<ParticipantForms />} />
+          <Route path='/AddCompetitors/:divisionId' element={<AddCompetitors />} />
           </Routes>
         </div>
       </div>

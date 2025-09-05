@@ -596,8 +596,11 @@ const SeeDivisions = () => {
                             <i className="fas fa-users me-2 text-muted"></i>Participants
                           </div>
                         </th>
-                        <th className="border-0 py-3 pe-4 text-center" style={{width: '10%'}}>
+                        <th className="border-0 py-3 text-center" style={{width: '10%'}}>
                           <i className="fas fa-sitemap me-2 text-muted"></i>Manage Brackets
+                        </th>
+                        <th className="border-0 py-3 pe-4 text-center" style={{width: '10%'}}>
+                          <i className="fas fa-user-plus me-2 text-muted"></i>Add Competitors
                         </th>
                       </tr>
                     </thead>
@@ -715,6 +718,21 @@ const SeeDivisions = () => {
                               )}
                             </Button>
                           </td>
+                          <td className="py-4 pe-4 text-center">
+                            <Button 
+                              variant="outline-primary"
+                              size="sm"
+                              onClick={() => navigate(`/AddCompetitors/${item.division_id}`)}
+                              className="d-flex align-items-center justify-content-center"
+                              style={{borderRadius: '20px'}}
+                              title="Add competitors to this division"
+                            >
+                              <i className="fas fa-user-plus me-1 d-flex align-items-center"></i>
+                              <span className="d-flex align-items-center">
+                                Add Competitors
+                              </span>
+                            </Button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -727,8 +745,8 @@ const SeeDivisions = () => {
           {/* Mobile Card View */}
           <div className="d-lg-none">
             {data.map((item, index) => (
-              <Card key={index} className="card-modern mb-3 slide-up">
-                <Card.Body className="p-3">
+              <Card key={index} className="card-modern mb-3 slide-up" style={{ overflow: 'visible' }}>
+                <Card.Body className="p-3" style={{ overflow: 'visible' }}>
                   <div className="row">
                     <div className="col-12">
                       <h6 className="card-title mb-3 fw-bold">
@@ -739,22 +757,22 @@ const SeeDivisions = () => {
                   </div>
                   
                   <div className="row mb-3">
-                    <div className="col-6">
+                    <div className="col-6 text-center">
                       <small className="text-muted d-block">Gender</small>
                       <strong>{item.gender}</strong>
                     </div>
-                    <div className="col-6">
+                    <div className="col-6 text-center">
                       <small className="text-muted d-block">Age Group</small>
                       <strong>{item.age_group}</strong>
                     </div>
                   </div>
                   
                   <div className="row mb-3">
-                    <div className="col-6">
+                    <div className="col-6 text-center">
                       <small className="text-muted d-block">Proficiency</small>
                       <strong>{item.proficiency_level}</strong>
                     </div>
-                    <div className="col-6">
+                    <div className="col-6 text-center">
                       <small className="text-muted d-block">Category</small>
                       <strong>{item.category}</strong>
                     </div>
@@ -764,7 +782,7 @@ const SeeDivisions = () => {
                     <hr className="my-3 mx-1" style={{ maxWidth: '92%', margin: '1rem auto' }} />
                     
                     <div className="row g-2 mx-1">
-                      <div className="col-12 col-sm-4 px-1">
+                      <div className="col-6 px-1">
                         <Button 
                           variant="outline-primary" 
                           size="sm"
@@ -773,11 +791,10 @@ const SeeDivisions = () => {
                           onClick={() => forPart(item.division_id)}
                         >
                           <i className="fas fa-users me-1"></i>
-                          <span className="d-none d-sm-inline">Participants</span>
-                          <span className="d-sm-none">Participants</span>
+                          <span>Participants</span>
                         </Button>
                       </div>
-                      <div className="col-12 col-sm-4 px-1">
+                      <div className="col-6 px-1">
                         <Button 
                           variant={hasBrackets ? "outline-success" : "outline-secondary"}
                           size="sm"
@@ -788,46 +805,53 @@ const SeeDivisions = () => {
                           title={!hasBrackets ? "Click 'START TOURNAMENT' on the dashboard first to create initial brackets" : ""}
                         >
                           <i className="fas fa-sitemap me-1"></i>
-                          <span className="d-none d-sm-inline">
-                            Manage Brackets
-                          </span>
-                          <span className="d-sm-none">
-                            Manage Brackets
-                          </span>
+                          <span>Brackets</span>
                           {!hasBrackets && (
                             <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
                           )}
                         </Button>
                       </div>
-                      <div className="col-12 col-sm-4 px-1">
-                        <Dropdown 
-                          show={openStates[index]} 
-                          onToggle={(isOpen) => {
-                            const newOpenStates = [...openStates];
-                            newOpenStates[index] = isOpen;
-                            setOpenStates(newOpenStates);
-                          }}
+                      <div className="col-4 px-1">
+                        <Button 
+                          variant="outline-primary"
+                          size="sm"
+                          className="w-100"
+                          style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          onClick={() => navigate(`/AddCompetitors/${item.division_id}`)}
+                          title="Add competitors to this division"
                         >
-                          <Dropdown.Toggle 
-                            variant="outline-dark" 
-                            size="sm" 
-                            className="w-100"
-                            style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
-                          >
-                            <i className="fas fa-ellipsis-v me-1"></i>Actions
-                          </Dropdown.Toggle>
-                          <Dropdown.Menu>
-                            <Dropdown.Item onClick={() => {
-                              handleShowModal();
-                              setSelectedDivisionId(item.division_id);
-                            }}>
-                              <i className="fas fa-edit me-2"></i>Edit Division
-                            </Dropdown.Item>
-                            <Dropdown.Item onClick={() => onDelete(item.division_id)} className="text-danger">
-                              <i className="fas fa-trash me-2"></i>Delete
-                            </Dropdown.Item>
-                          </Dropdown.Menu>
-                        </Dropdown>
+                          <i className="fas fa-user-plus me-1"></i>
+                          <span>Add</span>
+                        </Button>
+                      </div>
+                      <div className="col-4 px-1">
+                        <Button 
+                          variant="outline-success"
+                          size="sm"
+                          className="w-100"
+                          style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          onClick={() => {
+                            handleShowModal();
+                            setSelectedDivisionId(item.division_id);
+                          }}
+                          title="Edit division"
+                        >
+                          <i className="fas fa-edit me-1"></i>
+                          <span>Edit</span>
+                        </Button>
+                      </div>
+                      <div className="col-4 px-1">
+                        <Button 
+                          variant="outline-danger"
+                          size="sm"
+                          className="w-100"
+                          style={{ maxWidth: '95%', margin: '0 auto', display: 'block' }}
+                          onClick={() => onDelete(item.division_id)}
+                          title="Delete division"
+                        >
+                          <i className="fas fa-trash me-1"></i>
+                          <span>Delete</span>
+                        </Button>
                       </div>
                     </div>
                   </div>

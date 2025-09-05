@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
-import { Container, Row, Col, Card, Alert, Spinner, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Alert, Spinner, Badge, Button } from 'react-bootstrap';
 import Searchbar from '../../components/navigation/Searchbar';
 import { link } from '../../constant';
 
@@ -14,6 +14,7 @@ const SeeParticepents = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState({});
 
   // Fetch participants function with search support
   const fetchParticipants = () => {
@@ -60,6 +61,30 @@ const SeeParticepents = () => {
 
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
+
+  // Delete participant function
+  const deleteParticipant = async (participant) => {
+    const confirmDelete = window.confirm(`Are you sure you want to delete ${participant.name}?`);
+    if (!confirmDelete) return;
+
+    setDeleting(prev => ({ ...prev, [participant.participant_id]: true }));
+
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      await axios.delete(`${link}/participants/delete/${participant.participant_id}`, {
+        headers: { accessToken }
+      });
+
+      // Remove participant from data
+      setData(prevData => prevData.filter(p => p.participant_id !== participant.participant_id));
+      
+    } catch (error) {
+      console.error('Error deleting participant:', error);
+      alert(error.response?.data?.error || 'Failed to delete participant');
+    } finally {
+      setDeleting(prev => ({ ...prev, [participant.participant_id]: false }));
+    }
+  };
 
   if (loading) {
     return (
@@ -228,10 +253,31 @@ const SeeParticepents = () => {
                           <i className="fas fa-user-circle fa-3x text-muted"></i>
                         </div>
                         <h6 className="participant-name mb-2">{participant.name}</h6>
-                        <Badge bg="success" className="participant-badge">
+                        <Badge bg="success" className="participant-badge mb-3">
                           <i className="fas fa-check-circle me-1"></i>
                           Registered
                         </Badge>
+                        <div className="mt-3">
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => deleteParticipant(participant)}
+                            disabled={deleting[participant.participant_id]}
+                            className="w-100"
+                          >
+                            {deleting[participant.participant_id] ? (
+                              <>
+                                <Spinner animation="border" size="sm" className="me-2" />
+                                Deleting...
+                              </>
+                            ) : (
+                              <>
+                                <i className="fas fa-trash me-2"></i>
+                                Delete
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </Card.Body>
                     </Card>
                   </Col>

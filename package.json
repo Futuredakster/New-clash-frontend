@@ -21,6 +21,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.541.0",
     "react": "^18.2.0",
+    "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.9.1",
     "react-bracket": "^0.0.4",
     "react-dom": "^18.2.0",
