@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Searchbar from '../../components/navigation/Searchbar';
 import '../../assets/styles/Divisions.css'; // Import the CSS file
 import { link } from './constant';
 
@@ -10,6 +11,7 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
   const tournament_id = queryParams.get('tournament_id');
   const [data, setData] = useState([]);
   const [tournamentDetails, setTournamentDetails] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   const handleViewDetails = (item) => {
@@ -56,28 +58,44 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${link}/divisions/praticepent`, {
-          params: { tournament_id }
-        });
-        if (response.data.error) {
-          alert(response.data.error);
-        } else {
-          setData(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
+  // Fetch divisions function with search support
+  const fetchData = async () => {
+    try {
+      const params = { tournament_id };
+      if (searchTerm.trim()) {
+        params.search = searchTerm.trim();
       }
-    };
 
+      const response = await axios.get(`${link}/divisions/praticepent`, {
+        params: params
+      });
+      if (response.data.error) {
+        alert(response.data.error);
+      } else {
+        setData(response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
     fetchData();
 
     if (!props || props.length === 0) {
       fetchTournamentDetails();
     }
   }, [tournament_id, props]);
+
+  // Search effect with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchData();
+    }, 300); // Debounce search requests by 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   return (
     <div className="container-modern fade-in">
@@ -92,6 +110,27 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
             <i className="fas fa-calendar-end me-2"></i>
             <strong>End:</strong> {new Date(tournamentDetails.end_date || (props.length !== 0 && props.end_date)).toLocaleDateString()}
           </p>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="card-modern p-3 mb-4">
+        <div className="row g-3 align-items-center">
+          <div className="col-md-8">
+            <Searchbar 
+              search={searchTerm} 
+              setSearch={setSearchTerm} 
+              placeholder="Search divisions by age group, level, gender, or category..."
+              ariaLabel="Search divisions"
+            />
+          </div>
+          <div className="col-md-4 text-md-end">
+            <span className="text-muted">
+              <i className="fas fa-chart-bar me-2"></i>
+              {data.length} division{data.length !== 1 ? 's' : ''}
+              {searchTerm && ` (filtered by "${searchTerm}")`}
+            </span>
+          </div>
         </div>
       </div>
       

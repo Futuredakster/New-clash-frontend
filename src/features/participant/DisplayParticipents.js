@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Alert, Spinner, Badge } from 'react-bootstrap';
+import Searchbar from '../../components/navigation/Searchbar';
 import { link } from './constant';
 
 const DisplayParticipants = () => {
@@ -13,10 +14,17 @@ const DisplayParticipants = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [divisionName, setDivisionName] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
+  // Fetch participants function with search support
+  const fetchParticipants = () => {
+    const params = { division_id: division_id };
+    if (searchTerm.trim()) {
+      params.search = searchTerm.trim();
+    }
+
     axios.get(`${link}/participants`, {
-      params: { division_id: division_id },
+      params: params,
     })
     .then(response => {
       setData(response.data);
@@ -26,6 +34,11 @@ const DisplayParticipants = () => {
       setError(error);
       setLoading(false);
     });
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchParticipants();
 
     // Also fetch division name if division_id is provided
     if (division_id) {
@@ -38,6 +51,15 @@ const DisplayParticipants = () => {
         });
     }
   }, [division_id]);
+
+  // Search effect with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchParticipants();
+    }, 300); // Debounce search requests by 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   if (loading) {
     return (
@@ -81,6 +103,27 @@ const DisplayParticipants = () => {
           {data.length} participant{data.length !== 1 ? 's' : ''} registered
         </p>
       </div>
+
+      {/* Search Bar */}
+      <Card className="card-modern p-3 mb-4">
+        <div className="row g-3 align-items-center">
+          <div className="col-md-8">
+            <Searchbar 
+              search={searchTerm} 
+              setSearch={setSearchTerm} 
+              placeholder="Search participants by name..."
+              ariaLabel="Search participants by name"
+            />
+          </div>
+          <div className="col-md-4 text-md-end">
+            <span className="text-muted">
+              <i className="fas fa-chart-bar me-2"></i>
+              {data.length} participant{data.length !== 1 ? 's' : ''}
+              {searchTerm && ` (filtered by "${searchTerm}")`}
+            </span>
+          </div>
+        </div>
+      </Card>
 
       <Row className="justify-content-center">
         <Col xs={12} lg={8}>

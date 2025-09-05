@@ -2,6 +2,7 @@ import { useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import DivisionModal from '../../components/modals/DivisionModal';
+import Searchbar from '../../components/navigation/Searchbar';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Container, Row, Col, Card, Button, Modal, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +16,8 @@ const SeeDivisions = () => {
   const queryString = new URLSearchParams({ tournament_id:tournament_id}).toString();
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [openStates, setOpenStates] = useState(Array(data.length).fill(false));
   const [selectedDivisionId, setSelectedDivisionId] = useState(null);
   const navigate = useNavigate();
@@ -174,18 +177,7 @@ const SeeDivisions = () => {
       });
       
       // Refresh the divisions data without full page reload
-      if (accessToken) {
-        axios.get(`${link}/divisions/`, {
-          headers: { accessToken: accessToken },
-          params: { tournament_id: tournament_id }
-        })
-        .then(response => {
-          if (!response.data.error) {
-            setData(response.data);
-          }
-        })
-        .catch(error => console.error('Error refreshing divisions:', error));
-      }
+      fetchDivisions();
       
     } catch (error) {
       console.error('Error assigning mats:', error);
@@ -388,26 +380,31 @@ const SeeDivisions = () => {
     }
   }, [alertMessage]);
 
-  useEffect(() => {
+  // Fetch divisions function with search support
+  const fetchDivisions = () => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       console.error('Access token not found. API request not made.');
       return;
     }
 
+    const params = { tournament_id: tournament_id };
+    if (searchTerm.trim()) {
+      params.search = searchTerm.trim();
+    }
+
     axios.get(`${link}/divisions/`, {
       headers: {
         accessToken: accessToken,
       },
-      params: {
-        tournament_id: tournament_id,
-      },
+      params: params,
     })
       .then(response => {
         if (response.data.error) {
           alert(response.data.error);
         } else {
           setData(response.data);
+          setFilteredData(response.data);
           // Also fetch mat assignments when divisions are loaded
           fetchMatAssignments();
         }
@@ -415,7 +412,21 @@ const SeeDivisions = () => {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
+  };
+
+  // Initial fetch on component mount
+  useEffect(() => {
+    fetchDivisions();
   }, [tournament_id]);
+
+  // Search effect with debounce
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchDivisions();
+    }, 300); // Debounce search requests by 300ms
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   // Check brackets when tournament_id is available
   useEffect(() => {
@@ -450,6 +461,27 @@ const SeeDivisions = () => {
               </div>
             </Alert>
           )}
+
+          {/* Search Bar */}
+          <div className="card-modern p-3 mb-4">
+            <div className="row g-3 align-items-center">
+              <div className="col-md-8">
+                <Searchbar 
+                  search={searchTerm} 
+                  setSearch={setSearchTerm} 
+                  placeholder="Search divisions by age group, level, gender, or category..."
+                  ariaLabel="Search divisions"
+                />
+              </div>
+              <div className="col-md-4 text-md-end">
+                <span className="text-muted">
+                  <i className="fas fa-chart-bar me-2"></i>
+                  {data.length} division{data.length !== 1 ? 's' : ''}
+                  {searchTerm && ` (filtered by "${searchTerm}")`}
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className="mb-4 d-flex flex-wrap align-items-center" style={{gap: '1.75rem'}}>
             <Button 
