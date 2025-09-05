@@ -9,67 +9,83 @@ import Carousel from 'react-bootstrap/Carousel';
 function LandingPage() {
   const navigate = useNavigate();
 
-  // Reusable button group with modern styling and clear sections
+  // Simplified button group with better visibility
   const renderButtons = () => (
     <div className="mt-4">
-      {/* Primary CTA for Tournament Organizers */}
-      <div className="text-center mb-4">
-        <h4 className="text-white mb-2" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-          Want to organize karate tournaments?
-        </h4>
-        <Button
-          className="btn btn-modern btn-lg px-4 py-2"
-          onClick={() => navigate('/AccountUser')}
-          style={{ fontSize: '1.1rem', fontWeight: '600' }}
-        >
-          <i className="fas fa-trophy me-2"></i>
-          <span>CREATE TOURNAMENTS</span>
-        </Button>
-        <div className="text-white mt-2" style={{fontSize: '0.9rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-          Set up your organizer account
+      {/* Content wrapper with semi-transparent background for better readability */}
+      <div 
+        className="p-4 rounded-3 mx-auto" 
+        style={{
+          background: 'rgba(0, 0, 0, 0.6)', 
+          backdropFilter: 'blur(5px)',
+          maxWidth: '600px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}
+      >
+        {/* Primary CTA */}
+        <div className="text-center mb-4">
+          <h4 className="text-white mb-3 fw-bold">Get Started Today</h4>
+          <Button
+            className="btn btn-light btn-lg px-4 py-3 mb-3 d-flex align-items-center justify-content-center mx-auto"
+            onClick={() => navigate('/AccountUser')}
+            style={{ 
+              fontSize: '1.05rem', 
+              fontWeight: '600',
+              color: '#0d6efd',
+              boxShadow: '0 4px 15px rgba(255, 255, 255, 0.2)',
+              paddingTop: '1rem',
+              paddingBottom: '1rem'
+            }}
+          >
+            <i className="fas fa-trophy me-2"></i>
+            <span>CREATE TOURNAMENTS</span>
+          </Button>
+          <div className="text-white-50" style={{fontSize: '0.9rem'}}>
+            Set up your organizer account and start managing competitions
+          </div>
         </div>
-      </div>
 
-      {/* Secondary options */}
-      <div className="d-flex flex-wrap justify-content-center gap-2 mt-4">
-        <div className="d-flex flex-column align-items-center">
-          <Button
-            className="btn btn-modern-outline"
-            onClick={() => navigate('/RegistrationTypeSelector')}
-            style={{ minWidth: '200px' }}
-          >
-            <i className="fas fa-users me-2"></i>
-            <span>REGISTER FOR COMPETITIONS</span>
-          </Button>
-          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-            Sign up as competitor or parent
-          </small>
-        </div>
-        <div className="d-flex flex-column align-items-center">
-          <Button
-            className="btn btn-modern-outline"
-            onClick={() => navigate('/LoginTypeSelector')}
-            style={{ minWidth: '200px' }}
-          >
-            <i className="fas fa-list-check me-2"></i>
-            <span>MY REGISTRATIONS</span>
-          </Button>
-          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-            View your competitions
-          </small>
-        </div>
-        <div className="d-flex flex-column align-items-center">
-          <Button
-            className="btn btn-modern-outline"
-            onClick={() => navigate('/ViewerTour')}
-            style={{ minWidth: '200px' }}
-          >
-            <i className="fas fa-tv me-2"></i>
-            <span>VIEW LIVE TOURNAMENTS</span>
-          </Button>
-          <small className="text-white mt-1" style={{textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-            Watch matches and brackets
-          </small>
+        {/* Simplified secondary options */}
+        <div className="row g-2 mt-4">
+          <div className="col-md-4">
+            <Button
+              className="btn btn-outline-light btn-sm w-100"
+              onClick={() => navigate('/RegistrationTypeSelector')}
+              style={{ 
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                fontSize: '0.85rem'
+              }}
+            >
+              <i className="fas fa-users me-1 d-none d-sm-inline"></i>
+              <span>Register</span>
+            </Button>
+          </div>
+          <div className="col-md-4">
+            <Button
+              className="btn btn-outline-light btn-sm w-100"
+              onClick={() => navigate('/LoginTypeSelector')}
+              style={{ 
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                fontSize: '0.85rem'
+              }}
+            >
+              <i className="fas fa-list-check me-1 d-none d-sm-inline"></i>
+              <span>My Registrations</span>
+            </Button>
+          </div>
+          <div className="col-md-4">
+            <Button
+              className="btn btn-outline-light btn-sm w-100"
+              onClick={() => navigate('/ViewerTour')}
+              style={{ 
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                fontSize: '0.85rem'
+              }}
+            >
+              <i className="fas fa-tv me-1 d-none d-sm-inline"></i>
+              <span>Watch Live</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -89,14 +105,23 @@ function LandingPage() {
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
                 <Row className="justify-content-center">
-                  <Col lg={8} className="text-center text-white fade-in">
-                    <h1 className="display-3 fw-bold mb-4" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-                      Unleash the Thrill with <span style={{color: '#ffffff'}}>Clash</span>
-                    </h1>
-                    <p className="lead mb-4" style={{fontSize: '1.25rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-                      Your ultimate platform for seamlessly organizing and managing karate tournaments. 
-                      Whether you're a martial artist, karate competitor, or dojo looking to host competitions.
-                    </p>
+                  <Col lg={10} className="text-center text-white fade-in">
+                    <div 
+                      className="p-4 rounded-3 mb-4" 
+                      style={{
+                        background: 'rgba(0, 0, 0, 0.4)', 
+                        backdropFilter: 'blur(3px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }}
+                    >
+                      <h1 className="display-3 fw-bold mb-4">
+                        Unleash the Thrill with <span style={{color: '#ffd700'}}>Clash</span>
+                      </h1>
+                      <p className="lead mb-0" style={{fontSize: '1.25rem'}}>
+                        Your ultimate platform for seamlessly organizing and managing karate tournaments. 
+                        Whether you're a martial artist, karate competitor, or dojo looking to host competitions.
+                      </p>
+                    </div>
                     {renderButtons()}
                   </Col>
                 </Row>
@@ -116,14 +141,23 @@ function LandingPage() {
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
                 <Row className="justify-content-center">
-                  <Col lg={8} className="text-center text-white slide-up">
-                    <h2 className="display-4 fw-bold mb-4" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-                      Effortless Karate Competition Management
-                    </h2>
-                    <p className="lead mb-4" style={{fontSize: '1.25rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-                      Create comprehensive brackets, manage participants, and experience real-time updates 
-                      with our intuitive karate tournament management system.
-                    </p>
+                  <Col lg={10} className="text-center text-white slide-up">
+                    <div 
+                      className="p-4 rounded-3 mb-4" 
+                      style={{
+                        background: 'rgba(0, 0, 0, 0.4)', 
+                        backdropFilter: 'blur(3px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }}
+                    >
+                      <h2 className="display-4 fw-bold mb-4">
+                        Effortless Karate Competition Management
+                      </h2>
+                      <p className="lead mb-0" style={{fontSize: '1.25rem'}}>
+                        Create comprehensive brackets, manage participants, and experience real-time updates 
+                        with our intuitive karate tournament management system.
+                      </p>
+                    </div>
                     {renderButtons()}
                   </Col>
                 </Row>
@@ -143,14 +177,23 @@ function LandingPage() {
             <div className="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center">
               <Container>
                 <Row className="justify-content-center">
-                  <Col lg={8} className="text-center text-white fade-in">
-                    <h2 className="display-4 fw-bold mb-4" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.5)'}}>
-                      Live Tournament Experience
-                    </h2>
-                    <p className="lead mb-4" style={{fontSize: '1.25rem', textShadow: '1px 1px 2px rgba(0,0,0,0.5)'}}>
-                      Watch your events come to life with live scores, winner updates, and dynamic matchups. 
-                      Stay connected to the action from start to finish.
-                    </p>
+                  <Col lg={10} className="text-center text-white fade-in">
+                    <div 
+                      className="p-4 rounded-3 mb-4" 
+                      style={{
+                        background: 'rgba(0, 0, 0, 0.4)', 
+                        backdropFilter: 'blur(3px)',
+                        border: '1px solid rgba(255, 255, 255, 0.1)'
+                      }}
+                    >
+                      <h2 className="display-4 fw-bold mb-4">
+                        Live Tournament Experience
+                      </h2>
+                      <p className="lead mb-0" style={{fontSize: '1.25rem'}}>
+                        Watch your events come to life with live scores, winner updates, and dynamic matchups. 
+                        Stay connected to the action from start to finish.
+                      </p>
+                    </div>
                     {renderButtons()}
                   </Col>
                 </Row>

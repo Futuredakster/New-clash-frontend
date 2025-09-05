@@ -9,9 +9,9 @@ const SeeParticepents = () => {
   const queryParams = new URLSearchParams(location.search);
   const division_id = queryParams.get('division_id') || '';
   const [data, setData] = useState([]);
+  const [division, setDivision] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [divisionName, setDivisionName] = useState('');
 
   useEffect(() => {
     const accessToken = localStorage.getItem("accessToken");
@@ -29,24 +29,14 @@ const SeeParticepents = () => {
       params: { division_id: division_id },
     })
     .then(response => {
-      setData(response.data);
+      setData(response.data.participants || []);
+      setDivision(response.data.division);
       setLoading(false);
     })
     .catch(error => {
       setError(error);
       setLoading(false);
     });
-
-    // Also fetch division name if division_id is provided
-    if (division_id) {
-      axios.get(`${link}/divisions/${division_id}`)
-        .then(response => {
-          setDivisionName(response.data.division_name || 'Division');
-        })
-        .catch(() => {
-          setDivisionName('Division');
-        });
-    }
   }, [division_id]);
 
   if (loading) {
@@ -85,12 +75,61 @@ const SeeParticepents = () => {
       <div className="page-header-modern">
         <h1 className="page-title-modern">
           <i className="fas fa-users me-3"></i>
-          {divisionName ? `${divisionName} Participants` : 'My Participants'}
+          {division ? `${division.gender} ${division.category} Participants` : 'My Participants'}
         </h1>
         <p className="page-subtitle-modern">
           {data.length} participant{data.length !== 1 ? 's' : ''} registered
+          {division && ` • ${division.tournament?.tournament_name || 'Tournament'}`}
         </p>
       </div>
+
+      {/* Division Information Card */}
+      {division && (
+        <Card className="card-modern mb-4">
+          <Card.Header className="card-modern-header">
+            <h5 className="mb-0">
+              <i className="fas fa-info-circle me-2"></i>
+              Division Details
+            </h5>
+          </Card.Header>
+          <Card.Body className="card-modern-body">
+            <Row className="g-3">
+              <Col xs={6} md={3}>
+                <div className="text-center">
+                  <small className="text-muted d-block">Age Group</small>
+                  <Badge bg="primary" className="px-3 py-2">
+                    {division.age_group}
+                  </Badge>
+                </div>
+              </Col>
+              <Col xs={6} md={3}>
+                <div className="text-center">
+                  <small className="text-muted d-block">Level</small>
+                  <Badge bg="success" className="px-3 py-2">
+                    {division.proficiency_level}
+                  </Badge>
+                </div>
+              </Col>
+              <Col xs={6} md={3}>
+                <div className="text-center">
+                  <small className="text-muted d-block">Gender</small>
+                  <Badge bg="info" className="px-3 py-2">
+                    {division.gender}
+                  </Badge>
+                </div>
+              </Col>
+              <Col xs={6} md={3}>
+                <div className="text-center">
+                  <small className="text-muted d-block">Category</small>
+                  <Badge bg="warning" className="px-3 py-2">
+                    {division.category}
+                  </Badge>
+                </div>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      )}
 
       <Row className="justify-content-center">
         <Col xs={12} lg={8}>
@@ -99,7 +138,7 @@ const SeeParticepents = () => {
               <i className="fas fa-users fa-4x text-muted mb-4"></i>
               <h5 className="text-muted mb-3">No participants found</h5>
               <p className="text-muted">
-                {divisionName ? `No one has registered for ${divisionName} yet.` : 'You have not registered for any divisions yet.'}
+                {division ? `No one has registered for ${division.gender} ${division.category} (${division.age_group}) yet.` : 'You have not registered for any divisions yet.'}
               </p>
             </div>
           ) : (

@@ -951,16 +951,16 @@ const SeeDivisions = () => {
                   {/* Desktop Table View */}
                   <div className="d-none d-md-block">
                     <div className="table-responsive" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-                      <table className="table table-sm table-bordered table-hover mb-0">
+                      <table className="table table-sm table-bordered table-hover mb-0 w-100">
                         <thead className="table-light sticky-top">
                           <tr>
-                            <th style={{ minWidth: '80px' }}>Mat</th>
-                            <th style={{ minWidth: '140px' }}>Division</th>
-                            <th style={{ minWidth: '80px' }}>Age</th>
-                            <th style={{ minWidth: '100px' }}>Level</th>
-                            <th style={{ minWidth: '90px', textAlign: 'center' }}>Status</th>
-                            <th style={{ minWidth: '70px', textAlign: 'center' }}>Order</th>
-                            <th style={{ minWidth: '100px', textAlign: 'center' }}>Actions</th>
+                            <th style={{ width: '12%' }}>Mat</th>
+                            <th style={{ width: '25%' }}>Division</th>
+                            <th style={{ width: '12%' }}>Age</th>
+                            <th style={{ width: '15%' }}>Level</th>
+                            <th style={{ width: '15%', textAlign: 'center' }}>Status</th>
+                            <th style={{ width: '8%', textAlign: 'center' }}>Order</th>
+                            <th style={{ width: '13%', textAlign: 'center' }}>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
