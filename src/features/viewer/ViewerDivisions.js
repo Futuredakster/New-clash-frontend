@@ -42,6 +42,14 @@ export const ViewerDivisions = ({ props, setProps, setDivision }) => {
     });
   };
 
+  const handleViewBrackets = (item) => {
+    setDivision(item);
+    const queryString = new URLSearchParams({
+      division_id: item.division_id,
+    }).toString();
+    navigate(`/ViewerBrackets?${queryString}`);
+  };
+
   const fetchTournamentDetails = async () => {
     try {
       const response = await axios.get(`${link}/tournaments/default`, {
