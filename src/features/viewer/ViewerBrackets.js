@@ -242,42 +242,133 @@ const ViewerBrackets = () => {
       
       if (completeStructure.rounds[nextRound]) {
         completeStructure.rounds[roundNumber].forEach((match, matchIndex) => {
-          // For elimination tournaments, each pair of matches feeds into one match in next round
-          const nextRoundMatchIndex = Math.floor(matchIndex / 2);
-          const nextMatch = completeStructure.rounds[nextRound][nextRoundMatchIndex];
+          // Check if this is a bye match (participant vs "Bi" or "Bye")
+          const isByeMatch = match.user1 === 'Bi' || match.user1 === 'Bye' || 
+                           match.user2 === 'Bi' || match.user2 === 'Bye';
           
-          if (nextMatch) {
-            const startPos = nodePositions.get(match.bracket_id);
-            const endPos = nodePositions.get(nextMatch.bracket_id);
+          if (isByeMatch) {
+            // Bye matches automatically advance to next round
+            // Find where this participant appears in the next round
+            let advancingParticipantId = null;
+            if (match.user1 !== 'Bi' && match.user1 !== 'Bye') {
+              advancingParticipantId = match.participant_id1;
+            } else if (match.user2 !== 'Bi' && match.user2 !== 'Bye') {
+              advancingParticipantId = match.participant_id2;
+            }
             
-            if (startPos && endPos) {
-              // Determine connection status
-              let connectionStatus = 'inactive'; // Default for future connections
+            if (advancingParticipantId) {
+              // Find the next round match containing this participant
+              const targetMatch = completeStructure.rounds[nextRound]?.find(nm => 
+                nm.participant_id1 === advancingParticipantId || 
+                nm.participant_id2 === advancingParticipantId
+              );
               
-              if (!match.isPlaceholder && !nextMatch.isPlaceholder) {
-                // Both matches exist, check if there's actual participant advancement
-                if (match.winner) {
-                  const winnerParticipantId = match.winner === 'user1' ? 
-                    match.participant_id1 : match.participant_id2;
-                  
-                  if (nextMatch.participant_id1 === winnerParticipantId || 
-                      nextMatch.participant_id2 === winnerParticipantId) {
-                    connectionStatus = 'active';
-                  }
+              if (targetMatch) {
+                const startPos = nodePositions.get(match.bracket_id);
+                const endPos = nodePositions.get(targetMatch.bracket_id);
+                
+                if (startPos && endPos) {
+                  connectionLines.push({
+                    from: match.bracket_id,
+                    to: targetMatch.bracket_id,
+                    startPos,
+                    endPos,
+                    status: 'active', // Bye connections are always active
+                    active: true
+                  });
                 }
-              } else if (!match.isPlaceholder && nextMatch.isPlaceholder) {
-                // Current match exists, next is placeholder - show potential connection
-                connectionStatus = match.winner ? 'potential' : 'inactive';
+              }
+            }
+          } else {
+            // Regular match - check if winner has advanced
+            if (!match.isPlaceholder && match.winner) {
+              const winnerParticipantId = match.winner === 'user1' ? 
+                match.participant_id1 : match.participant_id2;
+              
+              // First, try to find where this winner appears in ANY future round
+              let targetMatch = null;
+              let targetRoundFound = null;
+              
+              // Search through all future rounds to find where this winner appears
+              for (let searchRound = nextRound; searchRound <= Math.max(...Object.keys(completeStructure.rounds).map(r => parseInt(r))); searchRound++) {
+                targetMatch = completeStructure.rounds[searchRound]?.find(nm => 
+                  nm.participant_id1 === winnerParticipantId || 
+                  nm.participant_id2 === winnerParticipantId
+                );
+                
+                if (targetMatch) {
+                  targetRoundFound = searchRound;
+                  console.log(`Found ${match.bracket_id} winner in Round ${targetRoundFound}`);
+                  break;
+                }
               }
               
-              connectionLines.push({
-                from: match.bracket_id,
-                to: nextMatch.bracket_id,
-                startPos,
-                endPos,
-                status: connectionStatus,
-                active: connectionStatus === 'active'
-              });
+              if (targetMatch && targetRoundFound) {
+                // Found where the winner appears - create connection
+                const startPos = nodePositions.get(match.bracket_id);
+                const endPos = nodePositions.get(targetMatch.bracket_id);
+                
+                if (startPos && endPos) {
+                  // Determine if this is a bye (skipping rounds) or normal advancement
+                  const isSkippingRound = targetRoundFound > nextRound;
+                  
+                  connectionLines.push({
+                    from: match.bracket_id,
+                    to: targetMatch.bracket_id,
+                    startPos,
+                    endPos,
+                    status: targetMatch.isPlaceholder ? 'potential' : 'active',
+                    active: !targetMatch.isPlaceholder
+                  });
+                  
+                  if (isSkippingRound) {
+                    console.log(`${match.bracket_id} gets bye, skipping to Round ${targetRoundFound}`);
+                  }
+                }
+              } else {
+                // Winner exists but no match found in future rounds - connect to expected placeholder
+                const nextRoundMatches = completeStructure.rounds[nextRound] || [];
+                const expectedTargetIndex = Math.floor(matchIndex / 2);
+                const expectedTarget = nextRoundMatches[expectedTargetIndex];
+                
+                if (expectedTarget) {
+                  const startPos = nodePositions.get(match.bracket_id);
+                  const endPos = nodePositions.get(expectedTarget.bracket_id);
+                  
+                  if (startPos && endPos) {
+                    console.log(`${match.bracket_id} connecting to expected placeholder in Round ${nextRound}`);
+                    connectionLines.push({
+                      from: match.bracket_id,
+                      to: expectedTarget.bracket_id,
+                      startPos,
+                      endPos,
+                      status: 'potential',
+                      active: false
+                    });
+                  }
+                }
+              }
+            } else if (!match.isPlaceholder) {
+              // Match exists but no winner yet - show potential connection to expected next round position
+              const nextRoundMatches = completeStructure.rounds[nextRound] || [];
+              const expectedTargetIndex = Math.floor(matchIndex / 2);
+              const expectedTarget = nextRoundMatches[expectedTargetIndex];
+              
+              if (expectedTarget) {
+                const startPos = nodePositions.get(match.bracket_id);
+                const endPos = nodePositions.get(expectedTarget.bracket_id);
+                
+                if (startPos && endPos) {
+                  connectionLines.push({
+                    from: match.bracket_id,
+                    to: expectedTarget.bracket_id,
+                    startPos,
+                    endPos,
+                    status: 'inactive',
+                    active: false
+                  });
+                }
+              }
             }
           }
         });
