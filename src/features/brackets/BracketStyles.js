@@ -85,6 +85,18 @@ export const getBracketPrintStyles = () => {
         transition: all 0.3s ease;
         z-index: 10; /* Ensure brackets appear above canvas lines */
       }
+
+      .match-bracket.placeholder {
+        border: 2px dashed #95a5a6;
+        background-color: #ecf0f1;
+        opacity: 0.7;
+      }
+
+      .match-bracket.placeholder .match-participant {
+        background-color: #ecf0f1;
+        color: #7f8c8d;
+        font-style: italic;
+      }
       
       .match-bracket:hover {
         box-shadow: 0 6px 12px rgba(44,62,80,0.25);

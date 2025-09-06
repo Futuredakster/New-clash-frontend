@@ -2,6 +2,66 @@
 import { createCanvasConnectionScript } from './CanvasConnections';
 import { getBracketPrintStyles } from './BracketStyles';
 
+// Helper function to calculate tournament rounds and matches
+const calculateTournamentStructure = (totalParticipants) => {
+  if (totalParticipants <= 1) return { rounds: [], totalMatches: 0 };
+  
+  const rounds = [];
+  let participantsInRound = totalParticipants;
+  let roundNumber = 1;
+  
+  while (participantsInRound > 1) {
+    const matchesInRound = Math.floor(participantsInRound / 2);
+    rounds.push({
+      round: roundNumber,
+      matches: matchesInRound,
+      participants: participantsInRound
+    });
+    
+    // Next round has winners from current round
+    participantsInRound = matchesInRound + (participantsInRound % 2); // Add bye if odd
+    roundNumber++;
+  }
+  
+  const totalMatches = rounds.reduce((sum, round) => sum + round.matches, 0);
+  return { rounds, totalMatches };
+};
+
+// Generate complete bracket structure with empty placeholders
+const generateCompleteBracketStructure = (totalParticipants, actualRounds) => {
+  const tournamentStructure = calculateTournamentStructure(totalParticipants);
+  const structure = {};
+  
+  // Create all rounds with placeholder matches
+  tournamentStructure.rounds.forEach(roundInfo => {
+    structure[roundInfo.round] = [];
+    
+    for (let i = 0; i < roundInfo.matches; i++) {
+      // Check if actual match exists for this position
+      const actualMatch = actualRounds[roundInfo.round]?.[i];
+      
+      if (actualMatch) {
+        // Use actual match data
+        structure[roundInfo.round].push(actualMatch);
+      } else {
+        // Create placeholder match
+        structure[roundInfo.round].push({
+          bracket_id: `placeholder_r${roundInfo.round}_m${i}`,
+          user1: 'TBD',
+          user2: 'TBD',
+          participant_id1: null,
+          participant_id2: null,
+          winner: null,
+          round: roundInfo.round,
+          isPlaceholder: true
+        });
+      }
+    }
+  });
+  
+  return structure;
+};
+
 export const printBracket = (tournamentData, division_id) => {
   const printHTML = generatePrintHTML(tournamentData, division_id);
   
@@ -58,7 +118,7 @@ const generatePrintHTML = (data, division_id) => {
           // Setup connections after DOM is ready
           setTimeout(function() {
             window.setupConnections();
-          }, 800);
+          }, 100);
         </script>
       </body>
     </html>
@@ -70,75 +130,78 @@ const generateTraditionalBracket = (rounds) => {
     return '<div class="bracket-container"><div class="no-matches">No bracket data available</div></div>';
   }
 
-  const sortedRounds = Object.keys(rounds).sort((a, b) => parseInt(a) - parseInt(b));
-  const finalRound = Math.max(...sortedRounds.map(r => parseInt(r)));
+  // Calculate total participants from Round 1
+  const round1Matches = rounds['1'] || [];
+  const totalParticipants = round1Matches.length * 2; // Each match has 2 participants
+  
+  // Pre-generate complete bracket structure with all expected matches
+  const bracketStructure = generateCompleteBracketStructure(totalParticipants, rounds);
+  
+  // Use bracketStructure instead of original rounds for complete bracket display
+  const allRounds = Object.keys(bracketStructure).sort((a, b) => parseInt(a) - parseInt(b));
+  const finalRound = Math.max(...allRounds.map(r => parseInt(r)));
 
   // Put all Round 1 matches on the left side to avoid pairing issues
-  const round1Matches = rounds['1'] || [];
-  const leftMatches = [...round1Matches];
+  const leftMatches = [...(bracketStructure['1'] || [])];
   const rightMatches = [];
 
-  // Middle rounds (2, 3, 4, etc.) go in the center
-  const middleRounds = sortedRounds.filter(round => parseInt(round) > 1);
+  // Middle rounds (2, 3, 4, etc.) go in the center - use bracketStructure
+  const middleRounds = allRounds.filter(round => parseInt(round) > 1);
 
   // Create arrays for left and right sides with proper round data
   const leftRounds = leftMatches.length > 0 ? [{ round: 1, matches: leftMatches }] : [];
   const rightRounds = rightMatches.length > 0 ? [{ round: 1, matches: rightMatches }] : [];
 
-  // Build connection mapping based on participant IDs - check ALL future rounds, not just consecutive ones
+  // Pre-build ALL connection lines based on tournament structure
   const connections = {};
   
-  sortedRounds.forEach((currentRound, currentIndex) => {
-    const currentRoundMatches = rounds[currentRound] || [];
+  allRounds.forEach((currentRound, currentIndex) => {
+    const currentRoundMatches = bracketStructure[currentRound] || [];
     
-    // For each match in current round, find which future round match it connects to
-    currentRoundMatches.forEach(currentMatch => {
-      // Only create connection if current match has a winner
-      if (!currentMatch.winner) return;
-      
-      // Find the winner's participant_id
-      const winnerParticipantId = currentMatch.winner === 'user1' ? 
-        currentMatch.participant_id1 : currentMatch.participant_id2;
-      
-      // Check ALL future rounds (not just the immediate next one) to handle cases where brackets skip rounds
-      for (let futureIndex = currentIndex + 1; futureIndex < sortedRounds.length; futureIndex++) {
-        const futureRound = sortedRounds[futureIndex];
-        const futureRoundMatches = rounds[futureRound] || [];
-        
-        const targetMatch = futureRoundMatches.find(futureMatch => 
-          futureMatch.participant_id1 === winnerParticipantId || 
-          futureMatch.participant_id2 === winnerParticipantId
-        );
+    // For each match in current round, create connection to next round
+    currentRoundMatches.forEach((currentMatch, matchIndex) => {
+      // For elimination tournaments, winners advance to the next round
+      // Each pair of matches feeds into one match in the next round
+      const nextRound = parseInt(currentRound) + 1;
+      if (bracketStructure[nextRound]) {
+        const nextRoundMatchIndex = Math.floor(matchIndex / 2);
+        const targetMatch = bracketStructure[nextRound][nextRoundMatchIndex];
         
         if (targetMatch) {
+          // Pre-render connection regardless of match completion status
           connections[currentMatch.bracket_id] = targetMatch.bracket_id;
-          console.log(`Connection found: Bracket ${currentMatch.bracket_id} (Round ${currentRound}) -> Bracket ${targetMatch.bracket_id} (Round ${futureRound})`);
-          break; // Stop searching once we find the target
+          console.log(`Pre-rendered connection: Bracket ${currentMatch.bracket_id} (Round ${currentRound}) -> Bracket ${targetMatch.bracket_id} (Round ${nextRound})`);
         }
       }
     });
   });
 
-  // Determine champion
-  const champion = rounds[finalRound]?.[0]?.winner ? 
-    (rounds[finalRound][0].winner === 'user1' ? rounds[finalRound][0].user1 : rounds[finalRound][0].user2) : 
+  // Determine champion from bracketStructure
+  const finalMatch = bracketStructure[finalRound]?.[0];
+  const champion = finalMatch?.winner ? 
+    (finalMatch.winner === 'user1' ? finalMatch.user1 : finalMatch.user2) : 
     'TBD';
 
   const renderMatch = (match, isLeftSide = false, isRightSide = false, hasNextRound = true, matchIndex = 0) => {
     const user1Winner = match.winner === 'user1';
     const user2Winner = match.winner === 'user2';
+    const isPlaceholder = match.isPlaceholder;
+    const hasWinner = match.winner && match.winner !== null;
     
-    // Create connection line based on bracket ID mapping (using bracket_id not id)
+    // Create connection line - always render if target exists (pre-render all lines)
     const targetBracketId = connections[match.bracket_id];
     let connectionLine = '';
     
-    if (targetBracketId && hasNextRound) {
+    if (targetBracketId) {
       const lineClass = isLeftSide ? 'line-horizontal-left' : (isRightSide ? 'line-horizontal-right' : 'line-horizontal');
       connectionLine = `<div class="${lineClass}" data-target-bracket="${targetBracketId}"></div>`;
     }
     
+    // Style placeholder matches differently
+    const bracketClass = isPlaceholder ? 'match-bracket placeholder' : 'match-bracket';
+    
     return `
-      <div class="match-bracket" data-bracket-id="${match.bracket_id}">
+      <div class="${bracketClass}" data-bracket-id="${match.bracket_id}">
         <div class="match-participant ${user1Winner ? 'winner' : ''}">${match.user1 || 'TBD'}</div>
         <div class="match-participant ${user2Winner ? 'winner' : ''}">${match.user2 || 'TBD'}</div>
         ${connectionLine}
@@ -200,7 +263,7 @@ const generateTraditionalBracket = (rounds) => {
 
       <div class="bracket-center">
         ${middleRounds.map(roundNumber => {
-          const roundMatches = rounds[roundNumber] || [];
+          const roundMatches = bracketStructure[roundNumber] || [];
           const isLastRound = parseInt(roundNumber) === parseInt(finalRound);
           const hasNextRound = !isLastRound; // Center rounds have next rounds except the final one
           return `
@@ -208,7 +271,7 @@ const generateTraditionalBracket = (rounds) => {
               <div class="round-header-bracket">Round ${roundNumber}${isLastRound && roundMatches.length === 1 ? ' - Final' : ''}</div>
               ${roundMatches.length > 0 ? 
                 roundMatches.map((match, index) => renderMatch(match, false, false, hasNextRound, index)).join('') : 
-                '<div class="match-bracket">No matches yet</div>'
+                '<div class="match-bracket">No matches scheduled</div>'
               }
               
               ${isLastRound && roundMatches.length === 1 && champion !== 'TBD' ? `
