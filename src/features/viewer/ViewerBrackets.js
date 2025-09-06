@@ -612,6 +612,55 @@ const ViewerBrackets = () => {
             </Col>
           </Row>
 
+          {/* Legend and Instructions */}
+          <Row className="mb-3">
+            <Col>
+              <Card className="card-modern">
+                <Card.Body className="card-modern-body py-3">
+                  <Row className="align-items-center">
+                    <Col md={8}>
+                      <div className="d-flex flex-wrap align-items-center gap-4">
+                        <div className="legend-item d-flex align-items-center">
+                          <div className="legend-icon me-2" style={{
+                            width: '20px', height: '12px', backgroundColor: '#007bff', borderRadius: '2px'
+                          }}></div>
+                          <small className="text-muted">Active Advancement</small>
+                        </div>
+                        <div className="legend-item d-flex align-items-center">
+                          <div className="legend-icon me-2" style={{
+                            width: '20px', height: '12px', backgroundColor: '#ffc107', borderRadius: '2px',
+                            borderStyle: 'dashed', borderWidth: '2px', borderColor: '#ffc107'
+                          }}></div>
+                          <small className="text-muted">Potential Advancement</small>
+                        </div>
+                        <div className="legend-item d-flex align-items-center">
+                          <div className="legend-icon me-2" style={{
+                            width: '20px', height: '12px', backgroundColor: '#28a745', borderRadius: '2px'
+                          }}></div>
+                          <small className="text-muted">Highlighted Path</small>
+                        </div>
+                        <div className="legend-item d-flex align-items-center">
+                          <div className="legend-icon me-2" style={{
+                            width: '20px', height: '12px', border: '2px dashed #6c757d', borderRadius: '2px',
+                            backgroundColor: 'transparent'
+                          }}></div>
+                          <small className="text-muted">Future Match</small>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col md={4} className="text-md-end">
+                      <small className="text-muted">
+                        <i className="fas fa-hand-pointer me-1"></i>
+                        <strong>Click brackets</strong> to view details • 
+                        <strong> Click names</strong> to trace paths
+                      </small>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+
           {/* Interactive Bracket Map */}
           <Row>
             <Col>
@@ -788,6 +837,8 @@ const ViewerBrackets = () => {
                         const isWinner2 = node.match.winner === 'user2';
                         const hasWinner = node.match.winner && node.match.winner !== null;
                         const isPlaceholder = node.match.isPlaceholder;
+                        const isBye = node.match.user1 === 'Bye' || node.match.user2 === 'Bye' || 
+                                     node.match.user1 === 'Bi' || node.match.user2 === 'Bi';
                         
                         // Determine node styling based on match status
                         let fillColor = '#ffffff';
@@ -826,8 +877,22 @@ const ViewerBrackets = () => {
                               strokeDasharray={isPlaceholder ? '3,3' : ''}
                               opacity={opacity}
                               className="match-node"
-                              style={{ cursor: isPlaceholder ? 'default' : 'pointer' }}
+                              style={{ 
+                                cursor: isPlaceholder ? 'default' : 'pointer',
+                                filter: isPlaceholder ? 'none' : 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
+                                transition: 'all 0.2s ease'
+                              }}
                               onClick={() => !isPlaceholder && setSelectedMatch(node.match)}
+                              onMouseEnter={(e) => {
+                                if (!isPlaceholder) {
+                                  e.target.style.filter = 'drop-shadow(0px 3px 6px rgba(0,0,0,0.15)) brightness(1.02)';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isPlaceholder) {
+                                  e.target.style.filter = 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))';
+                                }
+                              }}
                             />
                             
                             {/* Participant 1 */}
@@ -883,6 +948,34 @@ const ViewerBrackets = () => {
                             >
                               R{node.round}
                             </text>
+                            
+                            {/* Watch Live Icon for clickable matches */}
+                            {!isPlaceholder && !isBye && (
+                              <g opacity="0.7">
+                                <circle
+                                  cx={node.x + 45}
+                                  cy={node.y - 15}
+                                  r="8"
+                                  fill="#dc3545"
+                                  stroke="white"
+                                  strokeWidth="2"
+                                />
+                                <polygon
+                                  points={`${node.x + 42},${node.y - 17} ${node.x + 42},${node.y - 13} ${node.x + 48},${node.y - 15}`}
+                                  fill="white"
+                                />
+                                <text
+                                  x={node.x + 45}
+                                  y={node.y - 8}
+                                  textAnchor="middle"
+                                  fontSize="6"
+                                  fill="#dc3545"
+                                  fontWeight="bold"
+                                >
+                                  LIVE
+                                </text>
+                              </g>
+                            )}
                           </g>
                         );
                       })}
@@ -1026,17 +1119,20 @@ const ViewerBrackets = () => {
             </Modal.Body>
             <Modal.Footer className="card-modern-footer">
               <Button
-                variant="success"
+                variant="danger"
+                size="lg"
                 onClick={() => {
                   navigate(`/viewer?bracket_id=${selectedMatch.bracket_id}`);
                   setSelectedMatch(null);
                 }}
                 disabled={selectedMatch.user1 === 'Bye' || selectedMatch.user2 === 'Bye'}
+                className="me-2"
               >
-                <i className="fas fa-eye me-2"></i>
-                Watch Match
+                <i className="fas fa-video me-2"></i>
+                🔴 Watch Live
               </Button>
-              <Button variant="secondary" onClick={() => setSelectedMatch(null)}>
+              <Button variant="outline-secondary" onClick={() => setSelectedMatch(null)}>
+                <i className="fas fa-times me-2"></i>
                 Close
               </Button>
             </Modal.Footer>
