@@ -24,6 +24,13 @@ function Login() {
     
     setIsFromRegistration(fromRegistration);
     
+    // Check if demo credentials were passed from landing page
+    if (location.state?.demoCredentials) {
+      const demoCredentials = location.state.demoCredentials;
+      setUsername(demoCredentials.username);
+      setPassword(demoCredentials.password);
+    }
+    
     // Don't clear the flag immediately - wait until after successful login
   }, [location]);
   const login = () => {
@@ -56,7 +63,15 @@ function Login() {
           <div className="fade-in">
             <Card className="card-modern shadow">
               <Card.Header className="text-center bg-white border-0 pt-4 pb-2">
-                {isFromRegistration ? (
+                {location.state?.demoCredentials ? (
+                  <>
+                    <h3 className="mb-0 fw-bold" style={{color: '#28a745'}}>
+                      <i className="fas fa-play-circle me-2"></i>
+                      Demo Login Ready!
+                    </h3>
+                    <p className="text-muted mb-0">Your demo credentials have been pre-filled</p>
+                  </>
+                ) : isFromRegistration ? (
                   <>
                     <h3 className="mb-0 fw-bold" style={{color: 'var(--dark-grey)'}}>Account Created Successfully!</h3>
                     <p className="text-muted mb-0">Now sign in to start organizing karate tournaments</p>
