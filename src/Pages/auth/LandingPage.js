@@ -6,6 +6,7 @@ import karate from '../../assets/images/karate.jpg';
 import kick from '../../assets/images/kick.jpg';
 import Carousel from 'react-bootstrap/Carousel';
 import axios from 'axios';
+import { link } from '../../constant';
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function LandingPage() {
     setDemoError(null);
     
     try {
-      const response = await axios.post('http://localhost:3001/demo', {});
+      const response = await axios.post(`${link}/demo`, {});
       
       if (response.data.login_credentials) {
         setDemoCredentials(response.data.login_credentials);
