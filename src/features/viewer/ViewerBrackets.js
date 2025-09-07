@@ -236,9 +236,13 @@ const ViewerBrackets = () => {
     const connectionLines = [];
     
     // Pre-build ALL connection lines based on tournament structure
+    console.log('Processing connections for rounds:', Object.keys(completeStructure.rounds));
+    
     Object.keys(completeStructure.rounds).forEach(roundNumber => {
       const currentRound = parseInt(roundNumber);
       const nextRound = currentRound + 1;
+      
+      console.log(`Processing Round ${currentRound} connections to Round ${nextRound}`);
       
       if (completeStructure.rounds[nextRound]) {
         completeStructure.rounds[roundNumber].forEach((match, matchIndex) => {
@@ -322,7 +326,9 @@ const ViewerBrackets = () => {
                   });
                   
                   if (isSkippingRound) {
-                    console.log(`${match.bracket_id} gets bye, skipping to Round ${targetRoundFound}`);
+                    console.log(`🎯 ${match.bracket_id} (Round ${currentRound}, match ${matchIndex}) gets bye, skipping to Round ${targetRoundFound}`);
+                  } else {
+                    console.log(`➡️ ${match.bracket_id} (Round ${currentRound}, match ${matchIndex}) advances normally to Round ${targetRoundFound}`);
                   }
                 }
               } else {
@@ -349,10 +355,81 @@ const ViewerBrackets = () => {
                 }
               }
             } else if (!match.isPlaceholder) {
-              // Match exists but no winner yet - show potential connection to expected next round position
-              const nextRoundMatches = completeStructure.rounds[nextRound] || [];
-              const expectedTargetIndex = Math.floor(matchIndex / 2);
-              const expectedTarget = nextRoundMatches[expectedTargetIndex];
+              // Match exists but no winner yet - show natural bracket progression (only immediate next round)
+              const currentRoundMatches = completeStructure.rounds[roundNumber];
+              const isOddMatchInRound = currentRoundMatches.length % 2 === 1 && 
+                                       matchIndex === currentRoundMatches.length - 1;
+              
+              let expectedTarget = null;
+              
+              if (isOddMatchInRound) {
+                // Odd match - would skip to round after next
+                const byeTargetRound = nextRound + 1;
+                const byeTargetMatches = completeStructure.rounds[byeTargetRound] || [];
+                const expectedTargetIndex = Math.floor(matchIndex / 2);
+                expectedTarget = byeTargetMatches[Math.min(expectedTargetIndex, byeTargetMatches.length - 1)];
+                console.log(`🚀 ${match.bracket_id} (no winner yet, Round ${currentRound}) is odd match ${matchIndex}/${currentRoundMatches.length} - would get bye to Round ${byeTargetRound}`);
+              } else {
+                // Normal match - goes to immediate next round
+                const nextRoundMatches = completeStructure.rounds[nextRound] || [];
+                const expectedTargetIndex = Math.floor(matchIndex / 2);
+                expectedTarget = nextRoundMatches[expectedTargetIndex];
+                console.log(`${match.bracket_id} (no winner yet) would advance to Round ${nextRound}`);
+              }
+              
+              if (expectedTarget) {
+                const startPos = nodePositions.get(match.bracket_id);
+                const endPos = nodePositions.get(expectedTarget.bracket_id);
+                
+                if (startPos && endPos) {
+                  connectionLines.push({
+                    from: match.bracket_id,
+                    to: expectedTarget.bracket_id,
+                    startPos,
+                    endPos,
+                    status: 'inactive',
+                    active: false
+                  });
+                }
+              }
+            } else if (match.isPlaceholder && completeStructure.rounds[nextRound]) {
+              // Placeholder matches should also show expected connections with bye logic
+              const currentRoundMatches = completeStructure.rounds[roundNumber];
+              
+              // Check if this round will produce an odd number of winners (accounting for byes from previous rounds)
+              let totalWinners = currentRoundMatches.length; // Winners from this round's matches
+              
+              // Add any bye winners coming into next round (like Round 1 bye winner going to Round 3)
+              if (currentRound === 2) {
+                // Round 2: Check if Round 1 had a bye that skips to Round 3
+                const round1Matches = completeStructure.rounds['1'] || [];
+                const round1HasBye = round1Matches.length % 2 === 1;
+                if (round1HasBye) {
+                  totalWinners += 1; // Add the bye winner
+                }
+              }
+              
+              const isOddMatchInRound = totalWinners % 2 === 1 && 
+                                       matchIndex === currentRoundMatches.length - 1;
+              
+              console.log(`Round ${currentRound}: ${currentRoundMatches.length} matches, ${totalWinners} total winners, match ${matchIndex} isOdd: ${isOddMatchInRound}`);
+              
+              let expectedTarget = null;
+              
+              if (isOddMatchInRound && completeStructure.rounds[nextRound + 1]) {
+                // This placeholder is the odd match AND there's a round to skip to - would get bye
+                const byeTargetRound = nextRound + 1;
+                const byeTargetMatches = completeStructure.rounds[byeTargetRound] || [];
+                const expectedTargetIndex = Math.floor(matchIndex / 2);
+                expectedTarget = byeTargetMatches[Math.min(expectedTargetIndex, byeTargetMatches.length - 1)];
+                console.log(`${match.bracket_id} (placeholder, odd) would get bye to Round ${byeTargetRound}`);
+              } else {
+                // Normal placeholder - goes to immediate next round
+                const nextRoundMatches = completeStructure.rounds[nextRound] || [];
+                const expectedTargetIndex = Math.floor(matchIndex / 2);
+                expectedTarget = nextRoundMatches[expectedTargetIndex];
+                console.log(`${match.bracket_id} (placeholder) would advance to Round ${nextRound}`);
+              }
               
               if (expectedTarget) {
                 const startPos = nodePositions.get(match.bracket_id);
