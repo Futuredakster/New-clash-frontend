@@ -133,6 +133,52 @@ const seeDivision = (tournamentName, tournamentId) =>{
         return;
       }
 
+      // First check if tournament has participants by checking divisions
+      try {
+        console.log('Checking for participants before starting tournament...');
+        
+        // Get divisions for this tournament
+        const divisionsResponse = await axios.get(`${link}/divisions/`, {
+          headers: { accessToken: accessToken },
+          params: { tournament_id: tournament_id }
+        });
+
+        if (!divisionsResponse.data || divisionsResponse.data.length === 0) {
+          alert('Cannot start tournament: No divisions found. Please create divisions first.');
+          setStartingTournament(null);
+          return;
+        }
+
+        // Check each division for participants
+        let totalParticipants = 0;
+        for (const division of divisionsResponse.data) {
+          try {
+            const participantResponse = await axios.get(`${link}/participants/All`, {
+              headers: { accessToken: accessToken },
+              params: { division_id: division.division_id }
+            });
+            if (participantResponse.data && participantResponse.data.length > 0) {
+              totalParticipants += participantResponse.data.length;
+            }
+          } catch (divisionError) {
+            console.log(`No participants in division ${division.division_id}`);
+          }
+        }
+
+        if (totalParticipants === 0) {
+          alert('Cannot start tournament: No participants are registered. Please add participants to divisions before starting the tournament.');
+          setStartingTournament(null);
+          return;
+        }
+
+        console.log(`Found ${totalParticipants} participants across all divisions. Proceeding to start tournament...`);
+      } catch (participantError) {
+        console.error('Error checking participants:', participantError);
+        alert('Error checking participants. Please try again.');
+        setStartingTournament(null);
+        return;
+      }
+
       console.log('Setting tournament as starting...');
       setStartingTournament(tournament_id);
 
