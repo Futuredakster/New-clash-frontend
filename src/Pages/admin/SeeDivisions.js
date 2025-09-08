@@ -389,37 +389,58 @@ const SeeDivisions = () => {
   }, [alertMessage]);
 
   // Fetch divisions function with search support
-  const fetchDivisions = () => {
+  const fetchDivisions = async () => {
     const accessToken = localStorage.getItem('accessToken');
     if (!accessToken) {
       console.error('Access token not found. API request not made.');
       return;
     }
 
-    const params = { tournament_id: tournament_id };
-    if (searchTerm.trim()) {
-      params.search = searchTerm.trim();
-    }
+    try {
+      const params = { tournament_id: tournament_id };
+      if (searchTerm.trim()) {
+        params.search = searchTerm.trim();
+      }
 
-    axios.get(`${link}/divisions/`, {
-      headers: {
-        accessToken: accessToken,
-      },
-      params: params,
-    })
-      .then(response => {
-        if (response.data.error) {
-          alert(response.data.error);
-        } else {
-          setData(response.data);
-          setFilteredData(response.data);
-          // Also fetch mat assignments when divisions are loaded
-          fetchMatAssignments();
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
+      // Get divisions
+      const divisionsResponse = await axios.get(`${link}/divisions/`, {
+        headers: { accessToken: accessToken },
+        params: params,
       });
+
+      if (divisionsResponse.data.error) {
+        alert(divisionsResponse.data.error);
+        return;
+      }
+
+      // Get mats for the tournament
+      const matsResponse = await axios.get(`${link}/mats/`, {
+        headers: { accessToken: accessToken },
+        params: { tournament_id: tournament_id }
+      });
+
+      const divisions = divisionsResponse.data;
+      const mats = matsResponse.data;
+
+      // Create mat lookup
+      const matLookup = {};
+      mats.forEach(mat => {
+        matLookup[mat.mat_id] = mat.mat_name;
+      });
+
+      // Enrich divisions with mat names
+      const enrichedDivisions = divisions.map(division => ({
+        ...division,
+        mat_name: division.mat_id ? matLookup[division.mat_id] : null
+      }));
+
+      setData(enrichedDivisions);
+      setFilteredData(enrichedDivisions);
+      // Also fetch mat assignments when divisions are loaded
+      fetchMatAssignments();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
   // Initial fetch on component mount
@@ -689,29 +710,6 @@ const SeeDivisions = () => {
             </Button>
 
             <Button 
-              className="btn btn-outline-primary text-nowrap" 
-              onClick={handleAssignMats}
-              disabled={loading || data.length === 0 || !hasBrackets}
-              title={!hasBrackets && data.length > 0 ? "Create brackets first before assigning mats" : ""}
-            >
-              {loading ? (
-                <>
-                  <Spinner as="span" animation="border" size="sm" role="status" className="me-2" />
-                  <span className="d-none d-md-inline">Assigning</span>
-                  <span className="d-md-none">...</span>
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-map me-2"></i>
-                  <span className="d-none d-sm-inline">Auto-Assign </span>Mats
-                  {!hasBrackets && data.length > 0 && (
-                    <i className="fas fa-exclamation-triangle ms-1 text-warning"></i>
-                  )}
-                </>
-              )}
-            </Button>
-            
-            <Button 
               className="btn btn-outline-secondary text-nowrap" 
               onClick={() => {
                 fetchMatAssignments();
@@ -804,10 +802,35 @@ const SeeDivisions = () => {
                               </div>
                               <div>
                                 <div className="fw-bold text-dark mb-1">{item.gender}</div>
-                                <small className="text-muted">
+                                <small className="text-muted d-block">
                                   <i className="fas fa-layer-group me-1"></i>
                                   Division #{item.division_id}
                                 </small>
+                                {item.mat_id && (
+                                  <small className="text-success d-block mt-1">
+                                    <i className="fas fa-map-marker-alt me-1"></i>
+                                    {item.mat_name}
+                                    {item.is_active && (
+                                      <span className="badge bg-success ms-2" style={{fontSize: '0.7rem'}}>
+                                        ACTIVE
+                                      </span>
+                                    )}
+                                    {item.is_complete && (
+                                      <span className="badge bg-primary ms-2" style={{fontSize: '0.7rem'}}>
+                                        COMPLETE
+                                      </span>
+                                    )}
+                                  </small>
+                                )}
+                                {!item.mat_id && (
+                                  <small className="text-muted d-block mt-1">
+                                    <i className="fas fa-circle me-1"></i>
+                                    No mat assigned
+                                    <span className="badge bg-secondary ms-2" style={{fontSize: '0.7rem'}}>
+                                      INACTIVE
+                                    </span>
+                                  </small>
+                                )}
                               </div>
                             </div>
                           </td>
