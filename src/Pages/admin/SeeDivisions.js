@@ -13,6 +13,7 @@ const SeeDivisions = () => {
   const queryParams = new URLSearchParams(location.search);
   const tournament_name = queryParams.get('tournament_name');
   const tournament_id = queryParams.get('tournament_id');
+  const workflow = queryParams.get('workflow');
   const queryString = new URLSearchParams({ tournament_id:tournament_id}).toString();
   const [showModal, setShowModal] = useState(false);
   const [data, setData] = useState([]);
@@ -21,6 +22,7 @@ const SeeDivisions = () => {
   const [openStates, setOpenStates] = useState(Array(data.length).fill(false));
   const [selectedDivisionId, setSelectedDivisionId] = useState(null);
   const navigate = useNavigate();
+  const [workflowBannerVisible, setWorkflowBannerVisible] = useState(true);
 
   // Mat management state
   const [showMatDashboard, setShowMatDashboard] = useState(false);
@@ -226,6 +228,12 @@ const SeeDivisions = () => {
       });
       
       setShowCreateMats(false);
+      
+      // Update workflow to show mats created state
+      const newParams = new URLSearchParams(location.search);
+      newParams.set('workflow', 'mats_created');
+      const newSearch = newParams.toString();
+      navigate(`${location.pathname}?${newSearch}`, { replace: true });
       
     } catch (error) {
       console.error('Error creating mats:', error);
@@ -442,6 +450,185 @@ const SeeDivisions = () => {
             <p className="page-subtitle-modern">Manage divisions for this tournament</p>
           </div>
           
+          {/* Show Workflow Help Button (when banner is dismissed) */}
+          {workflow && !workflowBannerVisible && (
+            <div className="mb-3">
+              <Button 
+                variant="outline-secondary"
+                size="sm"
+                onClick={() => setWorkflowBannerVisible(true)}
+                className="d-flex align-items-center"
+              >
+                <i className="fas fa-question-circle me-2"></i>
+                Show Workflow Help
+              </Button>
+            </div>
+          )}
+          
+          {/* Workflow Guidance Banner */}
+          {workflow === 'division_created' && workflowBannerVisible && (
+            <Alert variant="success" className="mb-4 border-0" style={{ background: 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)', boxShadow: '0 4px 12px rgba(40, 167, 69, 0.2)' }}>
+              <div className="d-flex align-items-center">
+                <div className="me-3">
+                  <div className="bg-success d-flex align-items-center justify-content-center rounded-circle" 
+                       style={{width: '48px', height: '48px'}}>
+                    <i className="fas fa-check text-white" style={{fontSize: '1.4em'}}></i>
+                  </div>
+                </div>
+                <div className="flex-grow-1">
+                  <h5 className="mb-2 text-success fw-bold">
+                    <i className="fas fa-sparkles me-2"></i>
+                    Great! Division Created Successfully
+                  </h5>
+                  <p className="mb-2 text-success-emphasis">
+                    Your division has been added to <strong>{tournament_name}</strong>. 
+                    Next, you need to create mats for your tournament so competitors know where to compete.
+                  </p>
+                  <div className="d-flex flex-wrap gap-2 mt-3">
+                    <Button 
+                      variant="success"
+                      size="sm"
+                      onClick={() => setShowCreateMats(true)}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-plus me-2"></i>
+                      Create Mats Now
+                    </Button>
+                    <Button 
+                      variant="outline-success"
+                      size="sm"
+                      onClick={() => navigate(`/CreateDivision?${queryString}`)}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-plus me-2"></i>
+                      Add Another Division
+                    </Button>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline-success"
+                  size="sm"
+                  onClick={() => setWorkflowBannerVisible(false)}
+                  className="ms-2"
+                  title="Dismiss this message"
+                >
+                  <i className="fas fa-times"></i>
+                </Button>
+              </div>
+            </Alert>
+          )}
+
+          {workflow === 'mats_created' && workflowBannerVisible && (
+            <Alert variant="info" className="mb-4 border-0" style={{ background: 'linear-gradient(135deg, #d1ecf1 0%, #b8daff 100%)', boxShadow: '0 4px 12px rgba(13, 202, 240, 0.2)' }}>
+              <div className="d-flex align-items-center">
+                <div className="me-3">
+                  <div className="bg-info d-flex align-items-center justify-content-center rounded-circle" 
+                       style={{width: '48px', height: '48px'}}>
+                    <i className="fas fa-hourglass-half text-white" style={{fontSize: '1.4em'}}></i>
+                  </div>
+                </div>
+                <div className="flex-grow-1">
+                  <h5 className="mb-2 text-info fw-bold">
+                    <i className="fas fa-check-circle me-2"></i>
+                    Perfect! Mats Created Successfully
+                  </h5>
+                  <p className="mb-2 text-info-emphasis">
+                    Great work! Your mats have been created for <strong>{tournament_name}</strong>. 
+                    Now please wait until the tournament start date. Once it's time, you can return to the tournament dashboard and click <strong>"START TOURNAMENT"</strong> to begin the competition.
+                  </p>
+                  <div className="d-flex flex-wrap gap-2 mt-3">
+                    <Button 
+                      variant="info"
+                      size="sm"
+                      onClick={() => navigate('/Home')}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-home me-2"></i>
+                      Go to Tournament Dashboard
+                    </Button>
+                    <Button 
+                      variant="outline-info"
+                      size="sm"
+                      onClick={() => {
+                        fetchMatAssignments();
+                        setShowMatDashboard(true);
+                      }}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-eye me-2"></i>
+                      View Mat Dashboard
+                    </Button>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline-info"
+                  size="sm"
+                  onClick={() => setWorkflowBannerVisible(false)}
+                  className="ms-2"
+                  title="Dismiss this message"
+                >
+                  <i className="fas fa-times"></i>
+                </Button>
+              </div>
+            </Alert>
+          )}
+
+          {workflow === 'tournament_started' && workflowBannerVisible && (
+            <Alert variant="primary" className="mb-4 border-0" style={{ background: 'linear-gradient(135deg, #cfe2ff 0%, #b6d7ff 100%)', boxShadow: '0 4px 12px rgba(13, 110, 253, 0.2)' }}>
+              <div className="d-flex align-items-center">
+                <div className="me-3">
+                  <div className="bg-primary d-flex align-items-center justify-content-center rounded-circle" 
+                       style={{width: '48px', height: '48px'}}>
+                    <i className="fas fa-rocket text-white" style={{fontSize: '1.4em'}}></i>
+                  </div>
+                </div>
+                <div className="flex-grow-1">
+                  <h5 className="mb-2 text-primary fw-bold">
+                    <i className="fas fa-trophy me-2"></i>
+                    🎉 Tournament Started Successfully!
+                  </h5>
+                  <p className="mb-2 text-primary-emphasis">
+                    Excellent! <strong>{tournament_name}</strong> is now live with initial brackets created for all divisions. 
+                    You can now manage individual brackets, assign divisions to mats, and monitor the competition progress.
+                  </p>
+                  <div className="d-flex flex-wrap gap-2 mt-3">
+                    <Button 
+                      variant="primary"
+                      size="sm"
+                      onClick={() => {
+                        fetchMatAssignments();
+                        setShowMatDashboard(true);
+                      }}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-map me-2"></i>
+                      View Mat Dashboard
+                    </Button>
+                    <Button 
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={handleAssignMats}
+                      disabled={loading || data.length === 0}
+                      className="d-flex align-items-center"
+                    >
+                      <i className="fas fa-magic me-2"></i>
+                      Auto-Assign Mats
+                    </Button>
+                  </div>
+                </div>
+                <Button 
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => setWorkflowBannerVisible(false)}
+                  className="ms-2"
+                  title="Dismiss this message"
+                >
+                  <i className="fas fa-times"></i>
+                </Button>
+              </div>
+            </Alert>
+          )}
+
           {/* Alert Messages */}
           {alertMessage.message && (
             <Alert variant={alertMessage.type} className="mb-4">

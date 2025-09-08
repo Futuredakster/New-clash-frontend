@@ -120,6 +120,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
   };
 
     const startTournament = async (tournament_id) => {
+      console.log('START TOURNAMENT clicked for tournament:', tournament_id);
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) {
         alert('Access token not found. Please log in again.');
@@ -128,13 +129,16 @@ const seeDivision = (tournamentName, tournamentId) =>{
 
       // Prevent multiple clicks
       if (startingTournament === tournament_id) {
+        console.log('Already starting tournament, ignoring click');
         return;
       }
 
+      console.log('Setting tournament as starting...');
       setStartingTournament(tournament_id);
 
       try {
-        await axios.post(
+        console.log('Making API call to create brackets...');
+        const response = await axios.post(
           `${link}/brackets/initial`,  
           {
             tournament_id: tournament_id,
@@ -145,9 +149,22 @@ const seeDivision = (tournamentName, tournamentId) =>{
             },
           }
         );
+        console.log('API response:', response.data);
         alert('Tournament started successfully');
         setStartedTournaments(prev => new Set(prev).add(tournament_id));
         setStartingTournament(null);
+        
+        // Find tournament name for redirect
+        const tournament = items.find(item => item.tournament_id === tournament_id);
+        const tournamentName = tournament?.tournament_name || '';
+        
+        // Redirect to SeeDivisions with workflow parameter
+        const queryString = new URLSearchParams({ 
+          tournament_name: tournamentName, 
+          tournament_id: tournament_id, 
+          workflow: 'tournament_started' 
+        }).toString();
+        navigate(`/seeDivisions?${queryString}`);
       } catch (error) {
         console.error('Error starting tournament:', error);
         if (error.response?.data?.error) {

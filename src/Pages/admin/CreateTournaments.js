@@ -52,7 +52,10 @@ const CreateTournaments = () => {
       });
 
       console.log("Request successful:", response.data);
-      const queryString = new URLSearchParams({ tournament_id: response.data.tournament_id}).toString();
+      const queryString = new URLSearchParams({ 
+        tournament_id: response.data.tournament_id,
+        tournament_name: values.tournament_name
+      }).toString();
       navigate(`/CreateDivision?${queryString}`);
     } catch (error) {
       console.error("Error:", error);

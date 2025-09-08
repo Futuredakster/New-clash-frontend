@@ -185,7 +185,16 @@ const CreateDivision = () => {
       });
 
       alert(`Successfully created ${response.data.count} divisions!`);
-      navigate("/Home");
+      
+      // Get tournament name for redirect
+      const tournamentName = queryParams.get('tournament_name') || 'Tournament';
+      const queryString = new URLSearchParams({ 
+        tournament_name: tournamentName, 
+        tournament_id: tournament_id,
+        workflow: 'division_created'
+      }).toString();
+      
+      navigate(`/seeDivisions?${queryString}`);
     } catch (error) {
       console.error("Error creating divisions:", error);
       
@@ -217,7 +226,16 @@ const CreateDivision = () => {
       });
 
       console.log("Request successful:", response.data);
-      navigate("/Home");
+      
+      // Get tournament name for redirect
+      const tournamentName = queryParams.get('tournament_name') || 'Tournament';
+      const queryString = new URLSearchParams({ 
+        tournament_name: tournamentName, 
+        tournament_id: tournament_id,
+        workflow: 'division_created'
+      }).toString();
+      
+      navigate(`/seeDivisions?${queryString}`);
     } catch (error) {
       console.error("Error:", error);
       
