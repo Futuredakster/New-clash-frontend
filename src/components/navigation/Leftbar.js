@@ -32,9 +32,16 @@ const Leftbar = () => {
                     </li>
                     
                     <li className="nav-item mb-1">
+                        <Link to="/tournament-setup/tournament" className="nav-link text-white d-flex align-items-center">
+                            <i className="fas fa-magic me-3"></i>
+                            <span>Setup Tournament</span>
+                        </Link>
+                    </li>
+                    
+                    <li className="nav-item mb-1">
                         <Link to="/CreateTournaments" className="nav-link text-white d-flex align-items-center">
                             <i className="fas fa-plus-circle me-3"></i>
-                            <span>Create Tournament</span>
+                            <span>Quick Create Tournament</span>
                         </Link>
                     </li>
                     

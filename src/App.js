@@ -47,6 +47,7 @@ import ParticipantDetails from './Pages/participant/ParticipantDetails';
 import Competitors from './Pages/admin/Competitors';
 import ParticipantForms from './Pages/admin/ParticipantForms';
 import AddCompetitors from './Pages/admin/AddCompetitors';
+import TournamentSetup from './Pages/admin/TournamentSetup';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -217,6 +218,7 @@ useEffect(() => {
           <Route path='/Competitors' element={<Competitors />} />
           <Route path='/ParticipantForms' element={<ParticipantForms />} />
           <Route path='/AddCompetitors/:divisionId' element={<AddCompetitors />} />
+          <Route path='/tournament-setup/:step' element={<TournamentSetup />} />
           </Routes>
         </div>
       </div>

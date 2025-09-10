@@ -12,39 +12,113 @@ const ItemList = ({ items, accountId }) => {
   const [openStates, setOpenStates] = useState(Array(items.length).fill(false));
   const [startingTournament, setStartingTournament] = useState(null);
   const [startedTournaments, setStartedTournaments] = useState(new Set());
+  const [tournamentSetupStates, setTournamentSetupStates] = useState(new Map());
   const navigate = useNavigate();
 
-  // Check bracket status for all tournaments when component loads
+  // Initialize tournament setup states without API calls - check only when needed
   useEffect(() => {
-    const checkBracketStatus = async () => {
-      if (!items || items.length === 0) return;
-      
-      const statusPromises = items.map(item => 
-        axios.get(`${link}/brackets/tournament-status/${item.tournament_id}`)
-          .catch(error => {
-            console.error(`Error checking status for tournament ${item.tournament_id}:`, error);
-            return { data: { hasbrackets: false } };
-          })
-      );
-
-      try {
-        const results = await Promise.all(statusPromises);
-        const tournamentIds = new Set();
-        
-        results.forEach((result, index) => {
-          if (result.data.hasbrackets) {
-            tournamentIds.add(items[index].tournament_id);
-          }
-        });
-        
-        setStartedTournaments(tournamentIds);
-      } catch (error) {
-        console.error('Error checking tournament bracket statuses:', error);
-      }
-    };
-
-    checkBracketStatus();
+    if (!items || items.length === 0) return;
+    
+    const setupStates = new Map();
+    
+    // Default all tournaments to "Resume Setup" - we'll check actual progress when user clicks
+    items.forEach(item => {
+      setupStates.set(item.tournament_id, { nextStep: 'divisions', stepName: 'Resume Setup' });
+    });
+    
+    setTournamentSetupStates(setupStates);
   }, [items]);
+
+  // Function to determine where user left off in setup
+  const determineSetupProgress = async (tournamentId) => {
+    try {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        return { nextStep: 'tournament', stepName: 'Resume Setup' };
+      }
+
+      // First check if tournament has already been started (has brackets)
+      try {
+        const bracketResponse = await axios.get(`${link}/brackets/tournament-status/${tournamentId}`);
+        if (bracketResponse.data?.hasbrackets) {
+          // Tournament has been started, mark as completed
+          setStartedTournaments(prev => new Set(prev).add(tournamentId));
+          return { nextStep: 'completed', stepName: 'Complete' };
+        }
+      } catch (error) {
+        // No brackets exist, continue checking setup progress
+      }
+
+      // Step 1: Tournament exists (we know it does since we're checking existing tournaments)
+      // Step 2: Check if divisions exist
+      let divisionsExist = false;
+      try {
+        const divisionsResponse = await axios.get(`${link}/divisions/`, {
+          headers: { accessToken: accessToken },
+          params: { tournament_id: tournamentId }
+        });
+        divisionsExist = divisionsResponse.data && divisionsResponse.data.length > 0;
+      } catch (error) {
+        // No divisions
+      }
+
+      if (!divisionsExist) {
+        return { nextStep: 'divisions', stepName: 'Setup Divisions' };
+      }
+
+      // Step 3: Check if mats exist
+      let matsExist = false;
+      try {
+        const matsResponse = await axios.get(`${link}/mats/`, {
+          headers: { accessToken: accessToken },
+          params: { tournament_id: tournamentId }
+        });
+        matsExist = matsResponse.data && matsResponse.data.length > 0;
+      } catch (error) {
+        // No mats, but that's optional
+      }
+
+      // Step 4: Check if any competitors are assigned
+      let competitorsAssigned = false;
+      try {
+        const divisionsResponse = await axios.get(`${link}/divisions/`, {
+          headers: { accessToken: accessToken },
+          params: { tournament_id: tournamentId }
+        });
+
+        for (const division of divisionsResponse.data || []) {
+          try {
+            const participantResponse = await axios.get(`${link}/participants/user`, {
+              headers: { accessToken: accessToken },
+              params: { division_id: division.division_id }
+            });
+            
+            if (participantResponse.data?.participants?.length > 0) {
+              competitorsAssigned = true;
+              break;
+            }
+          } catch (error) {
+            // No participants in this division
+          }
+        }
+      } catch (error) {
+        // Error checking competitors
+      }
+
+      // Determine next step based on what's missing
+      if (!matsExist && !competitorsAssigned) {
+        return { nextStep: 'mats', stepName: 'Setup Mats' };
+      } else if (!competitorsAssigned) {
+        return { nextStep: 'competitors', stepName: 'Assign Competitors' };
+      } else {
+        return { nextStep: 'start', stepName: 'Start Tournament' };
+      }
+
+    } catch (error) {
+      console.error('Error determining setup progress:', error);
+      return { nextStep: 'tournament', stepName: 'Resume Setup' };
+    }
+  };
 
   const handleShowModal = (tournamentId) => {
     setSelectedTournamentId(tournamentId);
@@ -67,6 +141,49 @@ const ItemList = ({ items, accountId }) => {
 const seeDivision = (tournamentName, tournamentId) =>{
   const queryString = new URLSearchParams({ tournament_name: tournamentName, tournament_id:tournamentId}).toString();
   navigate(`/seeDivisions?${queryString}`);
+}
+
+const handleResumeSetup = async (item) => {
+  // First check if we already know it's completed
+  const currentSetupState = tournamentSetupStates.get(item.tournament_id);
+  if (currentSetupState?.nextStep === 'completed') {
+    return;
+  }
+
+  // Update UI to show we're checking progress
+  const updatedStates = new Map(tournamentSetupStates);
+  updatedStates.set(item.tournament_id, { nextStep: 'divisions', stepName: 'Checking...' });
+  setTournamentSetupStates(updatedStates);
+
+  try {
+    // Determine actual progress
+    const progressState = await determineSetupProgress(item.tournament_id);
+    
+    // Update the state with actual progress
+    updatedStates.set(item.tournament_id, progressState);
+    setTournamentSetupStates(updatedStates);
+
+    // Navigate to the appropriate step
+    const params = new URLSearchParams();
+    params.set('tournament_id', item.tournament_id);
+    params.set('tournament_name', item.tournament_name);
+    
+    const url = `/tournament-setup/${progressState.nextStep}?${params.toString()}`;
+    navigate(url);
+  } catch (error) {
+    console.error('Error determining setup progress:', error);
+    // Fallback to divisions step
+    const fallbackStates = new Map(tournamentSetupStates);
+    fallbackStates.set(item.tournament_id, { nextStep: 'divisions', stepName: 'Resume Setup' });
+    setTournamentSetupStates(fallbackStates);
+    
+    const params = new URLSearchParams();
+    params.set('tournament_id', item.tournament_id);
+    params.set('tournament_name', item.tournament_name);
+    
+    const url = `/tournament-setup/divisions?${params.toString()}`;
+    navigate(url);
+  }
 }
 
   const onPublish = (tournament_id) => {
@@ -198,6 +315,14 @@ const seeDivision = (tournamentName, tournamentId) =>{
         console.log('API response:', response.data);
         alert('Tournament started successfully');
         setStartedTournaments(prev => new Set(prev).add(tournament_id));
+        
+        // Update setup state to show tournament is complete
+        setTournamentSetupStates(prev => {
+          const updated = new Map(prev);
+          updated.set(tournament_id, { nextStep: 'completed', stepName: 'Complete' });
+          return updated;
+        });
+        
         setStartingTournament(null);
         
         // Find tournament name for redirect
@@ -217,6 +342,14 @@ const seeDivision = (tournamentName, tournamentId) =>{
           // Check if it's the duplicate brackets error
           if (error.response.data.error.includes('already been created')) {
             setStartedTournaments(prev => new Set(prev).add(tournament_id));
+            
+            // Update setup state to show tournament is complete
+            setTournamentSetupStates(prev => {
+              const updated = new Map(prev);
+              updated.set(tournament_id, { nextStep: 'completed', stepName: 'Complete' });
+              return updated;
+            });
+            
             alert('Tournament brackets have already been created.');
           } else {
             alert(`Error: ${error.response.data.error}`);
@@ -263,6 +396,9 @@ const seeDivision = (tournamentName, tournamentId) =>{
                     </th>
                     <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '100px'}}>
                       <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
+                    </th>
+                    <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '120px'}}>
+                      <i className="fas fa-magic me-2 text-muted"></i>Setup
                     </th>
                     <th className="border-0 py-3 pe-4 text-center" style={{width: '10%', minWidth: '100px'}}>
                       <i className="fas fa-play me-2 text-muted"></i>Controls
@@ -393,6 +529,40 @@ const seeDivision = (tournamentName, tournamentId) =>{
                         ) : (
                           <span className="badge bg-success d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
                             <i className="fas fa-check-circle me-2"></i>Published
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-4 text-center">
+                        {accountId === item.account_id ? (
+                          (() => {
+                            const setupState = tournamentSetupStates.get(item.tournament_id);
+                            if (!setupState) {
+                              return <span className="text-muted small">Loading...</span>;
+                            }
+                            
+                            if (setupState.nextStep === 'completed') {
+                              return (
+                                <span className="badge bg-success d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
+                                  <i className="fas fa-check-circle me-2"></i>Complete
+                                </span>
+                              );
+                            }
+                            
+                            return (
+                              <button 
+                                className="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
+                                onClick={() => handleResumeSetup(item)}
+                                style={{borderRadius: '20px'}}
+                                title={`Continue with: ${setupState.stepName}`}
+                              >
+                                <i className="fas fa-magic me-2"></i>
+                                <span>{setupState.stepName}</span>
+                              </button>
+                            );
+                          })()
+                        ) : (
+                          <span className="text-muted small d-inline-flex align-items-center">
+                            <i className="fas fa-lock me-1"></i>Restricted
                           </span>
                         )}
                       </td>
@@ -563,7 +733,7 @@ const seeDivision = (tournamentName, tournamentId) =>{
               </div>
               
               <div className="row g-2 mt-2">
-                <div className="col-6">
+                <div className="col-4">
                   {item.is_published === false ? (
                     <button 
                       className="btn btn-outline-primary btn-sm w-100" 
@@ -577,7 +747,40 @@ const seeDivision = (tournamentName, tournamentId) =>{
                     </button>
                   )}
                 </div>
-                <div className="col-6">
+                <div className="col-4">
+                  {accountId === item.account_id ? (
+                    (() => {
+                      const setupState = tournamentSetupStates.get(item.tournament_id);
+                      if (!setupState) {
+                        return <button className="btn btn-outline-secondary btn-sm w-100" disabled>Loading...</button>;
+                      }
+                      
+                      if (setupState.nextStep === 'completed') {
+                        return (
+                          <button className="btn btn-outline-success btn-sm w-100" disabled>
+                            <i className="fas fa-check me-1"></i>Complete
+                          </button>
+                        );
+                      }
+                      
+                      return (
+                        <button 
+                          className="btn btn-outline-primary btn-sm w-100" 
+                          onClick={() => handleResumeSetup(item)}
+                          title={`Continue with: ${setupState.stepName}`}
+                        >
+                          <i className="fas fa-magic me-1"></i>
+                          Setup
+                        </button>
+                      );
+                    })()
+                  ) : (
+                    <button className="btn btn-outline-secondary btn-sm w-100" disabled>
+                      <i className="fas fa-lock me-1"></i>Restricted
+                    </button>
+                  )}
+                </div>
+                <div className="col-4">
                   {accountId === item.account_id ? (
                     <div className="dropdown-modern w-100">
                       <Dropdown show={openStates[index]} onToggle={(isOpen) => {

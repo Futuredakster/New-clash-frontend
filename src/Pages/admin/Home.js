@@ -13,6 +13,7 @@ function Home() {
   const [data, setData] = useState([]);
   const [search,setSearch] = useState('')
   const {authState, setAuthState} = useContext(AuthContext);
+  const navigate = useNavigate();
   console.log("test",authState.acoount_id);
  
   useEffect(() => {
@@ -60,11 +61,28 @@ function Home() {
           </div>
           
           <div className="w-100">
-            <div className="mb-4">
-              <Searchbar
-                search={search}
-                setSearch={setSearch}
-              />
+            <div className="mb-4 d-flex flex-column flex-md-row gap-3 align-items-md-center">
+              <div className="flex-grow-1">
+                <Searchbar
+                  search={search}
+                  setSearch={setSearch}
+                />
+              </div>
+              <div>
+                <Button 
+                  className="btn btn-modern"
+                  onClick={() => navigate('/tournament-setup/tournament')}
+                  style={{
+                    background: 'linear-gradient(135deg, #007bff, #0056b3)',
+                    border: 'none',
+                    boxShadow: '0 4px 15px rgba(0, 123, 255, 0.3)',
+                    fontWeight: '600'
+                  }}
+                >
+                  <i className="fas fa-magic me-2"></i>
+                  Setup New Tournament
+                </Button>
+              </div>
             </div>
             <div className="w-100">
               <TableContent
