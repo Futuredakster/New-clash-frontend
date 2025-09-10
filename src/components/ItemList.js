@@ -373,7 +373,10 @@ const handleResumeSetup = async (item) => {
                         {accountId === item.account_id ? (
                           <button 
                             className="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
-                            onClick={() =>seeDivision(item.tournament_name,item.tournament_id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              seeDivision(item.tournament_name,item.tournament_id);
+                            }}
                             style={{borderRadius: '20px'}}
                           > 
                             <i className="fas fa-eye me-2"></i>
@@ -389,7 +392,10 @@ const handleResumeSetup = async (item) => {
                         {accountId === item.account_id ? (
                           <button 
                             className="btn btn-outline-danger btn-sm d-inline-flex align-items-center" 
-                            onClick={() => onDelete(item.tournament_id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete(item.tournament_id);
+                            }}
                             style={{borderRadius: '20px'}}
                             title="Delete Tournament"
                           >
@@ -406,7 +412,10 @@ const handleResumeSetup = async (item) => {
                         {item.is_published === false ? (
                           <button 
                             className="btn btn-outline-warning btn-sm d-inline-flex align-items-center" 
-                            onClick={() => onPublish(item.tournament_id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onPublish(item.tournament_id);
+                            }}
                             style={{borderRadius: '20px'}}
                           >
                             <i className="fas fa-paper-plane me-2"></i>
@@ -526,7 +535,10 @@ const handleResumeSetup = async (item) => {
                   {accountId === item.account_id ? (
                     <button 
                       className="btn btn-modern btn-sm w-100" 
-                      onClick={() =>seeDivision(item.tournament_name,item.tournament_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        seeDivision(item.tournament_name,item.tournament_id);
+                      }}
                     > 
                       <i className="fas fa-eye me-1"></i>
                       <span className="d-none d-sm-inline">View </span>Divisions
@@ -544,7 +556,10 @@ const handleResumeSetup = async (item) => {
                   {item.is_published === false ? (
                     <button 
                       className="btn btn-outline-primary btn-sm w-100" 
-                      onClick={() => onPublish(item.tournament_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onPublish(item.tournament_id);
+                      }}
                     >
                       <i className="fas fa-paper-plane me-1"></i>Publish
                     </button>
@@ -558,7 +573,10 @@ const handleResumeSetup = async (item) => {
                   {accountId === item.account_id ? (
                     <button 
                       className="btn btn-outline-danger btn-sm w-100" 
-                      onClick={() => onDelete(item.tournament_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(item.tournament_id);
+                      }}
                       title="Delete Tournament"
                     >
                       <i className="fas fa-trash me-1"></i>
