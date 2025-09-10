@@ -55,7 +55,7 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
   };
 
   const getConnectorColor = (stepId) => {
-    return completedSteps.includes(stepId) ? 'bg-success' : 'bg-light';
+    return completedSteps.includes(stepId) ? 'bg-success' : 'bg-secondary';
   };
 
   return (
