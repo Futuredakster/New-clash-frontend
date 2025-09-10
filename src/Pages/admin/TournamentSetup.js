@@ -248,7 +248,7 @@ const TournamentSetup = () => {
   };
 
   return (
-    <Container fluid className="fade-in px-3">
+    <Container fluid className={`fade-in ${currentStep === 2 ? 'px-1' : 'px-3'}`}>
       <Helmet>
         <title>{getStepTitle()} - Tournament Setup</title>
         <meta name="description" content="Multi-step tournament setup wizard" />
@@ -282,7 +282,7 @@ const TournamentSetup = () => {
           )}
 
           {/* Step Content */}
-          <Card className="card-modern">
+          <Card className="card-modern" style={currentStep === 2 ? {width: '100%'} : {}}>
             <Card.Header className="card-modern-header">
               <div className="d-flex align-items-center">
                 <div>
@@ -290,8 +290,10 @@ const TournamentSetup = () => {
                 </div>
               </div>
             </Card.Header>
-            <Card.Body className="card-modern-body p-4">
-              {renderCurrentStep()}
+            <Card.Body className={`card-modern-body ${currentStep === 2 ? 'p-2' : 'p-4'}`} style={currentStep === 2 ? {width: '100%'} : {}}>
+              <div style={currentStep === 2 ? {width: '100%'} : {}}>
+                {renderCurrentStep()}
+              </div>
             </Card.Body>
           </Card>
         </Col>

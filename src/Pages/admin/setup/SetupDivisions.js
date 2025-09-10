@@ -401,7 +401,7 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
 
       {/* Show existing divisions if any */}
       {existingDivisions.length > 0 && (
-        <div className="card mb-4">
+        <div className="card mb-4" style={{width: '100%', margin: '0 auto'}}>
           <div className="card-header">
             <h6 className="mb-0">
               <i className="fas fa-list me-2"></i>
@@ -409,15 +409,15 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
             </h6>
           </div>
           <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
+            <div style={{width: '100%', overflowX: 'auto'}}>
+              <table className="table table-hover mb-0" style={{width: '100%', tableLayout: 'fixed'}}>
                 <thead className="table-light">
                   <tr>
-                    <th>Age Group</th>
-                    <th>Proficiency</th>
-                    <th>Gender</th>
-                    <th>Category</th>
-                    <th className="text-center">Actions</th>
+                    <th style={{width: '20%'}}>Age Group</th>
+                    <th style={{width: '25%'}}>Proficiency</th>
+                    <th style={{width: '20%'}}>Gender</th>
+                    <th style={{width: '20%'}}>Category</th>
+                    <th className="text-center" style={{width: '15%'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -507,19 +507,19 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
 
           {/* Preview uploaded divisions */}
           {divisions.length > 0 && (
-            <div className="card mb-3">
+            <div className="card mb-3" style={{width: '100%', margin: '0 auto'}}>
               <div className="card-header">
                 <h5 className="mb-0">Preview - {divisions.length} Divisions</h5>
               </div>
-              <div className="card-body" style={{ maxHeight: '400px', overflowY: 'auto' }}>
-                <div className="table-responsive">
-                  <table className="table table-sm table-hover">
+              <div className="card-body p-0" style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <div style={{width: '100%', overflowX: 'auto'}}>
+                  <table className="table table-sm table-hover" style={{width: '100%', tableLayout: 'fixed'}}>
                     <thead className="table-light">
                       <tr>
-                        <th>Age Group</th>
-                        <th>Proficiency</th>
-                        <th>Gender</th>
-                        <th>Category</th>
+                        <th style={{width: '25%'}}>Age Group</th>
+                        <th style={{width: '30%'}}>Proficiency</th>
+                        <th style={{width: '20%'}}>Gender</th>
+                        <th style={{width: '25%'}}>Category</th>
                       </tr>
                     </thead>
                     <tbody>
