@@ -215,6 +215,26 @@ const handleResumeSetup = async (item) => {
   
   return (
     <div className="w-100">
+      {/* Add styles for clickable rows */}
+      <style jsx>{`
+        .table-row-clickable:hover {
+          background-color: #f8f9fa !important;
+          border-left: 4px solid #0d6efd !important;
+          transform: translateX(2px);
+          transition: all 0.2s ease;
+        }
+        
+        .mobile-card-clickable:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+          border-left: 4px solid #0d6efd !important;
+          transition: all 0.2s ease;
+        }
+        
+        .mobile-card-clickable {
+          transition: all 0.2s ease;
+        }
+      `}</style>
       {/* Desktop Table View */}
       <div className="d-none d-lg-block" style={{width: '100%'}}>
         <div className="card border-0 shadow-sm" style={{width: '100%', maxWidth: 'none'}}>
@@ -242,20 +262,34 @@ const handleResumeSetup = async (item) => {
                     <th className="border-0 py-3 text-center" style={{width: '15%', minWidth: '130px'}}>
                       <i className="fas fa-layer-group me-2 text-muted"></i>Divisions
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '80px'}}>
+                    <th className="border-0 py-3 text-center" style={{width: '15%', minWidth: '100px'}}>
                       <i className="fas fa-cog me-2 text-muted"></i>Actions
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '100px'}}>
+                    <th className="border-0 py-3 pe-4 text-center" style={{width: '20%', minWidth: '100px'}}>
                       <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
-                    </th>
-                    <th className="border-0 py-3 pe-4 text-center" style={{width: '15%', minWidth: '120px'}}>
-                      <i className="fas fa-magic me-2 text-muted"></i>Setup
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {items.map((item, index) => (
-                    <tr key={index} className="slide-up align-middle" style={{borderLeft: '4px solid transparent'}}>
+                  {items.map((item, index) => {
+                    const setupState = tournamentSetupStates.get(item.tournament_id);
+                    const isClickable = accountId === item.account_id && setupState && setupState.nextStep !== 'completed';
+                    
+                    return (
+                    <tr 
+                      key={index} 
+                      className={`slide-up align-middle ${isClickable ? 'table-row-clickable' : ''}`}
+                      style={{
+                        borderLeft: '4px solid transparent',
+                        cursor: isClickable ? 'pointer' : 'default'
+                      }}
+                      onClick={() => {
+                        if (isClickable) {
+                          handleResumeSetup(item);
+                        }
+                      }}
+                      title={isClickable ? `Click to continue setup: ${setupState.stepName}` : ''}
+                    >
                       <td className="py-4 ps-4">
                         <div className="d-flex align-items-center">
                           <div className="me-3">
@@ -274,7 +308,28 @@ const handleResumeSetup = async (item) => {
                             )}
                           </div>
                           <div>
-                            <div className="fw-bold text-dark mb-1">{item.tournament_name}</div>
+                            <div className="d-flex align-items-center mb-1">
+                              <div className="fw-bold text-dark me-2">{item.tournament_name}</div>
+                              {(() => {
+                                const setupState = tournamentSetupStates.get(item.tournament_id);
+                                if (setupState && setupState.nextStep !== 'completed' && accountId === item.account_id) {
+                                  return (
+                                    <span className="badge bg-primary" style={{fontSize: '10px', padding: '2px 6px'}}>
+                                      <i className="fas fa-mouse-pointer me-1" style={{fontSize: '8px'}}></i>
+                                      Click to Setup
+                                    </span>
+                                  );
+                                } else if (setupState && setupState.nextStep === 'completed') {
+                                  return (
+                                    <span className="badge bg-success" style={{fontSize: '10px', padding: '2px 6px'}}>
+                                      <i className="fas fa-check me-1" style={{fontSize: '8px'}}></i>
+                                      Complete
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </div>
                             <small className="text-muted">
                               <i className="fas fa-calendar me-1"></i>
                               {item.signup_duedate ? new Date(item.signup_duedate).toLocaleDateString() : 'No deadline set'}
@@ -330,7 +385,7 @@ const handleResumeSetup = async (item) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-4 text-center" onClick={(e) => e.stopPropagation()}>
                         {accountId === item.account_id ? (
                           <button 
                             className="btn btn-outline-danger btn-sm d-inline-flex align-items-center" 
@@ -347,7 +402,7 @@ const handleResumeSetup = async (item) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-4 pe-4 text-center" onClick={(e) => e.stopPropagation()}>
                         {item.is_published === false ? (
                           <button 
                             className="btn btn-outline-warning btn-sm d-inline-flex align-items-center" 
@@ -363,42 +418,9 @@ const handleResumeSetup = async (item) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 pe-4 text-center">
-                        {accountId === item.account_id ? (
-                          (() => {
-                            const setupState = tournamentSetupStates.get(item.tournament_id);
-                            if (!setupState) {
-                              return <span className="text-muted small">Loading...</span>;
-                            }
-                            
-                            if (setupState.nextStep === 'completed') {
-                              return (
-                                <span className="badge bg-success d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
-                                  <i className="fas fa-check-circle me-2"></i>Complete
-                                </span>
-                              );
-                            }
-                            
-                            return (
-                              <button 
-                                className="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
-                                onClick={() => handleResumeSetup(item)}
-                                style={{borderRadius: '20px'}}
-                                title={`Continue with: ${setupState.stepName}`}
-                              >
-                                <i className="fas fa-magic me-2"></i>
-                                <span>{setupState.stepName}</span>
-                              </button>
-                            );
-                          })()
-                        ) : (
-                          <span className="text-muted small d-inline-flex align-items-center">
-                            <i className="fas fa-lock me-1"></i>Restricted
-                          </span>
-                        )}
-                      </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -408,8 +430,24 @@ const handleResumeSetup = async (item) => {
 
       {/* Mobile Card View */}
       <div className="d-lg-none">
-        {items.map((item, index) => (
-          <div key={index} className="card mobile-tournament-card slide-up">
+        {items.map((item, index) => {
+          const setupState = tournamentSetupStates.get(item.tournament_id);
+          const isClickable = accountId === item.account_id && setupState && setupState.nextStep !== 'completed';
+          
+          return (
+          <div 
+            key={index} 
+            className={`card mobile-tournament-card slide-up ${isClickable ? 'mobile-card-clickable' : ''}`}
+            style={{
+              cursor: isClickable ? 'pointer' : 'default'
+            }}
+            onClick={() => {
+              if (isClickable) {
+                handleResumeSetup(item);
+              }
+            }}
+            title={isClickable ? `Tap to continue setup: ${setupState.stepName}` : ''}
+          >
             {/* Card Header */}
             <div className="mobile-tournament-header">
               <div className="row align-items-center g-3">
@@ -427,7 +465,28 @@ const handleResumeSetup = async (item) => {
                   )}
                 </div>
                 <div className="col">
-                  <h6 className="mobile-tournament-title">{item.tournament_name}</h6>
+                  <div className="d-flex align-items-center mb-1">
+                    <h6 className="mobile-tournament-title me-2 mb-0">{item.tournament_name}</h6>
+                    {(() => {
+                      const setupState = tournamentSetupStates.get(item.tournament_id);
+                      if (setupState && setupState.nextStep !== 'completed' && accountId === item.account_id) {
+                        return (
+                          <span className="badge bg-primary" style={{fontSize: '9px', padding: '2px 4px'}}>
+                            <i className="fas fa-hand-pointer me-1" style={{fontSize: '7px'}}></i>
+                            Tap to Setup
+                          </span>
+                        );
+                      } else if (setupState && setupState.nextStep === 'completed') {
+                        return (
+                          <span className="badge bg-success" style={{fontSize: '9px', padding: '2px 4px'}}>
+                            <i className="fas fa-check me-1" style={{fontSize: '7px'}}></i>
+                            Complete
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
                   <div className="mobile-tournament-dates">
                     <div className="col-12">
                       <i className="fas fa-calendar-start me-1"></i>
@@ -481,7 +540,7 @@ const handleResumeSetup = async (item) => {
               </div>
               
               <div className="row g-2 mt-2">
-                <div className="col-4">
+                <div className="col-6">
                   {item.is_published === false ? (
                     <button 
                       className="btn btn-outline-primary btn-sm w-100" 
@@ -495,40 +554,7 @@ const handleResumeSetup = async (item) => {
                     </button>
                   )}
                 </div>
-                <div className="col-4">
-                  {accountId === item.account_id ? (
-                    (() => {
-                      const setupState = tournamentSetupStates.get(item.tournament_id);
-                      if (!setupState) {
-                        return <button className="btn btn-outline-secondary btn-sm w-100" disabled>Loading...</button>;
-                      }
-                      
-                      if (setupState.nextStep === 'completed') {
-                        return (
-                          <button className="btn btn-outline-success btn-sm w-100" disabled>
-                            <i className="fas fa-check me-1"></i>Complete
-                          </button>
-                        );
-                      }
-                      
-                      return (
-                        <button 
-                          className="btn btn-outline-primary btn-sm w-100" 
-                          onClick={() => handleResumeSetup(item)}
-                          title={`Continue with: ${setupState.stepName}`}
-                        >
-                          <i className="fas fa-magic me-1"></i>
-                          Setup
-                        </button>
-                      );
-                    })()
-                  ) : (
-                    <button className="btn btn-outline-secondary btn-sm w-100" disabled>
-                      <i className="fas fa-lock me-1"></i>Restricted
-                    </button>
-                  )}
-                </div>
-                <div className="col-4">
+                <div className="col-6">
                   {accountId === item.account_id ? (
                     <button 
                       className="btn btn-outline-danger btn-sm w-100" 
@@ -547,7 +573,8 @@ const handleResumeSetup = async (item) => {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       
       {items.length === 0 && (
