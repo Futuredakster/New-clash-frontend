@@ -1,17 +1,10 @@
 import axios from 'axios';
-import Dropdown from 'react-bootstrap/Dropdown';
 import { useState, useEffect } from 'react';
-import CustomModal from './modals/CustomModal';
 import { useNavigate } from "react-router-dom";
 import { link } from './constant';
 
 const ItemList = ({ items, accountId }) => {
   const accessToken = localStorage.getItem("accessToken");
-  const [showModal, setShowModal] = useState(false);
-  const [selectedTournamentId, setSelectedTournamentId] = useState(null);
-  const [openStates, setOpenStates] = useState(Array(items.length).fill(false));
-  const [startingTournament, setStartingTournament] = useState(null);
-  const [startedTournaments, setStartedTournaments] = useState(new Set());
   const [tournamentSetupStates, setTournamentSetupStates] = useState(new Map());
   const navigate = useNavigate();
 
@@ -42,7 +35,6 @@ const ItemList = ({ items, accountId }) => {
         const bracketResponse = await axios.get(`${link}/brackets/tournament-status/${tournamentId}`);
         if (bracketResponse.data?.hasbrackets) {
           // Tournament has been started, mark as completed
-          setStartedTournaments(prev => new Set(prev).add(tournamentId));
           return { nextStep: 'completed', stepName: 'Complete' };
         }
       } catch (error) {
@@ -120,24 +112,7 @@ const ItemList = ({ items, accountId }) => {
     }
   };
 
-  const handleShowModal = (tournamentId) => {
-    setSelectedTournamentId(tournamentId);
-    setShowModal(true);
-  };
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedTournamentId(null);
-  };
 
-  const handleDropdownItemClick = (index, action, ...args) => {
-    // Close the dropdown
-    const newOpenStates = [...openStates];
-    newOpenStates[index] = false;
-    setOpenStates(newOpenStates);
-    
-    // Execute the action
-    action(...args);
-  };
 const seeDivision = (tournamentName, tournamentId) =>{
   const queryString = new URLSearchParams({ tournament_name: tournamentName, tournament_id:tournamentId}).toString();
   navigate(`/seeDivisions?${queryString}`);
@@ -236,130 +211,6 @@ const handleResumeSetup = async (item) => {
       });
   };
 
-    const startTournament = async (tournament_id) => {
-      console.log('START TOURNAMENT clicked for tournament:', tournament_id);
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        alert('Access token not found. Please log in again.');
-        return;
-      }
-
-      // Prevent multiple clicks
-      if (startingTournament === tournament_id) {
-        console.log('Already starting tournament, ignoring click');
-        return;
-      }
-
-      // First check if tournament has participants by checking divisions
-      try {
-        console.log('Checking for participants before starting tournament...');
-        
-        // Get divisions for this tournament
-        const divisionsResponse = await axios.get(`${link}/divisions/`, {
-          headers: { accessToken: accessToken },
-          params: { tournament_id: tournament_id }
-        });
-
-        if (!divisionsResponse.data || divisionsResponse.data.length === 0) {
-          alert('Cannot start tournament: No divisions found. Please create divisions first.');
-          setStartingTournament(null);
-          return;
-        }
-
-        // Check each division for participants
-        let totalParticipants = 0;
-        for (const division of divisionsResponse.data) {
-          try {
-            const participantResponse = await axios.get(`${link}/participants/All`, {
-              headers: { accessToken: accessToken },
-              params: { division_id: division.division_id }
-            });
-            if (participantResponse.data && participantResponse.data.length > 0) {
-              totalParticipants += participantResponse.data.length;
-            }
-          } catch (divisionError) {
-            console.log(`No participants in division ${division.division_id}`);
-          }
-        }
-
-        if (totalParticipants === 0) {
-          alert('Cannot start tournament: No participants are registered. Please add participants to divisions before starting the tournament.');
-          setStartingTournament(null);
-          return;
-        }
-
-        console.log(`Found ${totalParticipants} participants across all divisions. Proceeding to start tournament...`);
-      } catch (participantError) {
-        console.error('Error checking participants:', participantError);
-        alert('Error checking participants. Please try again.');
-        setStartingTournament(null);
-        return;
-      }
-
-      console.log('Setting tournament as starting...');
-      setStartingTournament(tournament_id);
-
-      try {
-        console.log('Making API call to create brackets...');
-        const response = await axios.post(
-          `${link}/brackets/initial`,  
-          {
-            tournament_id: tournament_id,
-          },
-          {
-            headers: {
-              accessToken: accessToken,
-            },
-          }
-        );
-        console.log('API response:', response.data);
-        alert('Tournament started successfully');
-        setStartedTournaments(prev => new Set(prev).add(tournament_id));
-        
-        // Update setup state to show tournament is complete
-        setTournamentSetupStates(prev => {
-          const updated = new Map(prev);
-          updated.set(tournament_id, { nextStep: 'completed', stepName: 'Complete' });
-          return updated;
-        });
-        
-        setStartingTournament(null);
-        
-        // Find tournament name for redirect
-        const tournament = items.find(item => item.tournament_id === tournament_id);
-        const tournamentName = tournament?.tournament_name || '';
-        
-        // Redirect to SeeDivisions with workflow parameter
-        const queryString = new URLSearchParams({ 
-          tournament_name: tournamentName, 
-          tournament_id: tournament_id, 
-          workflow: 'tournament_started' 
-        }).toString();
-        navigate(`/seeDivisions?${queryString}`);
-      } catch (error) {
-        console.error('Error starting tournament:', error);
-        if (error.response?.data?.error) {
-          // Check if it's the duplicate brackets error
-          if (error.response.data.error.includes('already been created')) {
-            setStartedTournaments(prev => new Set(prev).add(tournament_id));
-            
-            // Update setup state to show tournament is complete
-            setTournamentSetupStates(prev => {
-              const updated = new Map(prev);
-              updated.set(tournament_id, { nextStep: 'completed', stepName: 'Complete' });
-              return updated;
-            });
-            
-            alert('Tournament brackets have already been created.');
-          } else {
-            alert(`Error: ${error.response.data.error}`);
-          }
-        } else {
-          alert('Failed to start tournament. Please try again.');
-        }
-        setStartingTournament(null); // Reset on error
-      }
-    }
   
   
   return (
@@ -397,11 +248,8 @@ const handleResumeSetup = async (item) => {
                     <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '100px'}}>
                       <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '10%', minWidth: '120px'}}>
+                    <th className="border-0 py-3 pe-4 text-center" style={{width: '15%', minWidth: '120px'}}>
                       <i className="fas fa-magic me-2 text-muted"></i>Setup
-                    </th>
-                    <th className="border-0 py-3 pe-4 text-center" style={{width: '10%', minWidth: '100px'}}>
-                      <i className="fas fa-play me-2 text-muted"></i>Controls
                     </th>
                   </tr>
                 </thead>
@@ -484,32 +332,15 @@ const handleResumeSetup = async (item) => {
                       </td>
                       <td className="py-4 text-center">
                         {accountId === item.account_id ? (
-                          <div className="dropdown-modern d-inline-block">
-                            <Dropdown show={openStates[index]} onToggle={(isOpen) => {
-                              const newOpenStates = [...openStates];
-                              newOpenStates[index] = isOpen;
-                              setOpenStates(newOpenStates);
-                            }}>
-                              <Dropdown.Toggle 
-                                variant="outline-secondary" 
-                                size="sm" 
-                                id={`dropdown-basic-${index}`}
-                                style={{borderRadius: '20px'}}
-                                className="d-flex align-items-center"
-                              >
-                                <i className="fas fa-ellipsis-h"></i>
-                              </Dropdown.Toggle>
-                              <Dropdown.Menu>
-                                <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
-                                  <i className="fas fa-edit me-2 text-primary"></i>Edit Tournament
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
-                                <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
-                                  <i className="fas fa-trash me-2"></i>Delete Tournament
-                                </Dropdown.Item>
-                              </Dropdown.Menu>
-                            </Dropdown>
-                          </div>
+                          <button 
+                            className="btn btn-outline-danger btn-sm d-inline-flex align-items-center" 
+                            onClick={() => onDelete(item.tournament_id)}
+                            style={{borderRadius: '20px'}}
+                            title="Delete Tournament"
+                          >
+                            <i className="fas fa-trash me-2"></i>
+                            <span>Delete</span>
+                          </button>
                         ) : (
                           <span className="text-muted small d-inline-flex align-items-center">
                             <i className="fas fa-ban me-1"></i>N/A
@@ -532,7 +363,7 @@ const handleResumeSetup = async (item) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-4 text-center">
+                      <td className="py-4 pe-4 text-center">
                         {accountId === item.account_id ? (
                           (() => {
                             const setupState = tournamentSetupStates.get(item.tournament_id);
@@ -564,47 +395,6 @@ const handleResumeSetup = async (item) => {
                           <span className="text-muted small d-inline-flex align-items-center">
                             <i className="fas fa-lock me-1"></i>Restricted
                           </span>
-                        )}
-                      </td>
-                      <td className="py-4 pe-4 text-center">
-                         {accountId === item.account_id ?  (
-                           startedTournaments.has(item.tournament_id) ? (
-                             <span className="badge bg-secondary d-inline-flex align-items-center" style={{borderRadius: '20px', padding: '8px 12px'}}>
-                               <i className="fas fa-check-circle me-2"></i>Already Started
-                             </span>
-                           ) : (
-                             <button 
-                               className="btn btn-danger d-inline-flex align-items-center fw-bold text-white" 
-                               onClick={()=> startTournament(item.tournament_id)}
-                               disabled={startingTournament === item.tournament_id}
-                               style={{
-                                 borderRadius: '25px',
-                                 fontSize: '0.95rem',
-                                 padding: '10px 20px',
-                                 boxShadow: '0 4px 15px rgba(220, 53, 69, 0.4)',
-                                 border: '2px solid #dc3545',
-                                 fontWeight: '700',
-                                 animation: startingTournament !== item.tournament_id ? 'pulse 2s infinite' : 'none',
-                                 background: 'linear-gradient(45deg, #dc3545, #ff6b7a)'
-                               }}
-                             >
-                               {startingTournament === item.tournament_id ? (
-                                 <>
-                                   <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                   <span>STARTING TOURNAMENT...</span>
-                                 </>
-                               ) : (
-                                 <>
-                                   <i className="fas fa-rocket me-2" style={{fontSize: '1.1em'}}></i>
-                                   <span>🚀 START TOURNAMENT</span>
-                                 </>
-                               )}
-                             </button>
-                           )
-                        ) : (
-                         <span className="text-muted small d-inline-flex align-items-center">
-                           <i className="fas fa-ban me-1"></i>N/A
-                         </span>
                         )}
                       </td>
                     </tr>
@@ -673,7 +463,7 @@ const handleResumeSetup = async (item) => {
             {/* Card Actions */}
             <div className="mobile-tournament-actions">
               <div className="row g-2">
-                <div className="col-6">
+                <div className="col-12">
                   {accountId === item.account_id ? (
                     <button 
                       className="btn btn-modern btn-sm w-100" 
@@ -686,48 +476,6 @@ const handleResumeSetup = async (item) => {
                     <button className="btn btn-outline-secondary btn-sm w-100" disabled>
                       <i className="fas fa-lock me-1"></i>Restricted
                     </button>
-                  )}
-                </div>
-                <div className="col-6">
-                  {accountId === item.account_id ?  (
-                    startedTournaments.has(item.tournament_id) ? (
-                      <button className="btn btn-outline-secondary btn-sm w-100" disabled>
-                        <i className="fas fa-check-circle me-1"></i>Started
-                      </button>
-                    ) : (
-                       <button 
-                         className="btn btn-danger w-100 fw-bold text-white" 
-                         onClick={()=> startTournament(item.tournament_id)}
-                         disabled={startingTournament === item.tournament_id}
-                         style={{
-                           borderRadius: '20px',
-                           fontSize: '0.9rem',
-                           padding: '8px 12px',
-                           boxShadow: '0 3px 10px rgba(220, 53, 69, 0.4)',
-                           border: '2px solid #dc3545',
-                           fontWeight: '700',
-                           background: 'linear-gradient(45deg, #dc3545, #ff6b7a)',
-                           animation: startingTournament !== item.tournament_id ? 'pulse 2s infinite' : 'none'
-                         }}
-                       >
-                         {startingTournament === item.tournament_id ? (
-                           <>
-                             <span className="spinner-border spinner-border-sm me-1" role="status"></span>
-                             <span>STARTING...</span>
-                           </>
-                         ) : (
-                           <>
-                             <i className="fas fa-rocket me-1"></i>
-                             <span className="d-none d-sm-inline">🚀 START</span>
-                             <span className="d-sm-none">🚀 START</span>
-                           </>
-                         )}
-                       </button>
-                    )
-                  ) : (
-                   <button className="btn btn-outline-secondary btn-sm w-100" disabled>
-                     <i className="fas fa-ban me-1"></i>N/A
-                   </button>
                   )}
                 </div>
               </div>
@@ -782,26 +530,14 @@ const handleResumeSetup = async (item) => {
                 </div>
                 <div className="col-4">
                   {accountId === item.account_id ? (
-                    <div className="dropdown-modern w-100">
-                      <Dropdown show={openStates[index]} onToggle={(isOpen) => {
-                        const newOpenStates = [...openStates];
-                        newOpenStates[index] = isOpen;
-                        setOpenStates(newOpenStates);
-                      }}>
-                        <Dropdown.Toggle variant="outline-dark" size="sm" className="w-100">
-                          <i className="fas fa-cog me-1"></i>
-                          <span className="d-none d-sm-inline">More </span>Actions
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          <Dropdown.Item onClick={() => handleDropdownItemClick(index, handleShowModal, item.tournament_id)}>
-                            <i className="fas fa-edit me-2"></i>Edit Tournament
-                          </Dropdown.Item>
-                          <Dropdown.Item onClick={() => handleDropdownItemClick(index, onDelete, item.tournament_id)} className="text-danger">
-                            <i className="fas fa-trash me-2"></i>Delete Tournament
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
+                    <button 
+                      className="btn btn-outline-danger btn-sm w-100" 
+                      onClick={() => onDelete(item.tournament_id)}
+                      title="Delete Tournament"
+                    >
+                      <i className="fas fa-trash me-1"></i>
+                      Delete
+                    </button>
                   ) : (
                     <button className="btn btn-outline-secondary btn-sm w-100" disabled>
                       <i className="fas fa-lock me-1"></i>Protected
@@ -822,15 +558,6 @@ const handleResumeSetup = async (item) => {
         </div>
       )}
       
-      {/* Modal rendered outside of loops to avoid conflicts */}
-      {selectedTournamentId && (
-        <CustomModal 
-          showModal={showModal} 
-          handleClose={handleCloseModal} 
-          accountId={accountId} 
-          tournament_id={selectedTournamentId} 
-        />
-      )}
     </div>
   );
 };
