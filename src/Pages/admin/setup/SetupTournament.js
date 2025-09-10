@@ -34,6 +34,7 @@ const SetupTournament = ({ tournamentData, onStepComplete, onError }) => {
     fetchTournamentData();
   }, [tournamentData?.tournament_id]);
 
+  // Create initial values that update when existingTournament changes
   const initialValues = {
     tournament_name: existingTournament?.tournament_name || tournamentData?.tournament_name || "",
     start_date: existingTournament?.start_date ? existingTournament.start_date.split('T')[0] : "",
@@ -205,7 +206,7 @@ const SetupTournament = ({ tournamentData, onStepComplete, onError }) => {
         )}
       </div>
 
-      <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema}>
+      <Formik initialValues={initialValues} onSubmit={onSubmit} validationSchema={validationSchema} enableReinitialize={true}>
         {(formik) => (
           <Form>
             <div className="form-group-modern">

@@ -51,9 +51,12 @@ const TournamentSetup = () => {
 
   // Update current step based on URL
   useEffect(() => {
+    console.log('URL step:', step);
     if (step && stepMapping[step]) {
+      console.log('Setting current step to:', stepMapping[step]);
       setCurrentStep(stepMapping[step]);
     } else {
+      console.log('No valid step found, redirecting to tournament');
       // Default to step 1 if no valid step in URL
       navigate('/tournament-setup/tournament', { replace: true });
     }
@@ -282,15 +285,8 @@ const TournamentSetup = () => {
           <Card className="card-modern">
             <Card.Header className="card-modern-header">
               <div className="d-flex align-items-center">
-                <div className="me-3">
-                  <div className="bg-primary rounded-circle d-flex align-items-center justify-content-center"
-                       style={{ width: '40px', height: '40px' }}>
-                    <span className="text-white fw-bold">{currentStep}</span>
-                  </div>
-                </div>
                 <div>
                   <h4 className="mb-0">{getStepTitle()}</h4>
-                  <small className="text-muted">{getStepDescription()}</small>
                 </div>
               </div>
             </Card.Header>

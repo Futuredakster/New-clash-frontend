@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 
 const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
   const navigate = useNavigate();
+  
+  console.log('ProgressBar received currentStep:', currentStep);
 
   const steps = [
     { id: 1, name: 'Tournament', icon: 'fas fa-trophy', route: 'tournament' },
@@ -34,10 +36,10 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
   };
 
   const getStepStatus = (step) => {
-    if (completedSteps.includes(step.id)) {
-      return 'completed';
-    } else if (step.id === currentStep) {
+    if (step.id === currentStep) {
       return 'current';
+    } else if (completedSteps.includes(step.id)) {
+      return 'completed';
     } else {
       return 'pending';
     }
@@ -85,13 +87,13 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
           return (
             <div key={step.id} className="d-flex flex-column align-items-center position-relative" style={{ zIndex: 2 }}>
               <div
-                className={`step-circle d-flex align-items-center justify-content-center rounded-circle border-2 ${getStepColor(status)} ${isClickable ? 'step-clickable' : ''}`}
+                className={`step-circle d-flex align-items-center justify-content-center rounded-circle border-2 ${getStepColor(status)} ${isClickable ? 'step-clickable' : ''} ${status === 'current' ? 'step-current' : ''} ${status === 'completed' ? 'step-completed' : ''}`}
                 style={{
-                  width: '48px',
-                  height: '48px',
+                  width: status === 'current' ? '75px' : '48px',
+                  height: status === 'current' ? '75px' : '48px',
                   cursor: isClickable ? 'pointer' : 'default',
                   transition: 'all 0.3s ease',
-                  boxShadow: status === 'current' ? '0 0 0 3px rgba(13, 110, 253, 0.25)' : 'none'
+                  boxShadow: status === 'current' ? '0 0 0 4px rgba(13, 110, 253, 0.3)' : 'none'
                 }}
                 onClick={() => handleStepClick(step)}
                 title={isClickable ? `Go to ${step.name}` : step.name}
@@ -99,7 +101,7 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
                 {status === 'completed' ? (
                   <i className="fas fa-check" style={{ fontSize: '18px' }}></i>
                 ) : (
-                  <i className={step.icon} style={{ fontSize: '16px' }}></i>
+                  <i className={step.icon} style={{ fontSize: status === 'current' ? '24px' : '16px' }}></i>
                 )}
               </div>
               <small 
@@ -123,6 +125,17 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
         }
         
+        .step-current {
+          width: 75px !important;
+          height: 75px !important;
+          transform: scale(1.0) !important;
+          border: 3px solid !important;
+        }
+        
+        .step-current:hover {
+          transform: scale(1.1) !important;
+        }
+        
         .progress-connector {
           transition: all 0.3s ease;
         }
@@ -131,6 +144,11 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
           .step-circle {
             width: 40px !important;
             height: 40px !important;
+          }
+          
+          .step-current {
+            width: 60px !important;
+            height: 60px !important;
           }
           
           .step-circle i {
