@@ -391,7 +391,7 @@ const handleResumeSetup = async (item) => {
                       <td className="py-4 text-center" onClick={(e) => e.stopPropagation()}>
                         {accountId === item.account_id ? (
                           <button 
-                            className="btn btn-outline-danger btn-sm d-inline-flex align-items-center" 
+                            className="btn btn-outline-danger btn-sm d-inline-flex align-items-center justify-content-center" 
                             onClick={(e) => {
                               e.stopPropagation();
                               onDelete(item.tournament_id);
@@ -572,7 +572,7 @@ const handleResumeSetup = async (item) => {
                 <div className="col-6">
                   {accountId === item.account_id ? (
                     <button 
-                      className="btn btn-outline-danger btn-sm w-100" 
+                      className="btn btn-outline-danger btn-sm w-100 d-flex align-items-center justify-content-center" 
                       onClick={(e) => {
                         e.stopPropagation();
                         onDelete(item.tournament_id);
