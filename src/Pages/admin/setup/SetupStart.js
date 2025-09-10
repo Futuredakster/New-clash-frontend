@@ -7,6 +7,7 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
   const [loading, setLoading] = useState(false);
   const [validationResults, setValidationResults] = useState(null);
   const [readyToStart, setReadyToStart] = useState(false);
+  const [tournamentStarted, setTournamentStarted] = useState(false);
 
   useEffect(() => {
     validateTournament();
@@ -110,6 +111,24 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
         results.readiness.warnings.push('No competitors assigned. You can add them later before starting matches.');
       }
 
+      // Check if tournament is already started by looking for existing brackets
+      try {
+        const bracketsResponse = await axios.get(`${link}/brackets/tournament-status/${tournamentData.tournament_id}`, {
+          headers: { accessToken: accessToken }
+        });
+        
+        const hasExistingBrackets = bracketsResponse.data?.hasbrackets || false;
+        setTournamentStarted(hasExistingBrackets);
+        
+        if (hasExistingBrackets) {
+          results.readiness.warnings.push('Tournament has already been started. Brackets exist for this tournament.');
+        }
+        
+      } catch (error) {
+        // If we can't check brackets, assume tournament is not started
+        setTournamentStarted(false);
+      }
+
       // Determine overall readiness
       results.readiness.canStart = results.readiness.errors.length === 0;
 
@@ -123,8 +142,16 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
   };
 
   const handleStartTournament = async () => {
-    if (!readyToStart) return;
+    console.log('handleStartTournament called');
+    console.log('readyToStart:', readyToStart);
+    console.log('tournamentStarted:', tournamentStarted);
+    
+    if (!readyToStart || tournamentStarted) {
+      console.log('Function exited early due to conditions');
+      return;
+    }
 
+    console.log('Starting tournament for ID:', tournamentData.tournament_id);
     setLoading(true);
 
     try {
@@ -149,6 +176,9 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
 
       console.log('Tournament started successfully:', response.data);
       
+      // Update state to show tournament is now started
+      setTournamentStarted(true);
+      
       // Complete the setup process
       onSetupComplete();
 
@@ -157,7 +187,8 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
       
       if (error.response?.data?.error) {
         if (error.response.data.error.includes('already been created')) {
-          // Tournament already started, still complete the setup
+          // Tournament already started, update state and complete setup
+          setTournamentStarted(true);
           onSetupComplete();
         } else {
           onError(`Error starting tournament: ${error.response.data.error}`);
@@ -422,18 +453,25 @@ const SetupStart = ({ tournamentData, onStepComplete, onSetupComplete, onError }
             Back
           </Button>
           <Button 
-            variant="danger" 
+            variant={tournamentStarted ? "success" : "danger"}
             onClick={handleStartTournament}
-            disabled={!readyToStart || loading}
+            disabled={!readyToStart || loading || tournamentStarted}
             className="fw-bold"
             style={{
-              boxShadow: readyToStart ? '0 4px 15px rgba(220, 53, 69, 0.4)' : 'none'
+              boxShadow: readyToStart && !tournamentStarted ? '0 4px 15px rgba(220, 53, 69, 0.4)' : 'none',
+              minWidth: '200px',
+              whiteSpace: 'nowrap'
             }}
           >
             {loading ? (
               <>
                 <Spinner as="span" animation="border" size="sm" className="me-2" />
                 Starting Tournament...
+              </>
+            ) : tournamentStarted ? (
+              <>
+                <i className="fas fa-check me-2"></i>
+                TOURNAMENT STARTED
               </>
             ) : (
               <>

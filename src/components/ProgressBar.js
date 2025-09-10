@@ -57,6 +57,7 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
   };
 
   const getConnectorColor = (stepId) => {
+    // Color the connector if the step it connects FROM is completed
     return completedSteps.includes(stepId) ? 'bg-success' : 'bg-secondary';
   };
 
@@ -68,7 +69,13 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
           <div className="d-flex">
             {steps.slice(0, -1).map((step, index) => (
               <div key={step.id} className="flex-grow-1 d-flex align-items-center">
-                <div className="flex-grow-1 mx-3">
+                <div 
+                  className="flex-grow-1" 
+                  style={{
+                    marginLeft: index === 0 ? '24px' : '12px',
+                    marginRight: index === steps.length - 2 ? '24px' : '12px'
+                  }}
+                >
                   <div 
                     className={`progress-connector ${getConnectorColor(step.id)}`}
                     style={{ height: '3px', borderRadius: '2px' }}
