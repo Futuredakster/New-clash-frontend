@@ -262,9 +262,9 @@ const Tolpbar = () => {
                                         <i className="fas fa-home me-1"></i>
                                         Dashboard
                                     </Nav.Link>
-                                    <Nav.Link as={Link} to="/CreateTournaments" className="text-dark">
-                                        <i className="fas fa-plus me-1"></i>
-                                        Create
+                                    <Nav.Link as={Link} to="/tournament-setup/tournament" className="text-dark">
+                                        <i className="fas fa-magic me-1"></i>
+                                        Setup Tournament
                                     </Nav.Link>
                                     <Dropdown align="end">
                                         <Dropdown.Toggle 
@@ -535,9 +535,9 @@ const Tolpbar = () => {
                                     {/* Tournament Management Section */}
                                     <div className="mobile-nav-section">
                                         <div className="mobile-nav-section-title">Karate Tournament Management</div>
-                                        <Link to="/CreateTournaments" className="mobile-nav-link" onClick={handleMobileMenuClose}>
-                                            <i className="fas fa-plus-circle me-3"></i>
-                                            Create Karate Tournament
+                                        <Link to="/tournament-setup/tournament" className="mobile-nav-link" onClick={handleMobileMenuClose}>
+                                            <i className="fas fa-magic me-3"></i>
+                                            Setup Tournament
                                         </Link>
                                         <Link to="/MyTournaments" className="mobile-nav-link" onClick={handleMobileMenuClose}>
                                             <i className="fas fa-list me-3"></i>
