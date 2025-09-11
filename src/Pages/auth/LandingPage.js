@@ -329,82 +329,90 @@ function LandingPage() {
             Demo Environment Created!
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body className="p-4">
-          <div className="text-center mb-4">
-            <div className="bg-light rounded p-3 mb-4">
+        <Modal.Body className="p-3" style={{maxHeight: '70vh', overflowY: 'auto'}}>
+          <div className="text-center mb-3">
+            <div className="bg-light rounded p-3 mb-3">
               <h5 className="text-success mb-3">
                 <i className="fas fa-key me-2"></i>
                 Demo Account Credentials
               </h5>
-              <Alert variant="info" className="mb-3">
+              <Alert variant="info" className="mb-3 py-2">
                 <strong>IMPORTANT:</strong> Save these credentials! You can test different user types.
               </Alert>
               
               {demoCredentials && (
-                <div className="accordion" id="credentialsAccordion">
+                <div className="accordion" id="credentialsAccordion" style={{width: '100%', maxWidth: '100%', overflow: 'hidden'}}>
                   {/* Tournament Host Account */}
-                  <div className="accordion-item">
+                  <div className="accordion-item" style={{width: '100%', overflow: 'hidden'}}>
                     <h2 className="accordion-header">
                       <button 
-                        className={`accordion-button ${activeAccordion !== 'host' ? 'collapsed' : ''}`}
+                        className={`accordion-button d-flex align-items-center ${activeAccordion !== 'host' ? 'collapsed' : ''}`}
                         type="button" 
                         onClick={() => setActiveAccordion(activeAccordion === 'host' ? '' : 'host')}
+                        style={{padding: '12px 16px', fontSize: '14px', wordWrap: 'break-word', overflowWrap: 'break-word'}}
                       >
-                        <i className="fas fa-user-tie me-2 text-primary"></i>
-                        <strong>Tournament Organizer Account</strong>
+                        <i className="fas fa-user-tie me-2 text-primary flex-shrink-0"></i>
+                        <strong style={{whiteSpace: 'normal', lineHeight: '1.3'}}>Tournament Organizer</strong>
                       </button>
                     </h2>
                     <div className={`accordion-collapse collapse ${activeAccordion === 'host' ? 'show' : ''}`}>
-                      <div className="accordion-body">
-                        <div className="row g-2">
-                          <div className="col-12 mb-2">
-                            <label className="form-label fw-bold small">Username:</label>
+                      <div className="accordion-body p-3">
+                        <div className="row g-3">
+                          <div className="col-12">
+                            <label className="form-label fw-bold small mb-1">Username:</label>
                             <div className="input-group input-group-sm">
                               <input 
                                 type="text" 
                                 className="form-control text-center fw-bold" 
                                 value={demoCredentials.tournament_host?.username || demoCredentials.username} 
                                 readOnly 
+                                style={{fontSize: '14px'}}
                               />
                               <button 
-                                className="btn btn-outline-secondary"
+                                className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                                 onClick={() => navigator.clipboard.writeText(demoCredentials.tournament_host?.username || demoCredentials.username)}
+                                style={{width: '40px'}}
+                                title="Copy to clipboard"
                               >
                                 <i className="fas fa-copy"></i>
                               </button>
                             </div>
                           </div>
-                          <div className="col-12 mb-2">
-                            <label className="form-label fw-bold small">Email:</label>
+                          <div className="col-12">
+                            <label className="form-label fw-bold small mb-1">Email:</label>
                             <div className="input-group input-group-sm">
                               <input 
                                 type="text" 
                                 className="form-control fw-bold" 
                                 value={demoCredentials.tournament_host?.email || demoCredentials.email} 
                                 readOnly 
-                                style={{ textAlign: 'left' }}
+                                style={{ textAlign: 'left', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis' }}
                               />
                               <button 
-                                className="btn btn-outline-secondary"
+                                className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                                 onClick={() => navigator.clipboard.writeText(demoCredentials.tournament_host?.email || demoCredentials.email)}
+                                style={{width: '40px'}}
+                                title="Copy to clipboard"
                               >
                                 <i className="fas fa-copy"></i>
                               </button>
                             </div>
                           </div>
-                          <div className="col-12 mb-2">
-                            <label className="form-label fw-bold small">Password:</label>
+                          <div className="col-12">
+                            <label className="form-label fw-bold small mb-1">Password:</label>
                             <div className="input-group input-group-sm">
                               <input 
                                 type="text" 
                                 className="form-control text-center fw-bold text-primary" 
                                 value={demoCredentials.tournament_host?.password || demoCredentials.password} 
                                 readOnly 
-                                style={{ letterSpacing: '2px' }}
+                                style={{ letterSpacing: '1px', fontSize: '14px' }}
                               />
                               <button 
-                                className="btn btn-outline-secondary"
+                                className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                                 onClick={() => navigator.clipboard.writeText(demoCredentials.tournament_host?.password || demoCredentials.password)}
+                                style={{width: '40px'}}
+                                title="Copy to clipboard"
                               >
                                 <i className="fas fa-copy"></i>
                               </button>
@@ -416,19 +424,20 @@ function LandingPage() {
                   </div>
 
                   {/* Parent Account */}
-                  <div className="accordion-item">
+                  <div className="accordion-item" style={{width: '100%', overflow: 'hidden'}}>
                     <h2 className="accordion-header">
                       <button 
-                        className={`accordion-button ${activeAccordion !== 'parent' ? 'collapsed' : ''}`}
+                        className={`accordion-button d-flex align-items-center ${activeAccordion !== 'parent' ? 'collapsed' : ''}`}
                         type="button" 
                         onClick={() => setActiveAccordion(activeAccordion === 'parent' ? '' : 'parent')}
+                        style={{padding: '12px 16px', fontSize: '14px', wordWrap: 'break-word', overflowWrap: 'break-word'}}
                       >
-                        <i className="fas fa-users me-2 text-success"></i>
-                        <strong>Parent Account</strong>
+                        <i className="fas fa-users me-2 text-success flex-shrink-0"></i>
+                        <strong style={{whiteSpace: 'normal', lineHeight: '1.3'}}>Parent Account</strong>
                       </button>
                     </h2>
                     <div className={`accordion-collapse collapse ${activeAccordion === 'parent' ? 'show' : ''}`}>
-                      <div className="accordion-body">
+                      <div className="accordion-body p-3">
                         {demoCredentials.sample_parent && (
                           <>
                             <div className="mb-3">
@@ -438,18 +447,20 @@ function LandingPage() {
                               </div>
                             </div>
                             <div className="mb-2">
-                              <label className="form-label fw-bold small">Email:</label>
+                              <label className="form-label fw-bold small mb-1">Email:</label>
                               <div className="input-group input-group-sm">
                                 <input 
                                   type="text" 
                                   className="form-control fw-bold" 
                                   value={demoCredentials.sample_parent.email} 
                                   readOnly 
-                                  style={{ textAlign: 'left' }}
+                                  style={{ textAlign: 'left', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis' }}
                                 />
                                 <button 
-                                  className="btn btn-outline-secondary"
+                                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                                   onClick={() => navigator.clipboard.writeText(demoCredentials.sample_parent.email)}
+                                  style={{width: '40px'}}
+                                  title="Copy to clipboard"
                                 >
                                   <i className="fas fa-copy"></i>
                                 </button>
@@ -466,19 +477,20 @@ function LandingPage() {
                   </div>
 
                   {/* Participant Account */}
-                  <div className="accordion-item">
+                  <div className="accordion-item" style={{width: '100%', overflow: 'hidden'}}>
                     <h2 className="accordion-header">
                       <button 
-                        className={`accordion-button ${activeAccordion !== 'participant' ? 'collapsed' : ''}`}
+                        className={`accordion-button d-flex align-items-center ${activeAccordion !== 'participant' ? 'collapsed' : ''}`}
                         type="button" 
                         onClick={() => setActiveAccordion(activeAccordion === 'participant' ? '' : 'participant')}
+                        style={{padding: '12px 16px', fontSize: '14px', wordWrap: 'break-word', overflowWrap: 'break-word'}}
                       >
-                        <i className="fas fa-user-graduate me-2 text-warning"></i>
-                        <strong>Participant Account</strong>
+                        <i className="fas fa-user-graduate me-2 text-warning flex-shrink-0"></i>
+                        <strong style={{whiteSpace: 'normal', lineHeight: '1.3'}}>Participant Account</strong>
                       </button>
                     </h2>
                     <div className={`accordion-collapse collapse ${activeAccordion === 'participant' ? 'show' : ''}`}>
-                      <div className="accordion-body">
+                      <div className="accordion-body p-3">
                         {demoCredentials.sample_participant && (
                           <>
                             <div className="mb-3">
@@ -488,18 +500,20 @@ function LandingPage() {
                               </div>
                             </div>
                             <div className="mb-2">
-                              <label className="form-label fw-bold small">Email:</label>
+                              <label className="form-label fw-bold small mb-1">Email:</label>
                               <div className="input-group input-group-sm">
                                 <input 
                                   type="text" 
                                   className="form-control fw-bold" 
                                   value={demoCredentials.sample_participant.email} 
                                   readOnly 
-                                  style={{ textAlign: 'left' }}
+                                  style={{ textAlign: 'left', fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis' }}
                                 />
                                 <button 
-                                  className="btn btn-outline-secondary"
+                                  className="btn btn-outline-secondary d-flex align-items-center justify-content-center"
                                   onClick={() => navigator.clipboard.writeText(demoCredentials.sample_participant.email)}
+                                  style={{width: '40px'}}
+                                  title="Copy to clipboard"
                                 >
                                   <i className="fas fa-copy"></i>
                                 </button>
@@ -542,13 +556,15 @@ function LandingPage() {
             </div>
           </div>
         </Modal.Body>
-        <Modal.Footer className="d-flex justify-content-between">
+        <Modal.Footer className="d-flex justify-content-between align-items-center">
           <Button 
             variant="secondary" 
             onClick={() => setShowDemoModal(false)}
+            className="d-flex align-items-center"
+            style={{height: '40px', minWidth: '120px'}}
           >
             <i className="fas fa-bookmark me-2"></i>
-            Save for Later
+            <span>Save for Later</span>
           </Button>
           <div className="d-flex gap-2">
             <Button 
@@ -557,18 +573,20 @@ function LandingPage() {
                 setShowDemoModal(false);
                 navigate('/LoginTypeSelector');
               }}
-              className="px-3"
+              className="d-flex align-items-center justify-content-center px-3"
+              style={{height: '40px', minWidth: '180px', whiteSpace: 'nowrap'}}
             >
               <i className="fas fa-users me-2"></i>
-              Parent/Participant Login
+              <span>Parent/Participant</span>
             </Button>
             <Button 
               variant="success" 
               onClick={handleLoginWithDemo}
-              className="px-4"
+              className="d-flex align-items-center justify-content-center px-4"
+              style={{height: '40px', minWidth: '140px', whiteSpace: 'nowrap'}}
             >
               <i className="fas fa-user-tie me-2"></i>
-              Host Login
+              <span>Host Login</span>
             </Button>
           </div>
         </Modal.Footer>
