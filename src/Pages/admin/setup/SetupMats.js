@@ -168,13 +168,28 @@ const SetupMats = ({ tournamentData, onStepComplete, onError }) => {
           <div className="row g-3">
             {matNames.slice(0, matCount).map((name, index) => (
               <div key={index} className="col-md-6 col-lg-4">
-                <div className="p-3 bg-light rounded text-center">
-                  <div className="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center text-white mb-2"
-                       style={{ width: '40px', height: '40px' }}>
-                    <i className="fas fa-map-marker-alt"></i>
+                <div 
+                  className="p-3 rounded text-center position-relative"
+                  style={{
+                    background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                    border: '8px solid #dc2626',
+                    boxShadow: '0 4px 12px rgba(220, 38, 38, 0.3)',
+                    color: 'white'
+                  }}
+                >
+                  <div 
+                    className="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                    style={{ 
+                      width: '50px', 
+                      height: '50px',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      border: '2px solid rgba(255, 255, 255, 0.3)'
+                    }}
+                  >
+                    <i className="fas fa-map-marker-alt text-white" style={{fontSize: '20px'}}></i>
                   </div>
-                  <div className="fw-bold">{name}</div>
-                  <small className="text-muted">Competition Area {index + 1}</small>
+                  <div className="fw-bold text-white" style={{fontSize: '16px'}}>{name}</div>
+                  <small className="text-white-50">Competition Area {index + 1}</small>
                 </div>
               </div>
             ))}
