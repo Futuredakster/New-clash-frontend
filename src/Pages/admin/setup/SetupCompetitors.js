@@ -194,24 +194,24 @@ const SetupCompetitors = ({ tournamentData, onStepComplete, onError }) => {
 
       {/* Divisions List */}
       {divisions.length > 0 ? (
-        <Card className="mb-4">
+        <Card className="mb-4" style={{width: '100%'}}>
           <Card.Header>
             <h6 className="mb-0">
               <i className="fas fa-list me-2"></i>
               Tournament Divisions ({divisions.length})
             </h6>
           </Card.Header>
-          <Card.Body className="p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
+          <Card.Body className="p-0" style={{width: '100%'}}>
+            <div style={{width: '100%', overflowX: 'auto'}}>
+              <table className="table table-hover mb-0" style={{width: '100%', tableLayout: 'fixed'}}>
                 <thead className="table-light">
                   <tr>
-                    <th>Division</th>
-                    <th className="text-center">Age Group</th>
-                    <th className="text-center">Level</th>
-                    <th className="text-center">Category</th>
-                    <th className="text-center">Competitors</th>
-                    <th className="text-center">Action</th>
+                    <th style={{width: '30%'}}>Division</th>
+                    <th className="text-center" style={{width: '12%'}}>Age Group</th>
+                    <th className="text-center" style={{width: '15%'}}>Level</th>
+                    <th className="text-center" style={{width: '12%'}}>Category</th>
+                    <th className="text-center" style={{width: '13%'}}>Competitors</th>
+                    <th className="text-center" style={{width: '18%'}}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
