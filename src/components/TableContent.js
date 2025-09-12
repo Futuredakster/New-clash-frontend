@@ -1,13 +1,12 @@
 import ItemList from './ItemList';
 const TableContent = ({items,accountId}) => {
     return(
-        <main>
-       
+        <main style={{width: '100%'}}>
             <ItemList
                 items={items}
                 accountId={accountId}
             />
-    </main>
+        </main>
     )
 }
 

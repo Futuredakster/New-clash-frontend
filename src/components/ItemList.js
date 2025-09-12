@@ -247,7 +247,7 @@ const handleResumeSetup = async (item) => {
           </div>
           <div className="card-body p-0">
             <div className="table-responsive" style={{width: '100%'}}>
-              <table className="table table-hover mb-0" style={{width: '100%', minWidth: '100%', tableLayout: 'auto'}}>
+              <table className="table table-hover mb-0" style={{width: '100%', minWidth: '100%', tableLayout: 'fixed'}}>
                 <thead className="bg-light">
                   <tr>
                     <th className="border-0 py-3 ps-4" style={{width: '25%', minWidth: '200px'}}>
