@@ -64,24 +64,18 @@ const generateCompleteBracketStructure = (totalParticipants, actualRounds) => {
 
 export const printBracket = (tournamentData, division_id) => {
   const printHTML = generatePrintHTML(tournamentData, division_id);
-  
+
   const printWindow = window.open('', '_blank');
   printWindow.document.write(printHTML);
   printWindow.document.close();
-  
-  // Wait for content to load, then setup canvas and print
+
+  // Wait for content to load, then setup canvas connections only
   printWindow.onload = () => {
     // Call the canvas setup function in the print window with SAME timing as screen
     setTimeout(() => {
       if (printWindow.setupConnections) {
         printWindow.setupConnections();
       }
-      
-      // Print after canvas setup completes - same delay as screen
-      setTimeout(() => {
-        printWindow.print();
-        printWindow.close();
-      }, 800);
     }, 300);
   };
 };
@@ -98,18 +92,51 @@ const generatePrintHTML = (data, division_id) => {
       <head>
         <title>Tournament Bracket - Division ${division_id}</title>
         ${getBracketPrintStyles()}
+        <style>
+          @media print {
+            .print-controls {
+              display: none !important;
+            }
+          }
+        </style>
       </head>
       <body>
         <div class="print-header">
           <h1>Tournament Bracket - Division ${division_id}</h1>
           <div style="margin-top: 10px;">
-            <strong>Total Matches:</strong> ${stats?.totalMatches || 0} | 
-            <strong>Completed:</strong> ${stats?.completedMatches || 0} | 
+            <strong>Total Matches:</strong> ${stats?.totalMatches || 0} |
+            <strong>Completed:</strong> ${stats?.completedMatches || 0} |
             <strong>Remaining:</strong> ${stats?.remainingMatches || 0}
           </div>
-          ${lastRefresh ? `<div style="font-size: 10px; color: #666; margin-top: 10px;">Printed: ${lastRefresh.toLocaleString()}</div>` : ''}
+          ${lastRefresh ? `<div style="font-size: 10px; color: #666; margin-top: 10px;">Last Updated: ${lastRefresh.toLocaleString()}</div>` : ''}
+
+          <div class="print-controls" style="margin: 20px 0; text-align: center;">
+            <button id="printButton" onclick="window.print()" style="
+              background: #007bff;
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              font-size: 16px;
+              border-radius: 5px;
+              cursor: pointer;
+              margin-right: 10px;
+            ">
+              🖨️ Print Bracket
+            </button>
+            <button onclick="window.close()" style="
+              background: #6c757d;
+              color: white;
+              border: none;
+              padding: 12px 24px;
+              font-size: 16px;
+              border-radius: 5px;
+              cursor: pointer;
+            ">
+              ✕ Close
+            </button>
+          </div>
         </div>
-        
+
         ${bracketHTML}
         
         <script>

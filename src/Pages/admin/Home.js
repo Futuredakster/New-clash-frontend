@@ -3,7 +3,7 @@ import axios from 'axios';
 import Searchbar from '../../components/navigation/Searchbar';
 import TableContent from '../../components/TableContent';
 import {AuthContext} from '../../context/AuthContext';
-import { Container, Row, Col, Card, Button } from 'react-bootstrap';
+import { Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { link } from '../../constant';
 
@@ -52,9 +52,7 @@ function Home() {
 
 
   return (
-    <Container fluid className="fade-in px-3">
-      <Row>
-        <Col>
+    <div className="fade-in px-2 px-md-4 w-100">
           <div className="page-header-modern">
             <h1 className="page-title-modern">Karate Tournament Dashboard</h1>
             <p className="page-subtitle-modern">Manage and view all your karate tournaments</p>
@@ -74,9 +72,7 @@ function Home() {
               />
             </div>
           </div>
-        </Col>
-      </Row>
-    </Container>
+    </div>
   );
 }
 

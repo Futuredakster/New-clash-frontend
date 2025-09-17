@@ -65,22 +65,14 @@ const ProgressBar = ({ currentStep, completedSteps, tournamentData }) => {
     <div className="progress-bar-modern mb-4">
       <div className="d-flex justify-content-between align-items-center position-relative">
         {/* Progress Line */}
-        <div className="position-absolute w-100" style={{ top: '24px', left: '0', right: '0', zIndex: 1 }}>
+        <div className="position-absolute" style={{ top: '24px', left: '24px', right: '24px', zIndex: 1 }}>
           <div className="d-flex">
             {steps.slice(0, -1).map((step, index) => (
-              <div key={step.id} className="flex-grow-1 d-flex align-items-center">
-                <div 
-                  className="flex-grow-1" 
-                  style={{
-                    marginLeft: index === 0 ? '24px' : '12px',
-                    marginRight: index === steps.length - 2 ? '24px' : '12px'
-                  }}
-                >
-                  <div 
-                    className={`progress-connector ${getConnectorColor(step.id)}`}
-                    style={{ height: '3px', borderRadius: '2px' }}
-                  ></div>
-                </div>
+              <div key={step.id} className="flex-grow-1">
+                <div
+                  className={`progress-connector ${getConnectorColor(step.id)}`}
+                  style={{ height: '3px', borderRadius: '2px' }}
+                ></div>
               </div>
             ))}
           </div>

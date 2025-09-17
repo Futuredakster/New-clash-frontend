@@ -753,7 +753,7 @@ const SeeDivisions = () => {
                 <h5 className="mb-0 d-flex align-items-center">
                   <i className="fas fa-layer-group me-2 text-primary"></i>
                   Tournament Divisions
-                  <span className="badge bg-light text-dark ms-2">{data.length}</span>
+                  <span className="badge bg-light text-dark ms-2">{data.length} division{data.length !== 1 ? 's' : ''}</span>
                 </h5>
               </div>
               <div className="card-body p-0">

@@ -214,7 +214,7 @@ const handleResumeSetup = async (item) => {
   
   
   return (
-    <div className="w-100">
+    <div className="fade-in px-2 px-md-4 w-100">
       {/* Add styles for clickable rows */}
       <style jsx>{`
         .table-row-clickable:hover {
@@ -236,36 +236,36 @@ const handleResumeSetup = async (item) => {
         }
       `}</style>
       {/* Desktop Table View */}
-      <div className="d-none d-lg-block" style={{width: '100%'}}>
-        <div className="card border-0 shadow-sm" style={{width: '100%', maxWidth: 'none'}}>
-          <div className="card-header bg-white border-0 py-3" style={{paddingTop: '1rem'}}>
+      <div className="d-none d-lg-block">
+        <div className="card border-0 shadow-sm">
+          <div className="card-header bg-white border-0 py-3">
             <h5 className="mb-0 d-flex align-items-center">
               <i className="fas fa-trophy me-2 text-primary"></i>
               Tournaments Overview
-              <span className="badge bg-light text-dark ms-2" style={{verticalAlign: 'baseline', lineHeight: '1'}}>{items.length}</span>
+              <span className="badge bg-light text-dark ms-2">{items.length} tournament{items.length !== 1 ? 's' : ''}</span>
             </h5>
           </div>
           <div className="card-body p-0">
-            <div className="table-responsive" style={{width: '100%'}}>
-              <table className="table table-hover mb-0" style={{width: '100%', minWidth: '100%', tableLayout: 'fixed'}}>
+            <div className="table-responsive">
+              <table className="table table-hover table-modern mb-0 w-100">
                 <thead className="bg-light">
                   <tr>
-                    <th className="border-0 py-3 ps-4" style={{width: '25%', minWidth: '200px'}}>
+                    <th className="border-0 py-3 ps-4" style={{width: '25%'}}>
                       <i className="fas fa-calendar-alt me-2 text-muted"></i>Tournament
                     </th>
-                    <th className="border-0 py-3" style={{width: '15%', minWidth: '120px'}}>
+                    <th className="border-0 py-3" style={{width: '15%'}}>
                       <i className="fas fa-play-circle me-2 text-muted"></i>Start Date
                     </th>
-                    <th className="border-0 py-3" style={{width: '15%', minWidth: '120px'}}>
+                    <th className="border-0 py-3" style={{width: '15%'}}>
                       <i className="fas fa-stop-circle me-2 text-muted"></i>End Date
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '15%', minWidth: '130px'}}>
+                    <th className="border-0 py-3 text-center" style={{width: '15%'}}>
                       <i className="fas fa-layer-group me-2 text-muted"></i>Divisions
                     </th>
-                    <th className="border-0 py-3 text-center" style={{width: '15%', minWidth: '100px'}}>
+                    <th className="border-0 py-3 text-center" style={{width: '15%'}}>
                       <i className="fas fa-cog me-2 text-muted"></i>Actions
                     </th>
-                    <th className="border-0 py-3 pe-4 text-center" style={{width: '20%', minWidth: '100px'}}>
+                    <th className="border-0 py-3 pe-4 text-center" style={{width: '15%'}}>
                       <i className="fas fa-broadcast-tower me-2 text-muted"></i>Status
                     </th>
                   </tr>
@@ -371,16 +371,16 @@ const handleResumeSetup = async (item) => {
                       </td>
                       <td className="py-4 text-center">
                         {accountId === item.account_id ? (
-                          <button 
-                            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center" 
+                          <button
+                            className="btn btn-outline-primary btn-sm d-inline-flex align-items-center"
                             onClick={(e) => {
                               e.stopPropagation();
                               seeDivision(item.tournament_name,item.tournament_id);
                             }}
                             style={{borderRadius: '20px'}}
-                          > 
-                            <i className="fas fa-eye me-2"></i>
-                            <span>View Divisions</span>
+                          >
+                            <i className="fas fa-cog me-2"></i>
+                            <span>Manage Tournament</span>
                           </button>
                         ):( 
                           <span className="text-muted small d-inline-flex align-items-center">
@@ -533,15 +533,15 @@ const handleResumeSetup = async (item) => {
               <div className="row g-2">
                 <div className="col-12">
                   {accountId === item.account_id ? (
-                    <button 
-                      className="btn btn-modern btn-sm w-100" 
+                    <button
+                      className="btn btn-modern btn-sm w-100"
                       onClick={(e) => {
                         e.stopPropagation();
                         seeDivision(item.tournament_name,item.tournament_id);
                       }}
-                    > 
-                      <i className="fas fa-eye me-1"></i>
-                      <span className="d-none d-sm-inline">View </span>Divisions
+                    >
+                      <i className="fas fa-cog me-1"></i>
+                      <span className="d-none d-sm-inline">Manage </span>Tournament
                     </button>
                   ):( 
                     <button className="btn btn-outline-secondary btn-sm w-100" disabled>
