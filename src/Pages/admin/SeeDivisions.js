@@ -402,8 +402,8 @@ const SeeDivisions = () => {
         params.search = searchTerm.trim();
       }
 
-      // Get divisions
-      const divisionsResponse = await axios.get(`${link}/divisions/`, {
+      // Get divisions in tournament order
+      const divisionsResponse = await axios.get(`${link}/divisions/tournament-order`, {
         headers: { accessToken: accessToken },
         params: params,
       });
@@ -419,7 +419,8 @@ const SeeDivisions = () => {
         params: { tournament_id: tournament_id }
       });
 
-      const divisions = divisionsResponse.data;
+      const tournamentOrderData = divisionsResponse.data;
+      const divisions = tournamentOrderData.tournament_order || [];
       const mats = matsResponse.data;
 
       // Create mat lookup
@@ -428,10 +429,10 @@ const SeeDivisions = () => {
         matLookup[mat.mat_id] = mat.mat_name;
       });
 
-      // Enrich divisions with mat names
+      // Enrich divisions with mat names (divisions already contain mat_name from tournament-order endpoint)
       const enrichedDivisions = divisions.map(division => ({
         ...division,
-        mat_name: division.mat_id ? matLookup[division.mat_id] : null
+        mat_name: division.mat_name || (division.mat_id ? matLookup[division.mat_id] : null)
       }));
 
       setData(enrichedDivisions);
