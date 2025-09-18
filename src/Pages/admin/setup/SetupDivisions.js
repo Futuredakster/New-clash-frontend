@@ -3,8 +3,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { Row, Col, Button, Alert, Modal } from "react-bootstrap";
-import { Upload, FileSpreadsheet, Download, Plus } from 'lucide-react';
+import { Upload, FileSpreadsheet, Download, Plus, Move } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { link } from '../../../constant';
 import DivisionModal from '../../../components/modals/DivisionModal';
 
@@ -17,6 +18,8 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
   const [loading, setLoading] = useState(false);
   const [showDivisionModal, setShowDivisionModal] = useState(false);
   const [selectedDivisionId, setSelectedDivisionId] = useState(null);
+  const [hasCustomOrder, setHasCustomOrder] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
 
   const initialValues = {
     age_group: "",
@@ -49,13 +52,18 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
         const accessToken = localStorage.getItem("accessToken");
         if (!accessToken) return;
 
-        const response = await axios.get(`${link}/divisions/`, {
+        const response = await axios.get(`${link}/divisions/tournament-order`, {
           headers: { accessToken: accessToken },
           params: { tournament_id: tournamentData.tournament_id }
         });
 
-        if (response.data && response.data.length > 0) {
-          setExistingDivisions(response.data);
+        if (response.data && response.data.tournament_order && response.data.tournament_order.length > 0) {
+          const orderedDivisions = response.data.tournament_order;
+          setExistingDivisions(orderedDivisions);
+
+          // Check if any divisions have custom ordering
+          const hasCustomOrdering = orderedDivisions.some(div => div.custom_order !== null);
+          setHasCustomOrder(hasCustomOrdering);
         }
       } catch (error) {
         console.error('Error fetching existing divisions:', error);
@@ -258,13 +266,18 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
           const accessToken = localStorage.getItem("accessToken");
           if (!accessToken) return;
 
-          const response = await axios.get(`${link}/divisions/`, {
+          const response = await axios.get(`${link}/divisions/tournament-order`, {
             headers: { accessToken: accessToken },
             params: { tournament_id: tournamentData.tournament_id }
           });
 
-          if (response.data && response.data.length > 0) {
-            setExistingDivisions(response.data);
+          if (response.data && response.data.tournament_order && response.data.tournament_order.length > 0) {
+            const orderedDivisions = response.data.tournament_order;
+            setExistingDivisions(orderedDivisions);
+
+            // Check if any divisions have custom ordering
+            const hasCustomOrdering = orderedDivisions.some(div => div.custom_order !== null);
+            setHasCustomOrder(hasCustomOrdering);
           }
         } catch (error) {
           console.error('Error refreshing divisions:', error);
@@ -314,14 +327,100 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
     }
   };
 
+  // Handle drag and drop reordering
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+
+    const items = Array.from(existingDivisions);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Update local state immediately for better UX
+    setExistingDivisions(items);
+    setHasCustomOrder(true);
+
+    try {
+      setIsReordering(true);
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        onError("Access token not found. Please log in again.");
+        return;
+      }
+
+      // Create array of division updates with custom_order
+      const divisionUpdates = items.map((division, index) => ({
+        division_id: division.division_id,
+        custom_order: index + 1
+      }));
+
+      await axios.patch(`${link}/divisions/order`, {
+        divisions: divisionUpdates
+      }, {
+        headers: { accessToken: accessToken }
+      });
+
+      console.log("Division order updated successfully");
+
+    } catch (error) {
+      console.error("Error updating division order:", error);
+      onError("Failed to update division order. Please try again.");
+
+      // Revert local state on error
+      setExistingDivisions(existingDivisions);
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
+  // Reset to algorithmic ordering
+  const handleResetOrder = async () => {
+    if (!window.confirm("Reset to algorithmic ordering? This will discard your custom division order.")) {
+      return;
+    }
+
+    try {
+      setIsReordering(true);
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) {
+        onError("Access token not found. Please log in again.");
+        return;
+      }
+
+      await axios.patch(`${link}/divisions/reset-order`, {
+        tournament_id: tournamentData.tournament_id
+      }, {
+        headers: { accessToken: accessToken }
+      });
+
+      // Refresh divisions to show algorithmic ordering
+      const response = await axios.get(`${link}/divisions/tournament-order`, {
+        headers: { accessToken: accessToken },
+        params: { tournament_id: tournamentData.tournament_id }
+      });
+
+      if (response.data && response.data.tournament_order) {
+        setExistingDivisions(response.data.tournament_order);
+        setHasCustomOrder(false);
+      }
+
+      console.log("Division order reset to algorithmic sorting");
+
+    } catch (error) {
+      console.error("Error resetting division order:", error);
+      onError("Failed to reset division order. Please try again.");
+    } finally {
+      setIsReordering(false);
+    }
+  };
+
   const handleContinueToNext = () => {
     const totalDivisions = existingDivisions.length + createdDivisions.length + divisions.length;
-    
+
     if (totalDivisions === 0) {
       onError("Please create at least one division before continuing.");
       return;
     }
-    
+
     // Complete this step
     onStepComplete(2, {
       divisions_created: totalDivisions
@@ -402,69 +501,124 @@ const SetupDivisions = ({ tournamentData, onStepComplete, onError }) => {
       {/* Show existing divisions if any */}
       {existingDivisions.length > 0 && (
         <div className="card mb-4" style={{width: '100%', margin: '0 auto'}}>
-          <div className="card-header">
+          <div className="card-header d-flex justify-content-between align-items-center">
             <h6 className="mb-0">
               <i className="fas fa-list me-2"></i>
               Existing Divisions ({existingDivisions.length})
+              {hasCustomOrder && (
+                <span className="badge bg-primary ms-2" title="Custom ordering active">
+                  <Move size={12} className="me-1" />
+                  Manual Order
+                </span>
+              )}
+              {!hasCustomOrder && (
+                <span className="badge bg-secondary ms-2" title="Using algorithmic ordering">
+                  <i className="fas fa-magic me-1"></i>
+                  Auto Order
+                </span>
+              )}
             </h6>
+            <div className="d-flex gap-2">
+              {hasCustomOrder && (
+                <button
+                  className="btn btn-outline-secondary btn-sm"
+                  onClick={handleResetOrder}
+                  disabled={isReordering}
+                  title="Reset to algorithmic ordering"
+                >
+                  <i className="fas fa-undo me-1"></i>
+                  Reset Order
+                </button>
+              )}
+              <small className="text-muted align-self-center">
+                <Move size={14} className="me-1" />
+                Drag to reorder
+              </small>
+            </div>
           </div>
           <div className="card-body p-0">
             <div style={{width: '100%', overflowX: 'auto'}}>
-              <table className="table table-hover mb-0" style={{width: '100%', tableLayout: 'fixed'}}>
-                <thead className="table-light">
-                  <tr>
-                    <th style={{width: '20%'}}>Age Group</th>
-                    <th style={{width: '25%'}}>Proficiency</th>
-                    <th style={{width: '20%'}}>Gender</th>
-                    <th style={{width: '20%'}}>Category</th>
-                    <th className="text-center" style={{width: '15%'}}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {existingDivisions.map((division, index) => (
-                    <tr key={division.division_id}>
-                      <td>
-                        <span className="badge bg-warning text-dark">{division.age_group}</span>
-                      </td>
-                      <td>
-                        <span className={`badge ${
-                          division.proficiency_level === 'Beginner' ? 'bg-success' :
-                          division.proficiency_level === 'Intermediate' ? 'bg-warning text-dark' :
-                          'bg-danger'
-                        }`}>
-                          {division.proficiency_level}
-                        </span>
-                      </td>
-                      <td>
-                        <span className="badge bg-info">{division.gender}</span>
-                      </td>
-                      <td>
-                        <span className="badge bg-secondary">{division.category}</span>
-                      </td>
-                      <td className="text-center">
-                        <div className="btn-group" role="group">
-                          <button
-                            className="btn btn-outline-primary btn-sm"
-                            onClick={() => handleShowDivisionModal(division.division_id)}
-                            disabled={loading}
-                            title="Update Division"
-                          >
-                            <i className="fas fa-edit"></i>
-                          </button>
-                          <button
-                            className="btn btn-outline-danger btn-sm"
-                            onClick={() => handleDeleteDivision(division)}
-                            disabled={loading}
-                            title="Delete Division"
-                          >
-                            <i className="fas fa-trash"></i>
-                          </button>
-                        </div>
-                      </td>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <table className="table table-hover mb-0" style={{width: '100%', tableLayout: 'fixed'}}>
+                  <thead className="table-light">
+                    <tr>
+                      <th style={{width: '5%'}}></th>
+                      <th style={{width: '20%'}}>Age Group</th>
+                      <th style={{width: '25%'}}>Proficiency</th>
+                      <th style={{width: '20%'}}>Gender</th>
+                      <th style={{width: '20%'}}>Category</th>
+                      <th className="text-center" style={{width: '10%'}}>Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <Droppable droppableId="divisions">
+                    {(provided) => (
+                      <tbody {...provided.droppableProps} ref={provided.innerRef}>
+                        {existingDivisions.map((division, index) => (
+                          <Draggable
+                            key={division.division_id}
+                            draggableId={division.division_id.toString()}
+                            index={index}
+                          >
+                            {(provided, snapshot) => (
+                              <tr
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  backgroundColor: snapshot.isDragging ? '#f8f9fa' : 'transparent',
+                                }}
+                              >
+                                <td {...provided.dragHandleProps} className="text-center">
+                                  <Move size={16} className="text-muted" style={{ cursor: 'grab' }} />
+                                </td>
+                                <td>
+                                  <span className="badge bg-warning text-dark">{division.age_group}</span>
+                                </td>
+                                <td>
+                                  <span className={`badge ${
+                                    division.proficiency_level === 'Beginner' ? 'bg-success' :
+                                    division.proficiency_level === 'Intermediate' ? 'bg-warning text-dark' :
+                                    'bg-danger'
+                                  }`}>
+                                    {division.proficiency_level}
+                                  </span>
+                                </td>
+                                <td>
+                                  <span className="badge bg-info">{division.gender}</span>
+                                </td>
+                                <td>
+                                  <span className="badge bg-secondary">{division.category}</span>
+                                </td>
+                                <td className="text-center">
+                                  <div className="btn-group" role="group">
+                                    <button
+                                      className="btn btn-outline-primary btn-sm"
+                                      onClick={() => handleShowDivisionModal(division.division_id)}
+                                      disabled={loading || isReordering}
+                                      title="Update Division"
+                                    >
+                                      <i className="fas fa-edit"></i>
+                                    </button>
+                                    <button
+                                      className="btn btn-outline-danger btn-sm"
+                                      onClick={() => handleDeleteDivision(division)}
+                                      disabled={loading || isReordering}
+                                      title="Delete Division"
+                                    >
+                                      <i className="fas fa-trash"></i>
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </tbody>
+                    )}
+                  </Droppable>
+                </table>
+              </DragDropContext>
             </div>
           </div>
         </div>
