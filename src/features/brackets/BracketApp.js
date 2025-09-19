@@ -12,11 +12,19 @@ const TournamentBracket = () => {
   const [bracketCount, setBracketCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [lastRefresh, setLastRefresh] = useState(null);
+  const [divisionData, setDivisionData] = useState(null);
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const division_id = queryParams.get('division_id') || '';
   const navigate = useNavigate();
+
+  // Fetch division data on component mount
+  useEffect(() => {
+    if (division_id) {
+      fetchDivisionData();
+    }
+  }, [division_id]);
 
   // Refresh bracket data when component mounts or when coming back from other pages
   useEffect(() => {
@@ -55,6 +63,20 @@ const TournamentBracket = () => {
       }
     };
   }, [division_id, bracketData.length]);
+
+  // Fetch division data to determine category (Kata vs Kumite)
+  const fetchDivisionData = async () => {
+    if (!division_id) return;
+
+    try {
+      const response = await axios.get(`${link}/divisions/single`, {
+        params: { division_id }
+      });
+      setDivisionData(response.data);
+    } catch (error) {
+      console.error('Error fetching division data:', error);
+    }
+  };
 
   // Separate function to fetch brackets (without creating new ones)
   const fetchBrackets = async (isBackground = false) => {
@@ -456,6 +478,22 @@ const TournamentBracket = () => {
     return newStats;
   }, [bracketData, rounds]);
 
+  // Function to set Kata winner
+  const setKataWinner = async (bracket_id, winner) => {
+    try {
+      await axios.patch(`${link}/brackets/setKataWinner`, {
+        bracket_id,
+        winner
+      });
+
+      // Refresh brackets to show updated state
+      await fetchBrackets();
+      console.log(`Kata winner set: ${winner} for bracket ${bracket_id}`);
+    } catch (error) {
+      console.error('Error setting Kata winner:', error);
+    }
+  };
+
   const renderMatchCard = (bracket, roundNumber) => {
     const isWinner1 = bracket.winner === 'user1';
     const isWinner2 = bracket.winner === 'user2';
@@ -526,17 +564,53 @@ const TournamentBracket = () => {
 
           <div className="match-actions">
             <div className="d-grid">
-              <Button
-                variant="primary"
-                size="sm"
-                className="btn-modern mb-2"
-                onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
-                disabled={isBye}
-              >
-                <i className="fas fa-edit me-1"></i>
-                <span className="button-text">{isComplete ? 'Update Score' : 'Manage Score'}</span>
-              </Button>
-              
+              {divisionData?.category === 'Kata' ? (
+                // Kata buttons - declare winner directly
+                !hasWinner && !isBye ? (
+                  <div className="d-flex flex-column gap-2 mb-2">
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="btn-modern"
+                      onClick={() => setKataWinner(bracket.bracket_id, 'user1')}
+                      disabled={loading}
+                    >
+                      <i className="fas fa-crown me-1"></i>
+                      <span className="button-text">{bracket.user1} Wins</span>
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="btn-modern"
+                      onClick={() => setKataWinner(bracket.bracket_id, 'user2')}
+                      disabled={loading}
+                    >
+                      <i className="fas fa-crown me-1"></i>
+                      <span className="button-text">{bracket.user2} Wins</span>
+                    </Button>
+                  </div>
+                ) : hasWinner ? (
+                  <div className="mb-2 text-center">
+                    <Badge bg="success" className="p-2">
+                      <i className="fas fa-trophy me-1"></i>
+                      Kata Complete
+                    </Badge>
+                  </div>
+                ) : null
+              ) : (
+                // Kumite button - use PointTracker
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="btn-modern mb-2"
+                  onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
+                  disabled={isBye}
+                >
+                  <i className="fas fa-edit me-1"></i>
+                  <span className="button-text">{isComplete ? 'Update Score' : 'Manage Score'}</span>
+                </Button>
+              )}
+
               <div className="d-flex">
                 <Button
                   variant="success"
@@ -548,7 +622,7 @@ const TournamentBracket = () => {
                   <i className="fas fa-video me-1"></i>
                   <span className="button-text">Stream</span>
                 </Button>
-                
+
                 <Button
                   variant="outline-danger"
                   size="sm"
@@ -576,9 +650,22 @@ const TournamentBracket = () => {
             <h1 className="page-title-modern">
               <i className="fas fa-trophy me-3"></i>
               Tournament Bracket
+              {divisionData && (
+                <Badge
+                  bg={divisionData.category === 'Kata' ? 'warning' : 'info'}
+                  className="ms-3 fs-6"
+                  text={divisionData.category === 'Kata' ? 'dark' : 'white'}
+                >
+                  <i className={`fas ${divisionData.category === 'Kata' ? 'fa-meditation' : 'fa-fist-raised'} me-1`}></i>
+                  {divisionData.category}
+                </Badge>
+              )}
             </h1>
             <p className="page-subtitle-modern text-muted">
-              Manage and view tournament matches
+              {divisionData?.category === 'Kata'
+                ? 'Judge Kata performances and declare winners'
+                : 'Manage Kumite matches with point scoring'
+              }
               {lastRefresh && (
                 <small className="d-block mt-2 text-muted">
                   <i className="fas fa-clock me-1"></i>

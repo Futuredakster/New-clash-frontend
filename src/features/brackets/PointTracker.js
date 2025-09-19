@@ -21,6 +21,15 @@ const PointTracker = () => {
   const [winUser1, setWinUser1] = useState(false);
   const [winUser2, setWinUser2] = useState(false);
 
+  // Penalty and SENSHU state
+  const [penalties1, setPenalties1] = useState(0);
+  const [penalties2, setPenalties2] = useState(0);
+  const [penaltyLevel1, setPenaltyLevel1] = useState(null);
+  const [penaltyLevel2, setPenaltyLevel2] = useState(null);
+  const [senshuUser1, setSenshuUser1] = useState(false);
+  const [senshuUser2, setSenshuUser2] = useState(false);
+  const [firstScorer, setFirstScorer] = useState(null);
+
   const toggleTimer = () => {
     if (isRunning) {
       clearInterval(timerRef.current);
@@ -111,6 +120,15 @@ const PointTracker = () => {
       setWinUser1(fetchedBrackets.win_user1 || false);
       setWinUser2(fetchedBrackets.win_user2 || false);
 
+      // Update penalty and SENSHU data
+      setPenalties1(fetchedBrackets.penalties_user1 || 0);
+      setPenalties2(fetchedBrackets.penalties_user2 || 0);
+      setPenaltyLevel1(fetchedBrackets.penalty_level_user1 || null);
+      setPenaltyLevel2(fetchedBrackets.penalty_level_user2 || null);
+      setSenshuUser1(fetchedBrackets.senshu_user1 || false);
+      setSenshuUser2(fetchedBrackets.senshu_user2 || false);
+      setFirstScorer(fetchedBrackets.first_scorer || null);
+
     } catch (error) {
       console.error("Error updating points:", error);
     }
@@ -133,6 +151,15 @@ const PointTracker = () => {
         // Set the win flags
         setWinUser1(fetchedBrackets.win_user1 || false);
         setWinUser2(fetchedBrackets.win_user2 || false);
+
+        // Set penalty and SENSHU data
+        setPenalties1(fetchedBrackets.penalties_user1 || 0);
+        setPenalties2(fetchedBrackets.penalties_user2 || 0);
+        setPenaltyLevel1(fetchedBrackets.penalty_level_user1 || null);
+        setPenaltyLevel2(fetchedBrackets.penalty_level_user2 || null);
+        setSenshuUser1(fetchedBrackets.senshu_user1 || false);
+        setSenshuUser2(fetchedBrackets.senshu_user2 || false);
+        setFirstScorer(fetchedBrackets.first_scorer || null);
 
       } catch (error) {
         console.error("Error fetching brackets:", error);
@@ -170,6 +197,83 @@ const PointTracker = () => {
     updatePoints("user2", newPoints);
   };
 
+  // Penalty management functions
+  const addPenalty = async (user) => {
+    try {
+      const response = await axios.patch(`${link}/brackets/addPenalty`, {
+        bracket_id,
+        user
+      });
+
+      if (response.data.autoWin) {
+        alert(`${response.data.winner} wins by ${response.data.reason}!`);
+      }
+
+      // Refresh bracket data
+      const refreshResponse = await axios.get(`${link}/brackets/One`, {
+        params: { bracket_id },
+      });
+      const fetchedBrackets = refreshResponse.data;
+
+      // Update all state
+      setPenalties1(fetchedBrackets.penalties_user1 || 0);
+      setPenalties2(fetchedBrackets.penalties_user2 || 0);
+      setPenaltyLevel1(fetchedBrackets.penalty_level_user1 || null);
+      setPenaltyLevel2(fetchedBrackets.penalty_level_user2 || null);
+      setWinUser1(fetchedBrackets.win_user1 || false);
+      setWinUser2(fetchedBrackets.win_user2 || false);
+
+    } catch (error) {
+      console.error("Error adding penalty:", error);
+    }
+  };
+
+  const removePenalty = async (user) => {
+    try {
+      await axios.patch(`${link}/brackets/removePenalty`, {
+        bracket_id,
+        user
+      });
+
+      // Refresh bracket data
+      const refreshResponse = await axios.get(`${link}/brackets/One`, {
+        params: { bracket_id },
+      });
+      const fetchedBrackets = refreshResponse.data;
+
+      // Update penalty state
+      setPenalties1(fetchedBrackets.penalties_user1 || 0);
+      setPenalties2(fetchedBrackets.penalties_user2 || 0);
+      setPenaltyLevel1(fetchedBrackets.penalty_level_user1 || null);
+      setPenaltyLevel2(fetchedBrackets.penalty_level_user2 || null);
+
+    } catch (error) {
+      console.error("Error removing penalty:", error);
+    }
+  };
+
+  // Helper function to render penalty circles
+  const renderPenaltyCircles = (penalties) => {
+    const circles = [];
+    for (let i = 0; i < 4; i++) {
+      circles.push(
+        <span
+          key={i}
+          style={{
+            display: 'inline-block',
+            width: '20px',
+            height: '20px',
+            borderRadius: '50%',
+            backgroundColor: i < penalties ? '#ffc107' : 'transparent',
+            border: '2px solid #ffc107',
+            margin: '0 2px'
+          }}
+        />
+      );
+    }
+    return circles;
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -180,22 +284,92 @@ const PointTracker = () => {
       {/* Red Half */}
       <div className="w-50 bg-danger d-flex flex-column justify-content-center align-items-center">
         {winUser1 && <h4 className="winner-text">🏆 Winner</h4>}
-        <h2 style={{ color: 'white' }}>{user1}</h2>
+
+        <h2 style={{ color: 'white' }}>
+          {user1} {senshuUser1 && <span style={{ color: '#ffd700' }}>⭐</span>}
+        </h2>
+
         <h3 style={{ color: 'white' }}>Points: {points1}</h3>
-        <div>
+
+        {/* Penalty indicators */}
+        <div style={{ marginBottom: '10px' }}>
+          <div style={{ color: 'white', fontSize: '14px', marginBottom: '5px' }}>
+            Penalties: {renderPenaltyCircles(penalties1)}
+          </div>
+          {penaltyLevel1 && (
+            <div style={{ color: '#ffc107', fontSize: '12px', fontWeight: 'bold' }}>
+              Status: {penaltyLevel1}
+            </div>
+          )}
+        </div>
+
+        {/* Point controls */}
+        <div style={{ marginBottom: '10px' }}>
           <button onClick={addPoints1} style={{ margin: '5px' }}>+1 Point</button>
           <button onClick={subtractPoints1} style={{ margin: '5px' }}>-1 Point</button>
+        </div>
+
+        {/* Penalty controls */}
+        <div>
+          <button
+            onClick={() => addPenalty("user1")}
+            style={{ margin: '2px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#ffc107', color: '#000' }}
+          >
+            +Penalty
+          </button>
+          <button
+            onClick={() => removePenalty("user1")}
+            style={{ margin: '2px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#6c757d', color: '#fff' }}
+            disabled={penalties1 <= 0}
+          >
+            -Penalty
+          </button>
         </div>
       </div>
 
       {/* Blue Half */}
       <div className="w-50 bg-primary d-flex flex-column justify-content-center align-items-center">
         {winUser2 && <h4 className="winner-text">🏆 Winner</h4>}
-        <h2 style={{ color: 'white' }}>{user2}</h2>
+
+        <h2 style={{ color: 'white' }}>
+          {user2} {senshuUser2 && <span style={{ color: '#ffd700' }}>⭐</span>}
+        </h2>
+
         <h3 style={{ color: 'white' }}>Points: {points2}</h3>
-        <div>
+
+        {/* Penalty indicators */}
+        <div style={{ marginBottom: '10px' }}>
+          <div style={{ color: 'white', fontSize: '14px', marginBottom: '5px' }}>
+            Penalties: {renderPenaltyCircles(penalties2)}
+          </div>
+          {penaltyLevel2 && (
+            <div style={{ color: '#ffc107', fontSize: '12px', fontWeight: 'bold' }}>
+              Status: {penaltyLevel2}
+            </div>
+          )}
+        </div>
+
+        {/* Point controls */}
+        <div style={{ marginBottom: '10px' }}>
           <button onClick={addPoints2} style={{ margin: '5px' }}>+1 Point</button>
           <button onClick={subtractPoints2} style={{ margin: '5px' }}>-1 Point</button>
+        </div>
+
+        {/* Penalty controls */}
+        <div>
+          <button
+            onClick={() => addPenalty("user2")}
+            style={{ margin: '2px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#ffc107', color: '#000' }}
+          >
+            +Penalty
+          </button>
+          <button
+            onClick={() => removePenalty("user2")}
+            style={{ margin: '2px', padding: '5px 10px', fontSize: '12px', backgroundColor: '#6c757d', color: '#fff' }}
+            disabled={penalties2 <= 0}
+          >
+            -Penalty
+          </button>
         </div>
       </div>
 
