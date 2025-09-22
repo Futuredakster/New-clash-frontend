@@ -20,6 +20,7 @@ import {AuthContext} from './context/AuthContext';
 import { RecoverPassword } from './components/RecoverPassword';
 import BracketApp from './features/brackets/BracketApp';
 import PointTracker from './features/brackets/PointTracker';
+import SpectatorView from './features/brackets/SpectatorView';
 import ParticipentVer from './Pages/participant/ParticipentVer';
 import TournamentView from './features/participant/TournamentView';
 import DivisionsView from './features/participant/DivisionsView';
@@ -191,6 +192,7 @@ useEffect(() => {
           <Route path ='ForgotPass' exact element = {<ForgotPass/>} />
           <Route path ='BracketApp' exact element = {<BracketApp/>} />
           <Route path ='PointTracker' exact element= {<PointTracker/>} />
+          <Route path ='SpectatorView' exact element= {<SpectatorView/>} />
           <Route path ='ParticipetnVer' exact element = {<ParticipentVer/>} />
           <Route path ='TournamentView' exact element = {<TournamentView/>} />
           <Route path ='DivisionsView' exact element = {<DivisionsView/>} />

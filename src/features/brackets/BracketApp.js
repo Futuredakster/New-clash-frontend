@@ -598,17 +598,29 @@ const TournamentBracket = () => {
                   </div>
                 ) : null
               ) : (
-                // Kumite button - use PointTracker
-                <Button
-                  variant="primary"
-                  size="sm"
-                  className="btn-modern mb-2"
-                  onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
-                  disabled={isBye}
-                >
-                  <i className="fas fa-edit me-1"></i>
-                  <span className="button-text">{isComplete ? 'Update Score' : 'Manage Score'}</span>
-                </Button>
+                // Kumite buttons - PointTracker and SpectatorView
+                <div className="d-flex flex-column gap-2 mb-2">
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="btn-modern"
+                    onClick={() => navigate(`/PointTracker?bracket_id=${bracket.bracket_id}`)}
+                    disabled={isBye}
+                  >
+                    <i className="fas fa-edit me-1"></i>
+                    <span className="button-text">{isComplete ? 'Update Score' : 'Manage Score'}</span>
+                  </Button>
+                  <Button
+                    variant="outline-info"
+                    size="sm"
+                    className="btn-modern"
+                    onClick={() => navigate(`/SpectatorView?bracket_id=${bracket.bracket_id}`)}
+                    disabled={isBye}
+                  >
+                    <i className="fas fa-eye me-1"></i>
+                    <span className="button-text">Spectator View</span>
+                  </Button>
+                </div>
               )}
 
               <div className="d-flex">
