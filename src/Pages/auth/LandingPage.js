@@ -78,10 +78,10 @@ function LandingPage() {
               </p>
 
               {/* Hero CTA Buttons */}
-              <div className="d-flex flex-column flex-sm-row gap-3 mb-4">
+              <div className="d-flex flex-column flex-sm-row gap-3 mb-4 align-items-center align-items-sm-start">
                 <Button
                   size="lg"
-                  className="px-4 py-3"
+                  className="px-4 py-3 d-flex align-items-center justify-content-center"
                   onClick={handleCreateDemo}
                   disabled={isCreatingDemo}
                   style={{
@@ -109,7 +109,7 @@ function LandingPage() {
                 </Button>
                 <Button
                   size="lg"
-                  className="px-4 py-3"
+                  className="px-4 py-3 d-flex align-items-center justify-content-center"
                   onClick={() => navigate('/AccountUser')}
                   style={{
                     fontWeight: '600',
@@ -133,41 +133,97 @@ function LandingPage() {
               )}
 
               {/* Quick Access Links */}
-              <div className="d-flex flex-wrap gap-3">
-                <Button
-                  size="sm"
-                  className="px-3 py-2"
-                  onClick={() => navigate('/RegistrationTypeSelector')}
-                  style={{
-                    fontWeight: '500',
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                    borderWidth: '1px',
-                    color: '#fff',
-                    whiteSpace: 'nowrap',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <i className="fas fa-users me-1"></i>
-                  <span>Register for Tournament</span>
-                </Button>
-                <Button
-                  size="sm"
-                  className="px-3 py-2"
-                  onClick={() => navigate('/ViewerTour')}
-                  style={{
-                    fontWeight: '500',
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    borderColor: 'rgba(255, 255, 255, 0.3)',
-                    borderWidth: '1px',
-                    color: '#fff',
-                    whiteSpace: 'nowrap',
-                    fontSize: '0.9rem'
-                  }}
-                >
-                  <i className="fas fa-tv me-1"></i>
-                  <span>Watch Live</span>
-                </Button>
+              <div className="d-flex flex-column align-items-center align-items-sm-start">
+                {/* Top row - Register and My Registrations */}
+                <div className="d-flex gap-2 mb-2 justify-content-center justify-content-sm-start">
+                  <Button
+                    size="sm"
+                    className="px-3 py-2"
+                    onClick={() => navigate('/RegistrationTypeSelector')}
+                    style={{
+                      fontWeight: '500',
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      borderWidth: '1px',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <i className="fas fa-users me-1"></i>
+                    <span>Register</span>
+                  </Button>
+                  <Button
+                    size="sm"
+                    className="px-3 py-2"
+                    onClick={() => navigate('/LoginTypeSelector')}
+                    style={{
+                      fontWeight: '500',
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      borderWidth: '1px',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <i className="fas fa-list-check me-1"></i>
+                    <span>My Registrations</span>
+                  </Button>
+                </div>
+
+                {/* Bottom row - Watch Live centered between the two buttons above */}
+                <div className="d-none d-sm-flex gap-2 mb-2" style={{ justifyContent: 'flex-start' }}>
+                  {/* Invisible spacer button to match "Register" button */}
+                  <div style={{ visibility: 'hidden' }}>
+                    <Button size="sm" className="px-3 py-2" style={{ fontSize: '0.85rem' }}>
+                      <i className="fas fa-users me-1"></i>
+                      <span>Register</span>
+                    </Button>
+                  </div>
+
+                  {/* Watch Live button in the gap position */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '0.5rem' }}>
+                    <Button
+                      size="sm"
+                      className="px-3 py-2"
+                      onClick={() => navigate('/ViewerTour')}
+                      style={{
+                        fontWeight: '500',
+                        backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                        borderColor: 'rgba(255, 255, 255, 0.3)',
+                        borderWidth: '1px',
+                        color: '#fff',
+                        whiteSpace: 'nowrap',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      <i className="fas fa-tv me-1"></i>
+                      <span>Watch Live</span>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Mobile layout - Watch Live centered below */}
+                <div className="d-flex d-sm-none justify-content-center">
+                  <Button
+                    size="sm"
+                    className="px-3 py-2"
+                    onClick={() => navigate('/ViewerTour')}
+                    style={{
+                      fontWeight: '500',
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      borderColor: 'rgba(255, 255, 255, 0.3)',
+                      borderWidth: '1px',
+                      color: '#fff',
+                      whiteSpace: 'nowrap',
+                      fontSize: '0.85rem'
+                    }}
+                  >
+                    <i className="fas fa-tv me-1"></i>
+                    <span>Watch Live</span>
+                  </Button>
+                </div>
               </div>
             </Col>
             <Col lg={6} className="d-none d-lg-block">
@@ -361,7 +417,7 @@ function LandingPage() {
               <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center">
                 <Button
                   size="lg"
-                  className="px-5 py-3"
+                  className="px-5 py-3 d-flex align-items-center justify-content-center"
                   onClick={handleCreateDemo}
                   disabled={isCreatingDemo}
                   style={{
@@ -389,7 +445,7 @@ function LandingPage() {
                 </Button>
                 <Button
                   size="lg"
-                  className="px-5 py-3"
+                  className="px-5 py-3 d-flex align-items-center justify-content-center"
                   onClick={() => navigate('/AccountUser')}
                   style={{
                     fontWeight: '600',
